@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Open in TravelBuddy</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      font-family: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      margin: 0; min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 2em 1.5em;
+      background: linear-gradient(160deg, #0a84ff 0%, #30d0c6 100%);
+      color: #fff;
+    }
+    .logo { font-size: 64px; margin-bottom: .2em; }
+    h1 { font-size: 1.6em; margin: .2em 0; }
+    p { opacity: .92; max-width: 420px; line-height: 1.5; }
+    .btn {
+      display: inline-block; margin-top: 1.4em; padding: .85em 1.8em;
+      background: #fff; color: #0a84ff; font-weight: 700; font-size: 1.05em;
+      border-radius: 14px; text-decoration: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,.18);
+    }
+    .small { margin-top: 2.5em; font-size: .85em; opacity: .8; }
+    .small a { color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="logo">✈️</div>
+  <h1>Open in TravelBuddy</h1>
+  <p id="msg">Tap below to open this in the TravelBuddy app. If you don't have it yet, you can get it from the App Store.</p>
+  <a class="btn" id="openBtn" href="#">Open TravelBuddy</a>
+  <p class="small">
+    <a href="/privacy_travelbuddy.html">Privacy Policy</a>
+  </p>
+
+  <script>
+    // GitHub Pages serves this page for unmatched paths like /trip/<id> or /user/<id>.
+    // When the app is installed, the Universal Link opens the app directly and this
+    // page is never shown. This is the not-installed / fallback experience.
+    (function () {
+      var path = window.location.pathname; // e.g. /trip/UUID
+      var parts = path.split('/').filter(Boolean);
+      var deepLink = null;
+      if (parts.length >= 2 && (parts[0] === 'trip' || parts[0] === 'user' || parts[0] === 'profile')) {
+        deepLink = 'travelbuddy://' + parts[0] + '/' + parts[1];
+      }
+      var btn = document.getElementById('openBtn');
+      // Replace this with your real App Store URL once the app is published.
+      var appStoreURL = 'https://apps.apple.com/app/travelbuddy/id000000000';
+      if (deepLink) {
+        btn.href = deepLink;
+        // Try to open the app automatically; fall back to the store after a delay.
+        var t = setTimeout(function () { window.location.href = appStoreURL; }, 1200);
+        btn.addEventListener('click', function () { clearTimeout(t); });
+      } else {
+        btn.href = appStoreURL;
+        document.getElementById('msg').textContent =
+          'Plan and share your adventures with TravelBuddy.';
+      }
+    })();
+  </script>
+</body>
+</html>

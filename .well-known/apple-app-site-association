@@ -1,0 +1,17 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["9BN5XZ84YJ.at.OskarPolster.TravelBuddy"],
+        "components": [
+          { "/": "/trip/*", "comment": "Opens a shared trip in TravelBuddy" },
+          { "/": "/user/*", "comment": "Opens a user profile in TravelBuddy" },
+          { "/": "/profile/*", "comment": "Opens a user profile in TravelBuddy" }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["9BN5XZ84YJ.at.OskarPolster.TravelBuddy"]
+  }
+}
