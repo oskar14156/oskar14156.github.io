@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Open or import a shared Novus workout plan.">
+  <title>Open a Shared Plan in Novus</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#content">Skip to content</a>
+  <header>
+    <a class="brand" href="index.html">NOVUS</a>
+    <nav aria-label="Main navigation"><a href="index.html">Support</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></nav>
+  </header>
+  <main id="content">
+    <section class="hero">
+      <span class="eyebrow">Shared workout plan</span>
+      <h1>Open this plan in Novus.</h1>
+      <p id="intro">A Novus user shared a workout plan with you.</p>
+    </section>
+    <article>
+      <section>
+        <h2>Import the plan</h2>
+        <p id="code-copy">If you received an eight-character code, copy it and open Novus → Workouts → Plans → Import Plan.</p>
+        <p><a class="button" id="open-app" href="novus://plan">Open Novus</a></p>
+        <p class="notice" id="code-notice" hidden>Plan code: <strong id="plan-code"></strong></p>
+        <h2>Don’t have Novus?</h2>
+        <p><a href="https://apps.apple.com/app/id6741210393">Download Novus from the App Store</a>, then enter the shared code in Import Plan.</p>
+        <h2>Before you import</h2>
+        <p>Review the plan and adjust exercises, weights, repetitions and rest periods to your experience and abilities. Shared plans are user-created content and are not medical advice.</p>
+      </section>
+    </article>
+  </main>
+  <footer>© 2026 Novus · Oskar Polster<nav aria-label="Footer"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="index.html">Support</a></nav></footer>
+  <script>
+    (() => {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("c");
+      const data = params.get("d");
+      const appURL = new URL("novus://plan");
+
+      if (code && /^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{8}$/.test(code)) {
+        appURL.searchParams.set("c", code);
+        document.getElementById("plan-code").textContent = code;
+        document.getElementById("code-notice").hidden = false;
+      } else if (data && data.length <= 200000) {
+        appURL.searchParams.set("d", data);
+      }
+
+      document.getElementById("open-app").href = appURL.toString();
+    })();
+  </script>
+</body>
+</html>
