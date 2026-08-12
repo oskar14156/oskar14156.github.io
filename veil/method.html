@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="How Veil calculates camera exposure: direction, read range, field of view and confidence."><title>Veil — How exposure is calculated</title><link rel="stylesheet" href="styles.css"></head>
+<body>
+  <a class="skip" href="#content">Skip to content</a>
+  <header><a class="brand" href="index.html">VEIL</a><nav aria-label="Main navigation"><a href="index.html">Support</a><a aria-current="page" href="method.html">How it works</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="data.html">Your data</a><a href="imprint.html">Legal notice</a></nav></header>
+  <main id="content">
+    <section class="hero">
+      <span class="eyebrow">Method</span>
+      <h1>How exposure is calculated</h1>
+      <p>Why Veil counted a camera — or did not — and what the number on the route sheet actually means.</p>
+      <span class="pill">Last updated: 13 August 2026</span>
+    </section>
+
+    <article>
+      <h2>The short answer: direction is everything</h2>
+      <p>A plate reader only records what drives <em>into</em> its field of view and shows it a plate. The camera watching the opposite carriageway does not read you. Most naive implementations ignore this and simply count every camera within a radius of the route.</p>
+      <p class="notice">On our reference trip through Cobb County, Georgia, a radius-only model reported <strong>21 captures where the directional model reported 8</strong> — a 62% false-positive rate. Every one of those false positives is a detour you would have driven for nothing. That is the difference between an app you keep and one you delete after two trips.</p>
+
+      <h2>What has to be true for a capture to count</h2>
+      <p>For each camera near your route, Veil computes a capture probability from four independent factors, multiplied together:</p>
+      <ol>
+        <li><strong>Range.</strong> Are you inside the camera's read range at all? Beyond it, the probability is zero.</li>
+        <li><strong>Field of view.</strong> Are you inside the lens cone? A vehicle well off-axis is not read. Probability falls off towards the edge of the cone rather than cutting off hard, because a real lens does not have a wall at its edge.</li>
+        <li><strong>Approach.</strong> Are you driving towards the camera, showing it the plate? Travelling the other way, past the back of the installation, scores zero.</li>
+        <li><strong>Confidence.</strong> How trustworthy is the record? OpenStreetMap entries with a mapped bearing score high; your own reports slightly lower, because people misjudge bearings.</li>
+      </ol>
+      <p>Veil walks only the stretch of road that is actually inside the read range, and walks it densely — a few metres per sample. Spreading a fixed number of samples over a whole road segment looks equivalent and is not: on a kilometre-long rural straight the samples land hundreds of metres apart and the narrow capture window falls cleanly between two of them. That bug used to hide exactly the cameras on fast roads, which are the ones that matter most.</p>
+
+      <h2>Defaults per camera type</h2>
+      <p>These are starting assumptions, refined by whatever the map records for the individual camera. A camera with a mapped bearing or field of view uses its own values.</p>
+      <table>
+        <thead><tr><th>Type</th><th>Read range</th><th>Field of view</th><th>Weight</th></tr></thead>
+        <tbody>
+          <tr><td>Plate reader (ALPR / ANPR)</td><td>55 m</td><td>60°</td><td>1.0</td></tr>
+          <tr><td>Speed camera</td><td>40 m</td><td>45°</td><td>0.5</td></tr>
+          <tr><td>Red-light camera</td><td>35 m</td><td>60°</td><td>0.4</td></tr>
+          <tr><td>Traffic-monitoring camera</td><td>60 m</td><td>90°</td><td>0.2</td></tr>
+          <tr><td>Unknown / unspecified</td><td>50 m</td><td>70°</td><td>0.6</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Weight</strong> is how much a given type counts towards the risk score. A plate reader creates a searchable record of your vehicle's location; a traffic-flow camera generally does not, so it weighs a fifth as much.</p>
+
+      <h2>The two numbers you see</h2>
+      <ul>
+        <li><strong>Cameras on this route</strong> — the headline count. A camera is counted when its capture probability reaches <strong>0.35</strong>. Below that it is a plausible miss, not a read, and inflating the number would make every route look hopeless.</li>
+        <li><strong>Passed but not captured</strong> — cameras you drove past whose probability stayed under the threshold: wrong direction, off-axis, or too far. Shown so the map and the count do not appear to contradict each other.</li>
+      </ul>
+
+      <h2>"Assume unmapped cameras see everything"</h2>
+      <p>Many records carry no bearing. With this setting on — the default — such a camera is treated as able to read you from any angle, which is the safe assumption and finds longer routes. Turn it off and Veil discounts them instead, giving shorter routes and a less cautious count. It is a genuine trade-off, which is why it is a switch and not a hidden constant.</p>
+
+      <h2>How the route is chosen</h2>
+      <p>Exposure is not a filter applied to finished routes. It is a cost on every road segment, so an ordinary shortest-path search optimises it directly. Each avoidance level is a different price on that cost:</p>
+      <ul>
+        <li><strong>Fastest</strong> — cameras ignored, shown for honest comparison.</li>
+        <li><strong>Balanced</strong> — spends a modest amount of time to cut exposure. The detour ceiling is the greater of +30% or +3 minutes, because 30% of a two-minute drive is not a meaningful allowance.</li>
+        <li><strong>Strict</strong> — prioritises the visible camera count, within a larger but still bounded detour.</li>
+        <li><strong>Max</strong> — the fewest cameras the road network can offer, whatever the detour costs.</li>
+      </ul>
+
+      <h2>When Veil says a camera is unavoidable</h2>
+      <p>Only one thing entitles the app to that claim: solving the trip over the <em>complete</em> street network for the corridor, with every camera-covered segment removed, and finding that the endpoints are still connected — or provably are not. When that search runs, Veil can state a floor as a fact.</p>
+      <p>When it cannot run — usually because the street data could not be downloaded in time — Veil says so instead of guessing. Wording like "every route we could check" means exactly that: a sample, not a proof. A camera sitting a few hundred metres from your start is <em>likely</em> hard to avoid, but that is a reason, not evidence, and the app no longer presents it as evidence.</p>
+
+      <h2>The honest limits</h2>
+      <ul>
+        <li>Veil searches a corridor around your route, not the entire map. A clean road far outside that corridor is invisible to it. The width is shown in the app when it makes a proof claim.</li>
+        <li>Mobile and handheld enforcement is not modelled at all. Veil covers fixed, mapped infrastructure only.</li>
+        <li>The data is volunteer-contributed and incomplete. Zero mapped cameras is not zero cameras.</li>
+      </ul>
+      <p>Found a camera that is missing, gone, or facing the wrong way? Report it in the app — that is the cheapest data-quality feedback there is.</p>
+    </article>
+  </main>
+  <footer>© 2026 Veil · Oskar Polster<nav aria-label="Footer"><a href="index.html">Support</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="imprint.html">Legal notice</a></nav></footer>
+</body>
+</html>
