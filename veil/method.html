@@ -9,7 +9,7 @@
       <span class="eyebrow">Method</span>
       <h1>How exposure is calculated</h1>
       <p>Why Veil counted a camera — or did not — and what the number on the route sheet actually means.</p>
-      <span class="pill">Last updated: 13 August 2026</span>
+      <span class="pill">Last updated: 18 August 2026</span>
     </section>
 
     <article>
@@ -62,6 +62,15 @@
       <h2>When Veil says a camera is unavoidable</h2>
       <p>Only one thing entitles the app to that claim: solving the trip over the <em>complete</em> street network for the corridor, with every camera-covered segment removed, and finding that the endpoints are still connected — or provably are not. When that search runs, Veil can state a floor as a fact.</p>
       <p>When it cannot run — usually because the street data could not be downloaded in time — Veil says so instead of guessing. Wording like "every route we could check" means exactly that: a sample, not a proof. A camera sitting a few hundred metres from your start is <em>likely</em> hard to avoid, but that is a reason, not evidence, and the app no longer presents it as evidence.</p>
+
+      <h2>Which camera data the count was measured against</h2>
+      <p>A count is only as good as the camera list behind it, and that list is not the same on every trip. Veil labels which one it used, in the route sheet, rather than presenting all three as the same number:</p>
+      <ul>
+        <li><strong>Verified</strong> — the cameras along this corridor were fetched fresh while planning.</li>
+        <li><strong>Partial</strong> — the fetch ran out of time and part of the corridor came from what was already stored.</li>
+        <li><strong>Offline</strong> — no update was possible, so the trip was checked against the dataset bundled with the app and whatever you had cached. Trips over about 300&nbsp;km are always in this class: a bounding box across half a continent would be dozens of separate requests.</li>
+      </ul>
+      <p>A zero without coverage says so itself. That matters more than it sounds: the alternative is an app that reports "0 cameras" when what actually happened is that it had nothing to compare against.</p>
 
       <h2>The honest limits</h2>
       <ul>
