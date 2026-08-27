@@ -1,0 +1,23 @@
+<!doctype html><html lang="en" data-theme="dark"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Territories — The Charity Canvas</title><link rel="icon" href="/canvas/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/canvas/style.css"><script>document.documentElement.dataset.theme=localStorage.getItem("theme")||(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");</script>
+<style>
+.board{width:100%;border-collapse:collapse}
+.board tr{cursor:pointer}
+.board tr:hover td{background:var(--panel-2)}
+.board td{padding:12px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+.rank{font-variant-numeric:tabular-nums;font-weight:700;font-size:17px;width:52px;color:var(--faint)}
+.rank.top{color:var(--warn)}
+.teamname{font-weight:600;font-size:15px}
+.bar2{height:6px;border-radius:3px;background:var(--accent);margin-top:6px;min-width:2px}
+.mv{font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+.mv.up{color:var(--good)} .mv.down{color:var(--bad)} .mv.same{color:var(--faint)}
+.cardimg{width:100%;border-radius:12px;border:1px solid var(--line);display:block;image-rendering:pixelated}
+</style><script src="/canvas/demo-shim.js"></script></head><body>
+<header><a href="/canvas/" class="brand" style="color:inherit">THE CHARITY CANVAS<small>Territories</small></a>
+<div class="spacer"></div><nav><a href="/canvas/">Canvas</a><a href="/canvas/leaderboard.html">Territories</a><a href="/canvas/history.html">History</a><a href="/canvas/transparency.html">The money</a><a href="/canvas/about.html">How it works</a><button class="icobtn" id="themeBtn">◐</button></nav></header>
+<div class="wrap"><div id="out">Loading…</div></div>
+<footer class="sitefoot"><div class="wrap" style="padding:22px 20px"><nav><a href="/canvas/">Canvas</a><a href="/canvas/leaderboard.html">Territories</a><a href="/canvas/history.html">History</a><a href="/canvas/transparency.html">The money</a><a href="/canvas/about.html">How it works</a><a href="/canvas/terms.html">Terms</a><a href="/canvas/privacy.html">Privacy</a><a href="/canvas/imprint.html">Imprint</a></nav></div></footer>
+<script type="module" src="/canvas/nav.js"></script>
+<script type="module" src="/canvas/leaderboard.js"></script></body></html>
