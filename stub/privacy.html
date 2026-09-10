@@ -35,10 +35,10 @@
           <li>den Ländercode deines eingestellten Heimatlands.</li>
         </ul>
         <p>Ein Belegbild kann personenbezogene Angaben enthalten — etwa was du wo und wann gekauft hast, die letzten Stellen einer Kartennummer oder eine Kundennummer. Bitte scanne keine Dokumente, die du nicht übermitteln möchtest; die manuelle Erfassung kommt ohne jede Übertragung aus.</p>
-        <p>Die Übertragung läuft über unseren Analyse-Dienst („Stub-Proxy"), damit der API-Schlüssel des KI-Anbieters nicht in der App liegt. Der Proxy nimmt die Anfrage entgegen, leitet sie an den KI-Anbieter weiter und gibt das strukturierte Ergebnis zurück. Er legt Bild, PDF oder Ergebnis nicht dauerhaft ab. Zur Missbrauchsabwehr wird kurzzeitig im Arbeitsspeicher gezählt, wie viele Anfragen von einer IP-Adresse kommen; diese Zähler werden laufend verworfen und nicht mit einer Person verknüpft.</p>
-        <p>Als KI-Anbieter wird Anthropic PBC eingesetzt. Anthropic verarbeitet den Inhalt, um die Antwort zu erzeugen, und nutzt über die API übermittelte Inhalte nach den geltenden API-Bedingungen nicht zum Training seiner Modelle. Details: <a href="https://www.anthropic.com/legal/privacy" rel="noopener noreferrer">anthropic.com/legal/privacy</a>.</p>
+        <p>Die Übertragung läuft über unseren Analyse-Dienst („Stub-Proxy"), damit der API-Schlüssel des KI-Anbieters nicht in der App liegt. Der Proxy nimmt die Anfrage entgegen, leitet sie an den KI-Anbieter weiter und gibt das strukturierte Ergebnis zurück. Er legt Bild, PDF oder Ergebnis <strong>nicht</strong> ab. Betrieben wird er als Firebase-Cloud-Function von Google in der Region <strong>europe-west1 (Belgien, EU)</strong>; die Daten verlassen für diesen Schritt also nicht die Europäische Union.</p>
+        <p>Als KI-Anbieter wird <strong>Google</strong> mit der Gemini-API eingesetzt. Google verarbeitet den Inhalt, um die Antwort zu erzeugen. Im kostenpflichtigen Tarif der Gemini-API nutzt Google übermittelte Inhalte nicht zum Training seiner Modelle; sie werden lediglich für eine begrenzte Frist zur Missbrauchskontrolle vorgehalten. Details: <a href="https://ai.google.dev/gemini-api/terms" rel="noopener noreferrer">ai.google.dev/gemini-api/terms</a>.</p>
         <p>Das zurückgelieferte Ergebnis wird ausschließlich lokal gespeichert. Deine Zustimmung kannst du jederzeit in derselben Einstellung widerrufen; ab dann findet keine Übertragung mehr statt.</p>
-        <div class="notice"><p><strong>Entwickler- und Eigenbetrieb.</strong> Der Quelltext erlaubt zusätzlich, einen eigenen Analyse-Server oder einen eigenen API-Schlüssel (Anthropic oder Google Gemini) zu hinterlegen. Diese Betriebsart richtet sich an Selbstbetreiber. Wer sie nutzt, sendet direkt an den selbst gewählten Anbieter; dann gelten dessen Datenschutzbedingungen, und für die Verarbeitung ist verantwortlich, wer den Schlüssel einsetzt. Ein hinterlegter Schlüssel liegt in der vom Betriebssystem verschlüsselten Ablage (iOS-Schlüsselbund bzw. Android Keystore) und wird nur für die Belegerkennung verwendet.</p></div>
+        <div class="notice"><p><strong>Entwickler- und Eigenbetrieb.</strong> Der Quelltext erlaubt zusätzlich, einen eigenen Analyse-Server oder einen eigenen Google-Gemini-Schlüssel zu hinterlegen. Diese Betriebsart richtet sich an Selbstbetreiber. Wer sie nutzt, sendet direkt an den selbst gewählten Anbieter; dann gelten dessen Datenschutzbedingungen, und für die Verarbeitung ist verantwortlich, wer den Schlüssel einsetzt. Ein hinterlegter Schlüssel liegt in der vom Betriebssystem verschlüsselten Ablage (iOS-Schlüsselbund bzw. Android Keystore) und wird nur für die Belegerkennung verwendet.</p></div>
 
         <h2>6. Kontoauszüge</h2>
         <p>Von dir importierte PDF-Kontoauszüge werden im geschützten App-Verzeichnis abgelegt. Aus dem Dateiinhalt wird ein Prüfwert (Hash) gebildet, um denselben Auszug nicht zweimal zu importieren. Für die Auswertung des Auszugs gilt Abschnitt 5 sinngemäß. Beim Zurücksetzen der App werden die PDFs mitgelöscht.</p>
@@ -58,13 +58,14 @@
           <table>
             <thead><tr><th>Empfänger</th><th>Wofür</th><th>Welche Daten</th></tr></thead>
             <tbody>
-              <tr><td>Anthropic PBC (USA)</td><td>Erkennung von Beleg bzw. Kontoauszug</td><td>Nur mit Einwilligung: Belegbild oder PDF, Kategorienamen, Heimatland-Code</td></tr>
+              <tr><td>Google (Gemini-API)</td><td>Erkennung von Beleg bzw. Kontoauszug</td><td>Nur mit Einwilligung: Belegbild oder PDF, Kategorienamen, Heimatland-Code</td></tr>
+              <tr><td>Google Cloud / Firebase (EU, europe-west1)</td><td>Betrieb des Analyse-Dienstes und der Nutzungszähler</td><td>Pseudonyme App-Benutzer-ID, Zählerstände, Zeitstempel, IP-Adresse der Anfrage</td></tr>
               <tr><td>RevenueCat, Inc. (USA)</td><td>Prüfung und Verwaltung von Käufen</td><td>Pseudonyme App-Benutzer-ID, Abostatus, Land- und Geräteangaben des Kaufs</td></tr>
               <tr><td>Apple / Google</td><td>Kaufabwicklung, App-Auslieferung</td><td>Von der jeweiligen Plattform in eigener Verantwortung erhoben</td></tr>
             </tbody>
           </table>
         </div>
-        <p>Findet dabei eine Übermittlung in ein Drittland statt, erfolgt sie auf Grundlage eines Angemessenheitsbeschlusses der Europäischen Kommission oder der EU-Standardvertragsklauseln.</p>
+        <p>Der Analyse-Dienst selbst läuft innerhalb der EU. Eine Übermittlung in ein Drittland findet beim Aufruf der Gemini-API sowie gegenüber RevenueCat statt; sie erfolgt auf Grundlage eines Angemessenheitsbeschlusses der Europäischen Kommission (EU-US Data Privacy Framework) oder der EU-Standardvertragsklauseln.</p>
 
         <h2>11. Rechtsgrundlagen</h2>
         <p>Die Verarbeitung erfolgt zur Erfüllung des Nutzungsvertrags und zur Bereitstellung der Kauffunktionen (Art. 6 Abs. 1 lit. b DSGVO), zur Sicherheit und Missbrauchsabwehr (Art. 6 Abs. 1 lit. f DSGVO) sowie auf Grundlage deiner Einwilligung für die KI-Analyse und für die Kamera-, Foto- und Mitteilungsberechtigungen (Art. 6 Abs. 1 lit. a DSGVO). Eine Einwilligung kannst du jederzeit mit Wirkung für die Zukunft widerrufen — in der App unter <strong>Mehr → Datenschutz</strong> und in den Systemeinstellungen deines Geräts.</p>
@@ -73,13 +74,13 @@
         <p>Stub enthält keine Werbe-SDKs, keine profilbildenden Analyse- oder Tracking-SDKs und keine Drittanbieter-Tracker. Wir verkaufen und teilen keine personenbezogenen Daten, erstellen keine Nutzerprofile und verwenden deine Daten nicht für Werbung.</p>
 
         <h2>13. Speicherdauer</h2>
-        <p>Lokale Daten bleiben auf deinem Gerät, bis du sie löschst oder die App entfernst. Beim Analyse-Dienst entsteht keine dauerhafte Ablage der übermittelten Inhalte. Der Kaufdatensatz bei RevenueCat besteht so lange, wie es für die Verwaltung deiner Berechtigung und für gesetzliche Aufbewahrungspflichten erforderlich ist.</p>
+        <p>Lokale Daten bleiben auf deinem Gerät, bis du sie löschst oder die App entfernst. Beim Analyse-Dienst entsteht keine dauerhafte Ablage der übermittelten Inhalte. Für die Missbrauchs- und Kostenabwehr führt der Analyse-Dienst zusätzlich einen Zähler je pseudonymer App-Benutzer-ID (Anzahl Analysen im laufenden Monat und insgesamt, mit Zeitstempel). Er liegt in Firestore in der EU und bleibt bestehen, weil daran die einmaligen Gratis-Analysen hängen — ohne ihn ließe sich das kostenlose Kontingent durch Neuinstallation beliebig oft zurücksetzen. Der Zähler enthält keine Belegdaten. Der Kaufdatensatz bei RevenueCat besteht so lange, wie es für die Verwaltung deiner Berechtigung und für gesetzliche Aufbewahrungspflichten erforderlich ist.</p>
 
         <h2>14. Kinder</h2>
         <p>Stub richtet sich nicht an Kinder unter 13 Jahren, und wir erheben wissentlich keine Daten von ihnen.</p>
 
         <h2>15. Deine Rechte</h2>
-        <p>Da die App deine Belegdaten lokal speichert, kontrollierst du sie unmittelbar: über den Export (CSV, JSON, ZIP-Vollbackup), über das Löschen einzelner Belege und über <strong>Mehr → Alle Daten löschen</strong>. Für Daten bei unseren Auftragsverarbeitern — praktisch nur dein Kaufdatensatz — kannst du Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch verlangen. Schreibe an <a href="mailto:oskarpolster.business@gmail.com">oskarpolster.business@gmail.com</a>; wir antworten innerhalb von 30 Tagen. Du hast außerdem das Recht auf Beschwerde bei einer Aufsichtsbehörde, in Österreich bei der Datenschutzbehörde.</p>
+        <p>Da die App deine Belegdaten lokal speichert, kontrollierst du sie unmittelbar: über den Export (CSV, JSON, ZIP-Vollbackup), über das Löschen einzelner Belege und über <strong>Mehr → Alle Daten löschen</strong>. Für Daten bei unseren Auftragsverarbeitern — dein Kaufdatensatz bei RevenueCat und der Nutzungszähler beim Analyse-Dienst — kannst du Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch verlangen. Schreibe an <a href="mailto:oskarpolster.business@gmail.com">oskarpolster.business@gmail.com</a>; wir antworten innerhalb von 30 Tagen. Du hast außerdem das Recht auf Beschwerde bei einer Aufsichtsbehörde, in Österreich bei der Datenschutzbehörde.</p>
 
         <h2>16. Änderungen</h2>
         <p>Bei wesentlichen Änderungen aktualisieren wir das Datum oben und weisen in der App darauf hin, bevor sie wirksam werden.</p>
@@ -103,10 +104,10 @@
         <h2>5. What leaves your device — the AI analysis</h2>
         <p>Automatic recognition requires your consent and is off by default. Only after you enable <strong>Mehr → Datenschutz → KI-Analyse erlauben</strong> does Stub transmit, per scan: the downscaled receipt image or the bank statement PDF you selected, your existing category tree (category names only — no amounts, no receipts), and the country code of your configured home country.</p>
         <p>A receipt image can contain personal information — what you bought, where and when, the last digits of a card number, a loyalty number. Please do not scan documents you would rather not transmit; manual entry works entirely without any transmission.</p>
-        <p>The request goes through our analysis service (the "Stub proxy") so that the AI provider's API key never ships inside the app. The proxy receives the request, forwards it to the AI provider and returns the structured result. It does not persist the image, the PDF or the result. For abuse protection it briefly counts requests per IP address in memory; those counters are continuously discarded and are not linked to a person.</p>
-        <p>The AI provider is Anthropic PBC. Anthropic processes the content to produce the response and, under the applicable API terms, does not use content submitted via the API to train its models. See <a href="https://www.anthropic.com/legal/privacy" rel="noopener noreferrer">anthropic.com/legal/privacy</a>.</p>
+        <p>The request goes through our analysis service (the "Stub proxy") so that the AI provider's API key never ships inside the app. The proxy receives the request, forwards it to the AI provider and returns the structured result. It does <strong>not</strong> store the image, the PDF or the result. It runs as a Firebase Cloud Function operated by Google in region <strong>europe-west1 (Belgium, EU)</strong>, so for this step the data does not leave the European Union.</p>
+        <p>The AI provider is <strong>Google</strong>, via the Gemini API. Google processes the content to produce the response. On the paid tier of the Gemini API, Google does not use submitted content to train its models; it is retained only for a limited period for abuse monitoring. See <a href="https://ai.google.dev/gemini-api/terms" rel="noopener noreferrer">ai.google.dev/gemini-api/terms</a>.</p>
         <p>The returned result is stored locally only. You can withdraw consent at any time in the same setting; no further transmission takes place after that.</p>
-        <div class="notice"><p><strong>Developer and self-hosted mode.</strong> The source code additionally allows configuring your own analysis server or your own API key (Anthropic or Google Gemini). This mode is aimed at self-hosters: requests then go directly to the provider you chose, that provider's privacy terms apply, and whoever supplies the key is the controller for that processing. A stored key is kept in the operating system's encrypted storage (iOS Keychain or Android Keystore) and is used only for receipt recognition.</p></div>
+        <div class="notice"><p><strong>Developer and self-hosted mode.</strong> The source code additionally allows configuring your own analysis server or your own Google Gemini API key. This mode is aimed at self-hosters: requests then go directly to the provider you chose, that provider's privacy terms apply, and whoever supplies the key is the controller for that processing. A stored key is kept in the operating system's encrypted storage (iOS Keychain or Android Keystore) and is used only for receipt recognition.</p></div>
 
         <h2>6. Bank statements</h2>
         <p>Bank statement PDFs you import are stored in the app's protected storage. A hash of the file content is computed so the same statement is not imported twice. Section 5 applies accordingly to analysing a statement. Resetting the app deletes the PDFs as well.</p>
@@ -126,13 +127,14 @@
           <table>
             <thead><tr><th>Recipient</th><th>Purpose</th><th>Data</th></tr></thead>
             <tbody>
-              <tr><td>Anthropic PBC (USA)</td><td>Receipt and bank statement recognition</td><td>With consent only: receipt image or PDF, category names, home country code</td></tr>
+              <tr><td>Google (Gemini API)</td><td>Receipt and bank statement recognition</td><td>With consent only: receipt image or PDF, category names, home country code</td></tr>
+              <tr><td>Google Cloud / Firebase (EU, europe-west1)</td><td>Running the analysis service and the usage counters</td><td>Pseudonymous app user ID, counter values, timestamps, request IP address</td></tr>
               <tr><td>RevenueCat, Inc. (USA)</td><td>Verifying and managing purchases</td><td>Pseudonymous app user ID, subscription status, purchase country and device info</td></tr>
               <tr><td>Apple / Google</td><td>Payment processing, app distribution</td><td>Collected by the respective platform under its own responsibility</td></tr>
             </tbody>
           </table>
         </div>
-        <p>Where a transfer to a third country takes place, it is based on an adequacy decision of the European Commission or on the EU Standard Contractual Clauses.</p>
+        <p>The analysis service itself runs inside the EU. A transfer to a third country takes place when calling the Gemini API and towards RevenueCat; it is based on an adequacy decision of the European Commission (EU-US Data Privacy Framework) or on the EU Standard Contractual Clauses.</p>
 
         <h2>11. Legal bases</h2>
         <p>We process data to perform our agreement with you and to provide purchases (Art. 6(1)(b) GDPR), for security and abuse prevention (Art. 6(1)(f) GDPR), and on the basis of your consent for the AI analysis and for camera, photo and notification permissions (Art. 6(1)(a) GDPR). You may withdraw consent at any time with effect for the future — in the app under <strong>Mehr → Datenschutz</strong> and in your device's system settings.</p>
@@ -141,7 +143,7 @@
         <p>Stub contains no advertising SDKs, no profiling analytics or tracking SDKs and no third-party trackers. We do not sell or share personal data, we do not build user profiles, and we do not use your data for advertising.</p>
 
         <h2>13. Retention</h2>
-        <p>Local data stays on your device until you erase it or remove the app. The analysis service creates no lasting store of transmitted content. The RevenueCat purchase record is retained for as long as needed to manage your entitlement and to meet statutory retention obligations.</p>
+        <p>Local data stays on your device until you erase it or remove the app. The analysis service creates no lasting store of transmitted content. The RevenueCat purchase record is retained for as long as needed to manage your entitlement and to meet statutory retention obligations. For abuse and cost control the analysis service additionally keeps a counter per pseudonymous app user ID (number of analyses this month and in total, with a timestamp). It is stored in Firestore inside the EU and is retained because the one-off free analyses depend on it — without it the free allowance could be reset indefinitely by reinstalling. The counter holds no receipt data.</p>
 
         <h2>14. Children</h2>
         <p>Stub is not directed at children under 13 and we do not knowingly collect data from them.</p>
