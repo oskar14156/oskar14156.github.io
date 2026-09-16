@@ -1,66 +1,107 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Official support and legal information for the RiseProof alarm app.">
-  <title>RiseProof — Support &amp; Legal</title>
+  <meta name="description" content="Support, Datenschutz und rechtliche Informationen zur RiseProof-Wecker-App.">
+  <title>RiseProof — Support &amp; Rechtliches</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <a class="skip" href="#content">Skip to content</a>
+  <a class="skip" href="#content">Zum Inhalt springen</a>
   <header>
     <a class="brand" href="index.html">RISEPROOF</a>
-    <nav aria-label="Main navigation">
-      <a aria-current="page" href="index.html">Support</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="deletion.html">Delete data</a><a href="imprint.html">Legal notice</a>
+    <nav aria-label="Hauptnavigation">
+      <a aria-current="page" href="index.html">Support</a><a href="privacy.html">Datenschutz</a><a href="terms.html">Nutzungsbedingungen</a><a href="deletion.html">Daten löschen</a><a href="imprint.html">Impressum</a>
     </nav>
   </header>
   <main id="content">
     <section class="hero">
-      <span class="eyebrow">Official app support</span>
-      <h1>Prove you're awake. Then get on with your day.</h1>
-      <p>Support, privacy information and legal documents for the RiseProof alarm app.</p>
+      <span class="eyebrow">Offizieller App-Support</span>
+      <h1>Beweise, dass du wach bist. Dann hört der Wecker auf.</h1>
+      <p>Support, Datenschutzinformationen und rechtliche Dokumente zur RiseProof-Wecker-App für iPhone.</p>
     </section>
-    <section class="grid" aria-label="Support options">
-      <div class="card"><span class="pill">Support</span><h2>Need help?</h2><p>Tell us your iPhone model, iOS version, the RiseProof version shown at the bottom of Settings, and what happened. Please do not email passwords or payment details.</p><a class="button" href="mailto:oskarpolster.business@gmail.com?subject=RiseProof%20Support">Email support</a></div>
-      <div class="card"><span class="pill">Alarms</span><h2>My alarm didn't ring</h2><p>RiseProof needs iOS 26 and the system alarm permission. Open iOS Settings → Apps → RiseProof and allow alarms, then run <em>Sync system alarms</em> in RiseProof Settings.</p><a href="#troubleshooting">Troubleshooting →</a></div>
-      <div class="card"><span class="pill">Purchases</span><h2>Subscription support</h2><p>Purchases are billed by Apple. Manage or cancel a subscription in iOS Settings → your name → Subscriptions. Use Restore Purchases in RiseProof when switching devices.</p><a href="https://support.apple.com/en-us/118428" rel="noopener noreferrer">Apple subscription help →</a></div>
-      <div class="card"><span class="pill">Privacy</span><h2>Your data</h2><p>Alarms, history and streaks stay on your iPhone. Camera frames and proof photos are analysed on-device and never uploaded.</p><a href="deletion.html">Delete your data →</a></div>
+    <section class="grid" aria-label="Support-Optionen">
+      <div class="card"><span class="pill">Support</span><h2>Hilfe nötig?</h2><p>Nenne dein iPhone-Modell, die iOS-Version, die unten in den RiseProof-Einstellungen angezeigte App-Version und eine kurze Beschreibung, was passiert ist. Sende bitte niemals Passwörter oder Zahlungsdaten per E-Mail.</p><a class="button" href="mailto:oskarpolster.business@gmail.com?subject=RiseProof%20Support">Support schreiben</a></div>
+      <div class="card"><span class="pill">Wecker</span><h2>Mein Wecker hat nicht geklingelt</h2><p>RiseProof braucht iOS 26 und die Wecker-Berechtigung. Fehlt sie, zeigt die Startseite „Deine Wecker können nicht klingeln“ mit einem Knopf direkt in die Einstellungen.</p><a href="#hilfe">Zur Fehlerhilfe →</a></div>
+      <div class="card"><span class="pill">Käufe</span><h2>Abo &amp; Alarm Pro</h2><p>Abgerechnet wird über Apple. Verwalten oder kündigen kannst du unter Einstellungen → dein Name → Abonnements. Nach einem Gerätewechsel hilft <em>Käufe wiederherstellen</em> — schon auf dem allerersten Bildschirm.</p><a href="https://support.apple.com/de-at/118428" rel="noopener noreferrer">Apple-Abo-Hilfe →</a></div>
+      <div class="card"><span class="pill">Datenschutz</span><h2>Deine Daten</h2><p>Wecker, Historie und Serien bleiben auf deinem iPhone. Kamerabilder werden auf dem Gerät ausgewertet, das Foto einer Foto-Mission wird direkt nach der Prüfung gelöscht.</p><a href="deletion.html">Daten löschen →</a></div>
     </section>
-    <article id="troubleshooting">
-      <section lang="en">
-        <h2>Troubleshooting</h2>
-        <h3>The alarm does not ring, or does not ring again</h3>
+    <article id="hilfe">
+      <section lang="de">
+        <h2>Fehlerhilfe</h2>
+
+        <h3>Der Wecker klingelt nicht</h3>
         <ul>
-          <li>RiseProof requires an iPhone running iOS 26 or newer. AlarmKit does not exist on older versions.</li>
-          <li>Open iOS Settings → Apps → RiseProof and make sure alarm permission is allowed. If you declined it once, iOS will not ask again.</li>
-          <li>In RiseProof, open Settings and tap <strong>Sync system alarms</strong>. This reconciles the app with what iOS actually has scheduled.</li>
-          <li>Alarms scheduled before an app update may not carry newer behaviour. Toggle the alarm off and on again to reschedule it.</li>
+          <li>RiseProof benötigt ein iPhone mit iOS 26 oder neuer. AlarmKit gibt es auf älteren Versionen nicht.</li>
+          <li>Öffne Einstellungen → Apps → RiseProof und erlaube <strong>Wecker</strong>. Wurde die Anfrage einmal abgelehnt, fragt iOS nicht erneut — die App zeigt dann auf der Startseite eine Warnung mit Knopf in die Einstellungen.</li>
+          <li>Führe in RiseProof unter <strong>Einstellungen → Systemwecker abgleichen</strong> aus. Das gleicht die App mit dem ab, was iOS tatsächlich geplant hat.</li>
+          <li>Wecker, die vor einem App-Update erstellt wurden, einmal aus- und wieder einschalten.</li>
         </ul>
-        <h3>Push-ups or squats are not being counted</h3>
+
+        <h3>Der Wecker klingelt nach dem Wegwischen nicht erneut</h3>
         <ul>
-          <li>Prop the iPhone up so that a full shoulder–elbow–wrist line stays in frame. The on-screen hint names the joint that is missing.</li>
-          <li>Counting needs enough light for the camera to resolve your body outline.</li>
-          <li>Allow camera access in iOS Settings → Apps → RiseProof.</li>
+          <li>Das erneute Klingeln wird als eigener Systemwecker etwa 30 Sekunden später geplant. Bleibt es aus, prüfe die Wecker-Berechtigung wie oben.</li>
+          <li>Wird die Mission abgeschlossen, endet die Kette absichtlich sofort.</li>
         </ul>
-        <h3>A purchase is not showing up</h3>
+
+        <h3>Liegestütze, Kniebeugen oder Hampelmänner werden nicht gezählt</h3>
         <ul>
-          <li>Tap <strong>Restore purchases</strong> in RiseProof Settings while signed in with the Apple ID that made the purchase.</li>
-          <li>Purchases are tied to an Apple ID, not to a device. A different Apple ID will not see them.</li>
+          <li>Stelle das iPhone so auf, dass durchgehend Schulter, Ellbogen und Handgelenk im Bild bleiben. Der Hinweis am Bildschirm nennt das fehlende Gelenk.</li>
+          <li>Die Zählung braucht genug Licht, damit die Kamera deine Umrisse erkennt.</li>
+          <li>Erlaube den Kamerazugriff unter Einstellungen → Apps → RiseProof. Ohne Kamera bleiben die Kopf-Missionen nutzbar.</li>
         </ul>
+
+        <h3>Die Tanz-Mission zählt nicht</h3>
+        <p>Tanzen wird seit der aktuellen Version von der Kamera bewertet, nicht mehr vom Bewegungssensor. Stell dich so weit weg, dass dein ganzer Körper im Bild ist, und steh dabei aufrecht — im Bett oder mit dem Handy in der Hand zählt es bewusst nicht.</p>
+
+        <h3>Ich bin verletzt oder krank und kann die Mission nicht machen</h3>
+        <p>Unten im Missions-Bildschirm steht <strong>„Ich kann das gerade nicht“</strong>. Ein Knopf, den du zehn Sekunden hältst, beendet den Wecker samt Wiederholungskette. Dieser Morgen zählt dann nicht für deine Serie, und bei mehrfacher Nutzung innerhalb einer Woche verdoppelt sich die Haltezeit.</p>
+
+        <h3>Mein Abo ist abgelaufen — die Wecker klingeln weiter</h3>
+        <p>Das ist Absicht: Ein Wecker, auf den du dich verlässt, wird nicht stillschweigend abgeschaltet. Die App zeigt dir nach dem Ablauf einen Bildschirm mit allen noch aktiven Weckern und dort den Knopf <strong>„Alle Wecker ausschalten“</strong> — kostenlos und ohne Kauf. Zum Anlegen oder Bearbeiten von Weckern brauchst du wieder ein aktives Abo.</p>
+
+        <h3>Ein Kauf wird nicht erkannt</h3>
+        <ul>
+          <li>Tippe auf <strong>Käufe wiederherstellen</strong> — entweder ganz unten auf dem Startbildschirm der App oder in den Einstellungen — und zwar angemeldet mit der Apple-ID, mit der du gekauft hast.</li>
+          <li>Käufe hängen an der Apple-ID, nicht am Gerät. Mit einer anderen Apple-ID sind sie nicht sichtbar.</li>
+          <li>Ohne Internetverbindung nutzt die App den zuletzt bestätigten Status; ein aktives Abo bleibt also auch offline gültig.</li>
+        </ul>
+
+        <h3>Mitteilungen</h3>
+        <p>RiseProof sendet nur lokale Mitteilungen: eine Sicherungs-Mitteilung zur Weckzeit, optional die Abenderinnerung und, falls du einen Testzeitraum startest, eine Erinnerung 24 Stunden vor dessen Ende.</p>
       </section>
-      <section class="language" lang="de">
-        <h2>Support auf Deutsch</h2>
-        <p>Schreibe an <a href="mailto:oskarpolster.business@gmail.com?subject=RiseProof%20Support">oskarpolster.business@gmail.com</a> und nenne iPhone-Modell, iOS-Version, die in den RiseProof-Einstellungen angezeigte App-Version und eine kurze Fehlerbeschreibung. Sende niemals Passwörter oder Zahlungsdaten per E-Mail.</p>
-        <h3>Der Wecker läutet nicht</h3>
-        <p>RiseProof benötigt iOS 26 oder neuer. Prüfe unter Einstellungen → Apps → RiseProof, ob die Wecker-Berechtigung erlaubt ist, und führe danach in RiseProof unter Einstellungen <strong>Sync system alarms</strong> aus. Wecker, die vor einem App-Update erstellt wurden, einmal aus- und wieder einschalten.</p>
-        <h3>Liegestütze werden nicht gezählt</h3>
-        <p>Stelle das iPhone so auf, dass durchgehend Schulter, Ellbogen und Handgelenk sichtbar bleiben, und sorge für ausreichend Licht. Der Hinweis am Bildschirm nennt das fehlende Gelenk.</p>
-        <h3>Abonnements</h3>
-        <p>Apple-Abonnements verwaltest oder kündigst du unter Einstellungen → dein Name → Abonnements. Das Löschen der App kündigt ein Abonnement nicht automatisch.</p>
+
+      <section class="language" lang="en">
+        <h2>Support in English</h2>
+        <p>Write to <a href="mailto:oskarpolster.business@gmail.com?subject=RiseProof%20Support">oskarpolster.business@gmail.com</a> with your iPhone model, iOS version, the RiseProof version shown at the bottom of Settings, and a short description of the problem. Never send passwords or payment details by email.</p>
+
+        <h3>The alarm does not ring</h3>
+        <p>RiseProof requires iOS 26 or newer. Open Settings → Apps → RiseProof and allow <strong>Alarms</strong>; if you declined once, iOS will not ask again and the app's Home screen shows a warning with a button straight to Settings. Then run <strong>Settings → Sync system alarms</strong> in RiseProof. Alarms created before an app update should be toggled off and on once.</p>
+
+        <h3>It does not ring again after I dismiss it</h3>
+        <p>The repeat is scheduled as its own system alarm about 30 seconds later. If it does not arrive, check the alarm permission above. Completing the mission ends the chain immediately, by design.</p>
+
+        <h3>Push-ups, squats or jumping jacks are not counted</h3>
+        <p>Prop the iPhone up so a full shoulder–elbow–wrist line stays in frame, and make sure there is enough light. The on-screen hint names the joint that is missing. Allow camera access in Settings → Apps → RiseProof; without the camera the mind missions remain available.</p>
+
+        <h3>The dance mission does not count</h3>
+        <p>Dancing is scored by the camera now, not by the motion sensor. Step back far enough for your whole body to be visible and stay upright — moving in bed, or shaking the phone in your hand, deliberately does not count.</p>
+
+        <h3>I am injured or unwell and cannot do the mission</h3>
+        <p>At the bottom of the mission screen there is <strong>“I can’t do this right now”</strong>. Holding that button for ten seconds ends the alarm and its repeat chain. That morning does not count toward your streak, and using it repeatedly within a week doubles the hold.</p>
+
+        <h3>My subscription ended and the alarms keep ringing</h3>
+        <p>That is deliberate: an alarm you rely on is never switched off silently. After it lapses the app shows a screen listing the alarms that are still on, with a <strong>Turn off all alarms</strong> button — free, no purchase needed. Creating or editing alarms requires an active subscription again.</p>
+
+        <h3>A purchase is not showing up</h3>
+        <p>Tap <strong>Restore purchases</strong> — on the app's first screen or in Settings — while signed in with the Apple ID that made the purchase. Purchases are tied to an Apple ID, not to a device. Offline, the app uses the last confirmed status, so an active subscription keeps working without a connection.</p>
+
+        <h3>Notifications</h3>
+        <p>RiseProof sends local notifications only: a backup notification at alarm time, the optional evening reminder, and — if you start a trial — a reminder 24 hours before it converts.</p>
       </section>
     </article>
   </main>
-  <footer>© 2026 RiseProof · Oskar Polster<nav aria-label="Footer"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="deletion.html">Delete data</a><a href="imprint.html">Legal notice</a></nav></footer>
+  <footer>© 2026 RiseProof · Oskar Polster<nav aria-label="Fußzeile"><a href="privacy.html">Datenschutz</a><a href="terms.html">Nutzungsbedingungen</a><a href="deletion.html">Daten löschen</a><a href="imprint.html">Impressum</a></nav></footer>
 </body>
 </html>
