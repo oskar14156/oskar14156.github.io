@@ -1,0 +1,1 @@
+This branch contains the follow-up fix for the Hello World connector test.
