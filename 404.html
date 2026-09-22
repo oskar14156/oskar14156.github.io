@@ -20,49 +20,50 @@
     .code { font-size: 3em; font-weight: 700; margin: 0; opacity: .35; letter-spacing: .02em; }
     h1 { font-size: 1.5em; margin: .3em 0 .2em; font-weight: 600; }
     p { opacity: .75; max-width: 420px; line-height: 1.5; margin: .4em 0; }
+    .actions { display: none; gap: .7em; flex-wrap: wrap; justify-content: center; margin-top: 1.4em; }
     .btn {
-      display: none; margin-top: 1.4em; padding: .85em 1.8em;
+      display: inline-block; padding: .85em 1.8em;
       background: #0a84ff; color: #fff; font-weight: 600; font-size: 1.05em;
       border-radius: 14px; text-decoration: none;
     }
+    .btn.secondary { background: transparent; color: inherit; border: 1px solid currentColor; }
   </style>
 </head>
 <body>
   <p class="code">404</p>
   <h1 id="title">Page not found</h1>
   <p id="msg">The page you are looking for does not exist or has been moved. Please check the address and try again.</p>
-  <a class="btn" id="openBtn" href="#">Open in app</a>
+  <div class="actions" id="actions">
+    <a class="btn" id="openBtn" href="#">Open Voyeva</a>
+    <a class="btn secondary" href="/voyeva/">Voyeva website</a>
+  </div>
 
   <script>
     // GitHub Pages serves this page for every unmatched path across all products
     // hosted here, so the default state must stay product-neutral: a branded
     // fallback would misrepresent whichever product's path was mistyped.
     //
-    // The one exception is TravelBuddy's Universal Link paths (/trip/<id>,
-    // /user/<id>, /profile/<id>). When the app is installed the link opens it
-    // directly and this page is never shown; this is the not-installed fallback.
+    // Voyeva Universal Link paths (/trip/<id>, /user/<id>, /profile/<id>).
+    // If the app is installed, iOS opens it directly and this page is never
+    // shown. If not installed, keep a real web fallback instead of redirecting
+    // to a guessed or placeholder App Store id.
     (function () {
       var parts = window.location.pathname.split('/').filter(Boolean);
-      var isTravelBuddyLink =
+      var isVoyevaLink =
         parts.length >= 2 &&
         (parts[0] === 'trip' || parts[0] === 'user' || parts[0] === 'profile');
 
-      if (!isTravelBuddyLink) return;
+      if (!isVoyevaLink) return;
 
-      var appStoreURL = 'https://apps.apple.com/app/travelbuddy/id000000000';
-      var deepLink = 'travelbuddy://' + parts[0] + '/' + parts[1];
+      var deepLink = 'voyeva://' + parts[0] + '/' + parts[1];
       var btn = document.getElementById('openBtn');
 
-      document.getElementById('title').textContent = 'Open in TravelBuddy';
+      document.getElementById('title').textContent = 'Open in Voyeva';
       document.getElementById('msg').textContent =
-        'Tap below to open this link in the TravelBuddy app. If you do not have it yet, you can get it from the App Store.';
+        'Open this trip or profile in Voyeva. If Voyeva is not installed, you can continue to the Voyeva website.';
       document.querySelector('.code').style.display = 'none';
-      btn.style.display = 'inline-block';
-      btn.textContent = 'Open TravelBuddy';
+      document.getElementById('actions').style.display = 'flex';
       btn.href = deepLink;
-
-      var t = setTimeout(function () { window.location.href = appStoreURL; }, 1200);
-      btn.addEventListener('click', function () { clearTimeout(t); });
     })();
   </script>
 </body>
