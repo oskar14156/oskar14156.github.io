@@ -2,16 +2,24 @@
   "applinks": {
     "details": [
       {
-        "appIDs": ["9BN5XZ84YJ.at.OskarPolster.TravelBuddy"],
+        "appIDs": [
+          "9BN5XZ84YJ.at.OskarPolster.TravelBuddy"
+        ],
         "components": [
-          { "/": "/trip/*", "comment": "Opens a shared trip in TravelBuddy" },
-          { "/": "/user/*", "comment": "Opens a user profile in TravelBuddy" },
-          { "/": "/profile/*", "comment": "Opens a user profile in TravelBuddy" }
+          {
+            "/": "/trip/*",
+            "comment": "Opens a shared trip in Voyeva"
+          },
+          {
+            "/": "/user/*",
+            "comment": "Opens a user profile in Voyeva"
+          },
+          {
+            "/": "/profile/*",
+            "comment": "Opens a user profile in Voyeva"
+          }
         ]
       }
     ]
-  },
-  "webcredentials": {
-    "apps": ["9BN5XZ84YJ.at.OskarPolster.TravelBuddy"]
   }
 }
