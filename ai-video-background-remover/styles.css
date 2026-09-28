@@ -49,3 +49,7 @@ footer nav { justify-content: flex-start; margin-top: .5rem; }
 code { overflow-wrap: anywhere; }
 @media (max-width: 680px) { header { align-items: flex-start; flex-direction: column; } nav { justify-content: flex-start; } .hero { padding-top: 3rem; } .grid { grid-template-columns: 1fr; } }
 @media print { body { background: white; color: black; } header, footer, .skip { display: none; } main { width: 100%; } .hero { padding: 0 0 1rem; } article { border: 0; box-shadow: none; padding: 0; } a { color: inherit; } }
+
+.language-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: .45rem; margin-top: 1rem; }
+.language-list a { display: block; padding: .5rem .7rem; border: 1px solid var(--line); border-radius: .65rem; background: var(--surface); text-decoration: none; }
+.language-list a:hover { border-color: var(--accent); }
