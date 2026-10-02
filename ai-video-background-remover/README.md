@@ -1,4 +1,4 @@
-# AI Video Background Remover — support and legal site
+# Video Background Remover: AI — support and legal site
 
 This directory is the standalone static GitHub Pages site for the iOS app. It is separate from the `stub/` reference folder.
 
