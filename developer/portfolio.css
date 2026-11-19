@@ -59,8 +59,8 @@ html.lenis, html.lenis body { height: auto; }
 .pf-header.on-dark { color: #fffef9; }
 .pf-header.on-dark.is-solid { background: rgba(17, 25, 22, .72); }
 .pf-brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
-.pf-brand .brand-mark { background: currentColor; color: var(--bg); }
-.pf-header.on-dark .pf-brand .brand-mark { color: #111916; }
+.pf-brand .brand-mark { background: var(--text); color: var(--bg); }
+.pf-header.on-dark .pf-brand .brand-mark { background: #fffef9; color: #111916; }
 .pf-brand-name { font-size: 12px; font-weight: 800; letter-spacing: .14em; opacity: 0; transition: opacity .3s ease; }
 .pf-header.show-name .pf-brand-name { opacity: 1; }
 .pf-nav { display: flex; align-items: center; gap: 6px; }
