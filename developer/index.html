@@ -3,138 +3,458 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Official developer information and support links for apps and software by Oskar Polster.">
-  <title>Developer — Oskar Polster</title>
+  <meta name="description" content="Oskar Polster, mobile developer. React Native and Expo with native Swift and Kotlin modules; native iOS apps in SwiftUI with Firebase.">
+  <meta name="theme-color" content="#111916">
+  <title>Oskar Polster — Mobile Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/developer/portfolio.css?v=6">
+  <script>
+    // Theme before first paint: saved pick, else the system setting.
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('pf-theme'); } catch (e) {}
+      if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+    })();
+  </script>
 </head>
-<body class="developer-page">
+<body class="developer-page pf">
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <header class="site-header">
-    <div class="site-container header-inner">
-      <a class="brand" href="/" aria-label="Oskar Polster home">
-        <span class="brand-mark" aria-hidden="true">op<span>.</span></span>
-        <span class="brand-name">OSKAR<br>POLSTER</span>
-      </a>
-      <nav class="primary-nav" aria-label="Main navigation">
-        <a class="nav-link" href="/#projects">Projects</a>
-        <a class="nav-link" href="/developer/" aria-current="page">Developer</a>
-        <a class="nav-contact" href="#contact">Say hello <span aria-hidden="true">↗</span></a>
-      </nav>
-    </div>
+  <header class="pf-header" id="pf-header">
+    <a class="pf-brand" href="/" aria-label="Oskar Polster home">
+      <span class="brand-mark" aria-hidden="true">op<span>.</span></span>
+      <span class="pf-brand-name" id="header-wordmark">OSKAR POLSTER</span>
+    </a>
+    <nav class="pf-nav" aria-label="Main navigation">
+      <a class="pf-nav-link" href="#work">Work</a>
+      <a class="pf-nav-link" href="#appreleaser">AppReleaser</a>
+      <a class="pf-nav-link" href="#tools">Side projects</a>
+      <div class="pf-theme" role="group" aria-label="Color theme">
+        <button type="button" data-set-theme="light" aria-pressed="false">Light</button>
+        <button type="button" data-set-theme="dark" aria-pressed="false">Dark</button>
+      </div>
+      <a class="pf-nav-cta" href="#contact">Get in touch <span aria-hidden="true">↗</span></a>
+    </nav>
   </header>
 
   <main id="main">
-    <section class="developer-hero site-container" aria-labelledby="developer-title">
-      <div class="developer-hero-copy">
-        <p class="eyebrow"><span class="eyebrow-mark" aria-hidden="true"></span> Developer profile</p>
-        <h1 id="developer-title">Independent by choice.<br><span>Intentional by design.</span></h1>
-        <p class="developer-lede">I’m Oskar Polster, an independent app and software developer. This is the official website for my apps and digital projects.</p>
-        <a class="button button-dark" href="/#projects">Browse apps &amp; projects <span aria-hidden="true">↗</span></a>
-      </div>
-      <aside class="profile-card" aria-label="Developer contact">
-        <div class="profile-card-top"><span class="profile-initials" aria-hidden="true">OP</span><span class="profile-card-index">PROFILE / 01</span></div>
-        <p class="profile-card-label">Independent developer</p>
-        <h2>Oskar<br>Polster</h2>
-        <div class="profile-card-rule"></div>
-        <p class="profile-card-note">Apps, software<br>&amp; thoughtful details.</p>
-        <a class="profile-email" href="mailto:oskarpolster.business@gmail.com">oskarpolster.business@gmail.com <span aria-hidden="true">↗</span></a>
-      </aside>
-    </section>
 
-    <section class="developer-note site-container" aria-label="About the developer">
-      <span class="note-index">01 — ABOUT</span>
-      <p>I work independently across mobile apps and web projects, bringing each idea from a clear problem to a useful, considered experience.</p>
-      <a href="/#projects" class="inline-link">See the project index <span aria-hidden="true">↓</span></a>
-    </section>
-
-    <section class="directory-section site-container" aria-labelledby="directory-title">
-      <div class="section-heading developer-section-heading">
-        <div>
-          <p class="eyebrow"><span class="eyebrow-mark" aria-hidden="true"></span> Official project links</p>
-          <h2 id="directory-title">Apps &amp; projects.</h2>
+    <!-- 1 · INTRO: ink rises, the name docks into the header -->
+    <section class="intro" id="intro" aria-labelledby="intro-title">
+      <div class="intro-stage" id="intro-stage">
+        <canvas id="ink-canvas" aria-hidden="true"></canvas>
+        <div class="intro-content">
+          <p class="intro-kicker">Mobile developer · Lower Austria, near Vienna</p>
+          <h1 class="intro-title" id="intro-title">
+            <span class="intro-word" id="intro-wordmark">Oskar<br>Polster</span>
+          </h1>
+          <p class="intro-line">Mobile apps, <em>down to the native layer.</em></p>
         </div>
-        <p class="section-intro">Visit a project or find its support and privacy information.</p>
-      </div>
-
-      <div class="developer-project-grid">
-        <article class="developer-project">
-          <div class="developer-project-main"><span class="directory-index">01</span><div><h3><a href="/ai-video-background-remover/">Video Background Remover: AI</a></h3><p>Remove a video background on your iPhone.</p></div></div>
-          <div class="developer-project-links"><a href="/ai-video-background-remover/privacy.html">Privacy <span aria-hidden="true">↗</span></a></div>
-        </article>
-        <article class="developer-project">
-          <div class="developer-project-main"><span class="directory-index">02</span><div><h3><a href="/belegfluss/">Belegfluss</a></h3><p>Jede Position auf dem Bon. Ein Bild vom ganzen Jahr.</p></div></div>
-          <div class="developer-project-links"><a href="/belegfluss/privacy.html">Privacy <span aria-hidden="true">↗</span></a></div>
-        </article>
-        <article class="developer-project">
-          <div class="developer-project-main"><span class="directory-index">03</span><div><h3><a href="/blur/">Blur Photo</a></h3><p>Hide faces. Keep the moment.</p></div></div>
-          <div class="developer-project-links"><a href="/blur/privacy.html">Privacy <span aria-hidden="true">↗</span></a></div>
-        </article>
-        <article class="developer-project">
-          <div class="developer-project-main"><span class="directory-index">04</span><div><h3><a href="/canvas/">The Internet's Charity Canvas</a></h3><p>One million pixels. Draw anything. 25¢ per euro goes to charity; the remainder is published.</p></div></div>
-          <div class="developer-project-links"><a href="/canvas/privacy.html">Privacy <span aria-hidden="true">↗</span></a></div>
-        </article>
-        <article class="developer-project">
-          <div class="developer-project-main"><span class="directory-index">05</span><div><h3><a href="/cutout/">Cutout</a></h3><p>Background gone. Details kept.</p></div></div>
-          <div class="developer-project-links"><a href="/cutout/privacy.html">Privacy <span aria-hidden="true">↗</span></a></div>
-        </article>
-        <article class="developer-project">
-          <div class="developer-project-main"><span class="directory-index">06</span><div><h3><a href="/mp4repair/">MP4 Repair</a></h3><p>Help restoring broken MP4 and MOV video files.</p></div></div>
-          <div class="developer-project-links"><a href="/mp4repair/privacy.html">Privacy <span aria-hidden="true">↗</span></a></div>
-        </article>
-        <article class="developer-project">
-          <div class="developer-project-main"><span class="directory-index">07</span><div><h3><a href="/novus/">Novus</a></h3><p>A fitness app built to help you train with clarity.</p></div></div>
-          <div class="developer-project-links"><a href="/novus/privacy.html">Privacy <span aria-hidden="true">↗</span></a></div>
-        </article>
-        <article class="developer-project">
-          <div class="developer-project-main"><span class="directory-index">08</span><div><h3><a href="/quietredact/">QuietRedact</a></h3><p>On-device redaction for PDFs and images.</p></div></div>
-          <div class="developer-project-links"><a href="/quietredact/support.html">Support <span aria-hidden="true">↗</span></a><a href="/quietredact/privacy.html">Privacy <span aria-hidden="true">↗</span></a></div>
-        </article>
-        <article class="developer-project">
-          <div class="developer-project-main"><span class="directory-index">09</span><div><h3><a href="/riseproof/">RiseProof</a></h3><p>Prove you’re awake. Then the alarm stops.</p></div></div>
-          <div class="developer-project-links"><a href="/riseproof/privacy.html">Privacy <span aria-hidden="true">↗</span></a></div>
-        </article>
-        <article class="developer-project">
-          <div class="developer-project-main"><span class="directory-index">10</span><div><h3><a href="/speechtrim/">SpeechTrim</a></h3><p>Remove silence from audio and video; optionally detect filler words.</p></div></div>
-          <div class="developer-project-links"><a href="/speechtrim/support.html">Support <span aria-hidden="true">↗</span></a><a href="/speechtrim/privacy.html">Privacy <span aria-hidden="true">↗</span></a></div>
-        </article>
-        <article class="developer-project">
-          <div class="developer-project-main"><span class="directory-index">11</span><div><h3><a href="/steady-video/">Steady</a></h3><p>Video stabilization support and documentation.</p></div></div>
-          <div class="developer-project-links"><a href="/steady-video/privacy.html">Privacy <span aria-hidden="true">↗</span></a></div>
-        </article>
-        <article class="developer-project">
-          <div class="developer-project-main"><span class="directory-index">12</span><div><h3><a href="/veil/">Veil</a></h3><p>See the surveillance network you drive through.</p></div></div>
-          <div class="developer-project-links"><a href="/veil/privacy.html">Privacy <span aria-hidden="true">↗</span></a></div>
-        </article>
-        <article class="developer-project">
-          <div class="developer-project-main"><span class="directory-index">13</span><div><h3><a href="/vidloud/">VidLoud</a></h3><p>Make quiet videos louder. Processing stays on-device.</p></div></div>
-          <div class="developer-project-links"><a href="/vidloud/support.html">Support <span aria-hidden="true">↗</span></a><a href="/vidloud/privacy.html">Privacy <span aria-hidden="true">↗</span></a></div>
-        </article>
-        <article class="developer-project">
-          <div class="developer-project-main"><span class="directory-index">14</span><div><h3><a href="/voyeva/">Voyeva</a></h3><p>Plan the trip. Share the journey.</p></div></div>
-          <div class="developer-project-links"><a href="/voyeva/privacy.html">Privacy <span aria-hidden="true">↗</span></a></div>
-        </article>
+        <p class="intro-cue" aria-hidden="true">Scroll <span>↓</span></p>
       </div>
     </section>
 
-    <section class="contact-section site-container" id="contact" aria-labelledby="contact-title">
-      <div class="contact-panel">
-        <div>
-          <p class="eyebrow eyebrow-light"><span class="eyebrow-mark" aria-hidden="true"></span> Get in touch</p>
-          <h2 id="contact-title">Need a hand<br>with an app?</h2>
-          <p>For questions or support, send a note and include the app name so I can point you in the right direction.</p>
+    <!-- 2 · PHONE FLIGHT: one iPhone, five apps -->
+    <section class="flight" id="flight" aria-label="Apps at a glance">
+      <div class="flight-stage">
+        <div class="flight-words" aria-hidden="true">
+          <span data-step="0">Travel</span>
+          <span data-step="1">Training</span>
+          <span data-step="2">Focus</span>
+          <span data-step="3">Money</span>
+          <span data-step="4">Native</span>
         </div>
-        <a class="contact-email" href="mailto:oskarpolster.business@gmail.com">oskarpolster.business@gmail.com <span aria-hidden="true">↗</span></a>
+
+        <div class="flight-chips" aria-hidden="true">
+          <span class="chip" style="--x:-34vw;--y:-26vh;--d:1.4">Swift</span>
+          <span class="chip" style="--x:30vw;--y:-30vh;--d:.8">Kotlin</span>
+          <span class="chip chip-accent" style="--x:-38vw;--y:8vh;--d:1.1">Expo Modules API</span>
+          <span class="chip" style="--x:33vw;--y:4vh;--d:1.6">Config plugins</span>
+          <span class="chip" style="--x:-26vw;--y:30vh;--d:.7">Firebase</span>
+          <span class="chip" style="--x:27vw;--y:28vh;--d:1.2">Core ML</span>
+          <span class="chip" style="--x:-12vw;--y:-38vh;--d:1.9">AlarmKit</span>
+          <span class="chip" style="--x:12vw;--y:37vh;--d:1">Screen Time API</span>
+          <span class="chip" style="--x:40vw;--y:-10vh;--d:.6">EAS Build</span>
+          <span class="chip" style="--x:-41vw;--y:-8vh;--d:1.7">Sentry</span>
+        </div>
+
+        <div class="flight-phone" id="flight-phone">
+          <div class="device device-lg">
+            <div class="device-screen">
+              <video class="flight-screen is-active" data-step="0" src="/developer/media/voyeva-recap.mp4" poster="/developer/media/voyeva-recap.jpg" muted loop playsinline preload="none" aria-label="Voyeva trip recap video"></video>
+              <img class="flight-screen" data-step="1" src="/developer/shots/novus-3.jpg" alt="Novus run through Vienna coloured by pace" loading="lazy">
+              <img class="flight-screen" data-step="2" src="/developer/shots/unscroll-1.jpg" alt="Unscroll today screen" loading="lazy">
+              <img class="flight-screen" data-step="3" src="/developer/shots/stub-3.jpg" alt="Stub money flow" loading="lazy">
+              <img class="flight-screen" data-step="4" src="/developer/shots/voyeva-11.jpg" alt="Voyeva 3D globe" loading="lazy">
+            </div>
+            <img class="device-frame" src="/developer/shots/frame-black.png" alt="" width="640" height="1306">
+          </div>
+        </div>
+
+        <ol class="flight-captions">
+          <li data-step="0"><strong>Voyeva</strong> A trip recap, rendered on the phone. SwiftUI and MapKit.</li>
+          <li data-step="1"><strong>Novus</strong> A real run, coloured by pace. SwiftUI, HealthKit, watchOS.</li>
+          <li data-step="2"><strong>Unscroll</strong> Blocks apps with Apple's Screen Time APIs, from React Native.</li>
+          <li data-step="3"><strong>Stub</strong> Every receipt line item, then where the money went.</li>
+          <li data-step="4"><strong>All of them</strong> React Native where it helps, native code where it counts.</li>
+        </ol>
+        <div class="flight-progress" aria-hidden="true"><span></span></div>
+      </div>
+    </section>
+
+    <!-- 3 · NUMBERS -->
+    <section class="numbers site-container" aria-label="In numbers">
+      <dl class="numbers-grid">
+        <div><dd data-count="6">6</dd><dt>apps live on Google Play</dt></div>
+        <div><dd data-count="18">18</dd><dt>custom Expo native modules in Swift and Kotlin</dt></div>
+        <div><dd data-count="22">22</dd><dt>Expo config plugins written</dt></div>
+        <div><dd data-count="157" data-suffix="k">157k</dd><dt>lines of Swift in two native iOS apps</dt></div>
+      </dl>
+      <ul class="stack-marquee" aria-label="Main technologies">
+        <li>React Native</li><li>Expo · EAS</li><li>TypeScript</li><li>Swift · SwiftUI</li><li>Kotlin</li><li>Expo Modules API</li><li>Config plugins</li><li>Firebase</li><li>Sentry</li><li>RevenueCat</li><li>Jest</li><li>fastlane</li>
+      </ul>
+    </section>
+
+    <!-- 4 · PATH: horizontal -->
+    <section class="path" id="path" aria-labelledby="path-title">
+      <div class="path-stage">
+        <div class="path-head site-container">
+          <p class="eyebrow-pf">How I got here</p>
+          <h2 id="path-title">Native first. <em>Then cross-platform without giving up native.</em></h2>
+        </div>
+        <ol class="path-track">
+          <li class="path-card"><span class="path-no">01</span><h3>Flutter &amp; Firebase</h3><p>My first production apps: Firebase Auth and Firestore, cross-platform UI, store releases.</p></li>
+          <li class="path-card"><span class="path-no">02</span><h3>Swift &amp; SwiftUI</h3><p>Two large native apps, Voyeva and Novus: Firebase Auth, Firestore, Cloud Functions, Storage, FCM and App Check; WidgetKit, a watchOS app, HealthKit, StoreKit.</p></li>
+          <li class="path-card"><span class="path-no">03</span><h3>React Native + Expo</h3><p>Expo SDK 57 and RN 0.86 on the New Architecture. Expo Router, EAS Build profiles for dev client, preview and production, EAS Submit, signing for iOS and Android.</p></li>
+          <li class="path-card path-card-accent"><span class="path-no">04</span><h3>Native code inside RN</h3><p>Swift and Kotlin modules on the Expo Modules API: AlarmKit, Screen Time, Core ML and Vision, CarPlay, MapKit, plus config plugins for everything the prebuild has to know.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 5 · PRODUCT APPS -->
+    <section class="work" id="work" aria-labelledby="work-title">
+      <div class="work-head site-container">
+        <p class="eyebrow-pf">Featured work</p>
+        <h2 id="work-title">Product apps.</h2>
+        <p class="work-intro">Full products with accounts, sync, subscriptions, crash reporting and release pipelines. Screens come from the iOS Simulator with demo data, from the store listings, and, for the Voyeva photo maps, from my own trips. The Light/Dark switch changes the screenshots too.</p>
+      </div>
+
+      <article class="chapter tint-violet" id="voyeva">
+        <div class="chapter-grid site-container">
+          <div class="chapter-text">
+            <p class="chapter-kind">Travel · iOS · Native Swift</p>
+            <h3>Voyeva</h3>
+            <p class="chapter-lede">Plan trips together, split expenses, ask the AI what fits into a free afternoon, and get a recap of the whole journey.</p>
+            <ul class="chapter-points">
+              <li>SwiftUI, around 85,000 lines, plus a widget extension, a share extension and a macOS target</li>
+              <li>Firebase Auth (Apple and Google sign-in), Firestore, Cloud Functions, Storage and FCM push</li>
+              <li>A trip assistant on Gemini through a Cloud Function: it reads the itinerary and proposes changes you can apply</li>
+              <li>Tricount-style splitting with settle-up, and a spending analysis per category and person</li>
+              <li>Photos from the camera roll matched to the right trip day and pinned on the route</li>
+            </ul>
+            <ul class="chips"><li>SwiftUI</li><li>Firebase</li><li>Gemini</li><li>MapKit</li><li>WidgetKit</li><li>RevenueCat</li></ul>
+            <a class="chapter-link" href="/voyeva/">Product page <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="fan" aria-hidden="true">
+            <div class="device fan-l"><div class="device-screen"><img src="/developer/shots/voyeva-1.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+            <div class="device fan-c"><div class="device-screen"><video src="/developer/media/voyeva-recap.mp4" poster="/developer/media/voyeva-recap.jpg" muted loop playsinline preload="none"></video></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+            <div class="device fan-r"><div class="device-screen"><img src="/developer/shots/voyeva-4.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+          </div>
+        </div>
+        <div class="pf-gallery" data-app="voyeva">
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-1.jpg" alt="Every trip at a glance" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-1-dark.jpg" alt="Every trip at a glance" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Every trip at a glance</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-2.jpg" alt="Real trips: China &amp; Japan, UAE &amp; China, Spain" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Real trips: China &amp; Japan, UAE &amp; China, Spain</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-3.jpg" alt="Day-by-day timeline" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-3-dark.jpg" alt="Day-by-day timeline" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Day-by-day timeline</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-4.jpg" alt="Ask the assistant about a free afternoon" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-4-dark.jpg" alt="Ask the assistant about a free afternoon" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Ask the assistant about a free afternoon</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-5.jpg" alt="It proposes a change; you apply it" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>It proposes a change; you apply it</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-6.jpg" alt="Flights and trains on a satellite map" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Flights and trains on a satellite map</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-7.jpg" alt="Road trips follow the real roads" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Road trips follow the real roads</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-8.jpg" alt="Real trip, Japan: photos pinned along the drive" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Real trip, Japan: photos pinned along the drive</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-9.jpg" alt="Real trip, UAE: every photo where it was taken" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Real trip, UAE: every photo where it was taken</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-10.jpg" alt="Real trip, China: train route with photo stops" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Real trip, China: train route with photo stops</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-11.jpg" alt="Every journey on a 3D globe" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Every journey on a 3D globe</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-12.jpg" alt="Weather for each stop on the route" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Weather for each stop on the route</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-13.jpg" alt="Top sights for every city" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-13-dark.jpg" alt="Top sights for every city" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Top sights for every city</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-14.jpg" alt="Friends&#x27; trips in a feed" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-14-dark.jpg" alt="Friends&#x27; trips in a feed" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Friends&#x27; trips in a feed</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-15.jpg" alt="Tricount-style splitting and settle-up" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-15-dark.jpg" alt="Tricount-style splitting and settle-up" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Tricount-style splitting and settle-up</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-16.jpg" alt="Shared budget per trip" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-16-dark.jpg" alt="Shared budget per trip" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Shared budget per trip</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-17.jpg" alt="Spending by category" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-17-dark.jpg" alt="Spending by category" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Spending by category</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-18.jpg" alt="Shared packing list" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-18-dark.jpg" alt="Shared packing list" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Shared packing list</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-19.jpg" alt="Import bookings with any AI chat" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-19-dark.jpg" alt="Import bookings with any AI chat" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Import bookings with any AI chat</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-20.jpg" alt="Travel passport and yearly recap" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Travel passport and yearly recap</figcaption></figure>
+        </div><!--/gallery-->
+      </article>
+
+      <article class="chapter tint-lime" id="novus">
+        <div class="chapter-grid site-container">
+          <div class="chapter-text">
+            <p class="chapter-kind">Fitness · iOS + watchOS · Native Swift</p>
+            <h3>Novus</h3>
+            <p class="chapter-lede">Gym and running in one place: plans, a training log, nutrition, supplements, routes on the map, and a coach that reads all of it.</p>
+            <ul class="chapter-points">
+              <li>SwiftUI and Core Data, around 72,000 lines, with a watchOS companion over WatchConnectivity</li>
+              <li>Runs and rides from HealthKit on a map, with pace, heart rate and elevation along the route</li>
+              <li>A year of training as a heatmap, muscle maps per session, Live Activities, widgets and Swift Charts</li>
+              <li>AI coach on Gemini through a Cloud Function: it reads training summaries, never raw Health data, and only after an explicit consent screen</li>
+            </ul>
+            <ul class="chips"><li>SwiftUI</li><li>watchOS</li><li>HealthKit</li><li>Firebase</li><li>Gemini</li></ul>
+            <a class="chapter-link" href="/novus/">Product page <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="fan" aria-hidden="true">
+            <div class="device fan-l"><div class="device-screen"><img src="/developer/shots/novus-1.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+            <div class="device fan-c"><div class="device-screen"><img src="/developer/shots/novus-4.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+            <div class="device fan-r"><div class="device-screen"><img src="/developer/shots/novus-3.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+          </div>
+        </div>
+        <div class="pf-gallery" data-app="novus">
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/novus-1.jpg" alt="Weekly goal, streak and volume" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/novus-1-dark.jpg" alt="Weekly goal, streak and volume" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Weekly goal, streak and volume</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-2.jpg" alt="Fifteen weeks of training at a glance" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Fifteen weeks of training at a glance</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-3.jpg" alt="A real run through Vienna, coloured by pace" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>A real run through Vienna, coloured by pace</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-4.jpg" alt="101 km along the Danube, with heart rate" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>101 km along the Danube, with heart rate</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/novus-5.jpg" alt="Gym history with muscle maps" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/novus-5-dark.jpg" alt="Gym history with muscle maps" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Gym history with muscle maps</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/novus-6.jpg" alt="Which muscles each session hit" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/novus-6-dark.jpg" alt="Which muscles each session hit" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Which muscles each session hit</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-7.jpg" alt="Nutrition calendar and macros" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Nutrition calendar and macros</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-8.jpg" alt="Supplement stack with a 30-day streak" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Supplement stack with a 30-day streak</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-9.jpg" alt="AI coach asks before any data leaves the phone" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>AI coach asks before any data leaves the phone</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/novus-10.jpg" alt="Coach reads six weeks of training" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/novus-10-dark.jpg" alt="Coach reads six weeks of training" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Coach reads six weeks of training</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-11.jpg" alt="…and turns it into a plan" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>…and turns it into a plan</figcaption></figure>
+        </div><!--/gallery-->
+      </article>
+
+      <article class="chapter tint-peach" id="stub">
+        <div class="chapter-grid site-container">
+          <div class="chapter-text">
+            <p class="chapter-kind">Finance · iOS + Android · React Native</p>
+            <h3>Stub</h3>
+            <p class="chapter-lede">Point the camera at any receipt, or drop in photos and PDF invoices, several at once. Stub reads every line item and shows where the money went.</p>
+            <ul class="chapter-points">
+              <li>The system document scanner finds the edges and straightens the paper; a queue analyses many receipts in the background</li>
+              <li>On-device text recognition through a custom native module: Vision in Swift, a Kotlin implementation on Android</li>
+              <li>Expo Router, Zustand and expo-sqlite; charts drawn with Skia</li>
+              <li>The largest Jest suite of my RN apps, covering the parsing and money logic</li>
+            </ul>
+            <ul class="chips"><li>Expo SDK 57</li><li>TypeScript</li><li>expo-sqlite</li><li>Skia</li><li>Jest</li><li>Swift + Kotlin module</li></ul>
+            <a class="chapter-link" href="/stub/">Product page <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="scan" aria-hidden="true">
+            <div class="receipt">
+              <p class="receipt-store">FRESH MARKET</p>
+              <p class="receipt-meta">Aug 15 · 18:42 · #4471</p>
+              <ul>
+                <li><span>Oat milk 1 l</span><span>2.49</span></li>
+                <li><span>Bananas</span><span>1.89</span></li>
+                <li><span>Sourdough bread</span><span>4.20</span></li>
+                <li><span>Greek yogurt</span><span>3.79</span></li>
+                <li><span>Coffee beans</span><span>12.99</span></li>
+                <li><span>Tomatoes</span><span>3.15</span></li>
+                <li><span>Olive oil</span><span>9.49</span></li>
+                <li><span>Pasta</span><span>1.99</span></li>
+              </ul>
+              <p class="receipt-total"><span>TOTAL</span><span>39.99</span></p>
+            </div>
+            <div class="device scan-phone"><div class="device-screen"><img src="/developer/shots/stub-1.jpg" alt="" loading="lazy"><span class="scan-beam"></span></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+          </div>
+        </div>
+        <div class="pf-gallery" data-app="stub">
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-1.jpg" alt="Monthly overview from scanned receipts" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Monthly overview from scanned receipts</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-2.jpg" alt="Budgets per category" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Budgets per category</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-3.jpg" alt="Where the money goes, as a Sankey diagram" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Where the money goes, as a Sankey diagram</figcaption></figure>
+        </div><!--/gallery-->
+      </article>
+
+      <article class="chapter tint-blue" id="unscroll">
+        <div class="chapter-grid site-container">
+          <div class="chapter-text">
+            <p class="chapter-kind">Wellbeing · iOS · React Native</p>
+            <h3>Unscroll</h3>
+            <p class="chapter-lede">Blocks the apps you choose, shows your real screen time and what it adds up to over a lifetime.</p>
+            <ul class="chapter-points">
+              <li>The UI is React Native, but blocking needs Apple's Screen Time APIs, which only exist in Swift</li>
+              <li>Native module on FamilyControls, ManagedSettings and DeviceActivity, plus a WidgetKit widget</li>
+              <li>Five app extensions live in the Expo project: activity monitor, shield configuration, shield action, usage report and widget</li>
+            </ul>
+            <ul class="chips"><li>Expo</li><li>Screen Time API</li><li>DeviceActivity</li><li>MMKV</li><li>RevenueCat</li></ul>
+            <a class="chapter-link" href="/unscroll/">Product page <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="fan" aria-hidden="true">
+            <div class="device fan-l"><div class="device-screen"><img src="/developer/shots/unscroll-2.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+            <div class="device fan-c"><div class="device-screen"><img src="/developer/shots/unscroll-1.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+            <div class="device fan-r"><div class="device-screen"><img src="/developer/shots/unscroll-4.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+          </div>
+        </div>
+        <div class="pf-gallery" data-app="unscroll">
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-1.jpg" alt="Today: screen time and blocked time" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Today: screen time and blocked time</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-2.jpg" alt="Scheduled locks with Screen Time APIs" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Scheduled locks with Screen Time APIs</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-3.jpg" alt="Stats: times you said no" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Stats: times you said no</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-4.jpg" alt="Your life in weeks" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Your life in weeks</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-5.jpg" alt="Progress and milestones" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Progress and milestones</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-6.jpg" alt="Quick lock for an hour" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Quick lock for an hour</figcaption></figure>
+        </div><!--/gallery-->
+      </article>
+
+      <article class="chapter tint-ink" id="riseproof">
+        <div class="chapter-grid site-container">
+          <div class="chapter-text">
+            <p class="chapter-kind">Alarm · iOS + Android · React Native <span class="live">Live on Google Play</span></p>
+            <h3>RiseProof</h3>
+            <p class="chapter-lede">An alarm that only stops once you prove you're awake: push-ups counted by the camera, a photo of your made bed, or a brain game.</p>
+            <ul class="chapter-points">
+              <li>Alarms have to ring when the app is closed, so they run natively: AlarmKit and App Intents in Swift; on Android a ring service and boot-reschedule receivers in Kotlin</li>
+              <li>Push-ups and the photo task are checked on-device with Vision</li>
+              <li>Sentry with source maps for crash reports; RevenueCat for subscriptions on both stores</li>
+              <li>Config plugins for privacy manifest, localized permission strings and Android signing</li>
+            </ul>
+            <ul class="chips"><li>Expo</li><li>AlarmKit</li><li>Kotlin</li><li>Vision</li><li>Sentry</li><li>Jest</li></ul>
+            <a class="chapter-link" href="/riseproof/">Product page <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="fan fan-store" aria-hidden="true">
+            <img class="fan-l" src="/developer/shots/riseproof-3.jpg" alt="" loading="lazy">
+            <img class="fan-c" src="/developer/shots/riseproof-1.jpg" alt="" loading="lazy">
+            <img class="fan-r" src="/developer/shots/riseproof-6.jpg" alt="" loading="lazy">
+          </div>
+        </div>
+        <div class="pf-gallery" data-app="riseproof">
+          <figure><img class="pf-store" src="/developer/shots/riseproof-1.jpg" alt="Push-ups counted on-device" loading="lazy" width="600" height="1304"><figcaption>Push-ups counted on-device</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/riseproof-2.jpg" alt="Rings through Silent and Focus" loading="lazy" width="600" height="1304"><figcaption>Rings through Silent and Focus</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/riseproof-3.jpg" alt="Photo proof checked with Vision" loading="lazy" width="600" height="1304"><figcaption>Photo proof checked with Vision</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/riseproof-4.jpg" alt="Brain games to wake up" loading="lazy" width="600" height="1304"><figcaption>Brain games to wake up</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/riseproof-5.jpg" alt="20+ missions to choose from" loading="lazy" width="600" height="1304"><figcaption>20+ missions to choose from</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/riseproof-6.jpg" alt="Streaks and stats" loading="lazy" width="600" height="1304"><figcaption>Streaks and stats</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/riseproof-7.jpg" alt="Wake-up history" loading="lazy" width="600" height="1304"><figcaption>Wake-up history</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/riseproof-8.jpg" alt="System-backed alarms" loading="lazy" width="600" height="1304"><figcaption>System-backed alarms</figcaption></figure>
+        </div><!--/gallery-->
+      </article>
+
+      <article class="chapter tint-mint" id="vbg">
+        <div class="chapter-grid site-container">
+          <div class="chapter-text">
+            <p class="chapter-kind">Video · iOS + Android · React Native <span class="live">Live on Google Play</span></p>
+            <h3>Video Background Remover</h3>
+            <p class="chapter-lede">Removes the background from a whole video on the phone, with no upload.</p>
+            <ul class="chapter-points">
+              <li>A native processing engine of about 37 files: Core ML, Vision, Core Image and BackgroundTasks in Swift, the matching pipeline in Kotlin</li>
+              <li>Exports HEVC with alpha and ProRes 4444 for video editors</li>
+              <li>Sentry crash reports; a separate EAS profile for Android test builds</li>
+            </ul>
+            <ul class="chips"><li>Expo</li><li>Core ML</li><li>Vision</li><li>Kotlin</li><li>Sentry</li><li>expo-sqlite</li></ul>
+            <a class="chapter-link" href="/ai-video-background-remover/">Product page <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="fan fan-store" aria-hidden="true">
+            <img class="fan-l" src="/developer/shots/vbg-2.jpg" alt="" loading="lazy">
+            <img class="fan-c" src="/developer/shots/vbg-1.jpg" alt="" loading="lazy">
+            <img class="fan-r" src="/developer/shots/vbg-3.jpg" alt="" loading="lazy">
+          </div>
+        </div>
+        <div class="pf-gallery" data-app="vbg">
+          <figure><img class="pf-store" src="/developer/shots/vbg-1.jpg" alt="AI cutout on the phone" loading="lazy" width="600" height="1304"><figcaption>AI cutout on the phone</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/vbg-2.jpg" alt="Photo, color, blur or video background" loading="lazy" width="600" height="1304"><figcaption>Photo, color, blur or video background</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/vbg-3.jpg" alt="Green screen for editors" loading="lazy" width="600" height="1304"><figcaption>Green screen for editors</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/vbg-4.jpg" alt="HEVC with alpha and ProRes 4444" loading="lazy" width="600" height="1304"><figcaption>HEVC with alpha and ProRes 4444</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/vbg-5.jpg" alt="Refine edges frame by frame" loading="lazy" width="600" height="1304"><figcaption>Refine edges frame by frame</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/vbg-6.jpg" alt="Trim before processing" loading="lazy" width="600" height="1304"><figcaption>Trim before processing</figcaption></figure>
+        </div><!--/gallery-->
+      </article>
+    </section>
+
+    <!-- 6 · APPRELEASER -->
+    <section class="ar" id="appreleaser" aria-labelledby="ar-title">
+      <div class="ar-head site-container">
+        <p class="eyebrow-pf">In development · Release tooling</p>
+        <h2 id="ar-title">AppReleaser. <em>Two stores, one dashboard.</em></h2>
+        <p class="ar-lede">Shipping many apps means App Store Connect, Google Play Console and RevenueCat open at once, with the same listing, screenshots and prices typed three times. AppReleaser reads what each store really has, shows what is missing before review, and writes the changes back through the official APIs.</p>
+      </div>
+      <div class="ar-stage site-container">
+        <div class="browser" id="ar-browser">
+          <div class="browser-bar"><span></span><span></span><span></span><p>AppReleaser · Portfolio</p></div>
+          <img class="browser-shot" src="/developer/shots/ar-app.jpg" alt="AppReleaser portfolio: every app's state in the App Store, Google Play, pricing and RevenueCat" width="1800" height="1055" loading="lazy">
+        </div>
+        <img class="ar-card ar-card-texts" src="/developer/shots/ar-texts.jpg" alt="AI-drafted store texts per locale with character limits" loading="lazy">
+        <img class="ar-card ar-card-prices" src="/developer/shots/ar-prices.jpg" alt="Yearly subscription price per country" loading="lazy">
+        <img class="ar-card ar-card-connections" src="/developer/shots/ar-connections.jpg" alt="Connections: App Store Connect, Google Play Console, RevenueCat, repository" loading="lazy">
+        <img class="ar-card ar-card-compliance" src="/developer/shots/ar-compliance.jpg" alt="Compliance answers pre-filled" loading="lazy">
+      </div>
+      <p class="ar-note site-container">The real interface with sample data. The product UI is German for now.</p>
+      <div class="ar-grid site-container">
+        <ul class="ar-features">
+          <li><strong>Portfolio at a glance</strong> Every app's state in both stores, prices and RevenueCat on one screen</li>
+          <li><strong>Listings &amp; screenshots</strong> Apple and Google in 15 locales, checked against each store's limits, with AI drafts you approve</li>
+          <li><strong>Pricing</strong> Weekly, yearly and lifetime across 194 countries, with a read-only check of live store prices</li>
+          <li><strong>Release checklist</strong> 96 store-specific tasks and pre-filled compliance answers, so nothing is missing at review</li>
+        </ul>
+        <ul class="ar-facts">
+          <li><strong>593</strong> unit tests in CI on Linux and macOS</li>
+          <li><strong>512</strong> commits since October 2026</li>
+          <li><strong>Next.js 16</strong> · React 19 · TypeScript</li>
+          <li><strong>AES-256-GCM</strong> vault for store credentials</li>
+          <li><strong>Next up</strong> review submission from the dashboard, Sentry release health per version</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 7 · HOW I SHIP -->
+    <section class="practice site-container" aria-labelledby="practice-title">
+      <p class="eyebrow-pf">How I ship</p>
+      <h2 id="practice-title">From the first commit <em>to the store.</em></h2>
+      <div class="practice-grid">
+        <div><h3>Builds &amp; releases</h3><p>EAS Build profiles for dev client, internal QA and production, EAS Submit, signing credentials, TestFlight and Play internal testing tracks, versioning.</p></div>
+        <div><h3>Native when needed</h3><p>Expo Modules API in Swift and Kotlin, custom config plugins, and the CocoaPods and Gradle debugging that comes with them.</p></div>
+        <div><h3>Quality</h3><p>Jest for business logic, XCTest and UI tests on native iOS, Sentry for crashes and source maps, a written QA checklist before every release.</p></div>
+        <div><h3>Backend</h3><p>Firebase Auth, Firestore, Cloud Functions, Storage and Cloud Messaging; REST APIs; RevenueCat for subscriptions on both stores.</p></div>
+        <div><h3>Teamwork</h3><p>Feature branches, pull requests and reviews with another developer on shared apps. Git history and docs written so someone else can take over.</p></div>
+        <div><h3>AI</h3><p>Gemini behind Cloud Functions with consent and quotas, on-device models with Core ML and Vision, and agentic coding tools in my daily workflow.</p></div>
+      </div>
+    </section>
+
+    <!-- 8 · SIDE PROJECTS -->
+    <section class="tools site-container" id="tools" aria-labelledby="tools-title">
+      <div class="tools-head">
+        <div>
+          <p class="eyebrow-pf eyebrow-muted">Side projects</p>
+          <h2 id="tools-title">Small utilities.</h2>
+        </div>
+        <p>Focused one-job apps I build in a few days, mostly to try out a native API. Several of them are live on Google Play.</p>
+      </div>
+      <ul class="tool-list">
+        <li><a href="/mp4repair/"><span class="tool-name">MP4 Repair</span><span class="tool-what">Rebuilds broken MP4 and MOV files</span><span class="tool-tag">Play</span></a></li>
+        <li><a href="/blur/"><span class="tool-name">Blur Photo</span><span class="tool-what">Blurs faces in photos and videos</span><span class="tool-tag">Play</span></a></li>
+        <li><a href="/cutout/"><span class="tool-name">Cutout</span><span class="tool-what">Removes photo backgrounds on-device</span><span class="tool-tag">Play</span></a></li>
+        <li><a href="/vidloud/"><span class="tool-name">VidLoud</span><span class="tool-what">Makes quiet videos louder</span><span class="tool-tag">Play</span></a></li>
+        <li><a href="/veil/"><span class="tool-name">Veil</span><span class="tool-what">Maps license-plate cameras, with CarPlay</span><span class="tool-tag">iOS</span></a></li>
+        <li><a href="/compress/"><span class="tool-name">Compress</span><span class="tool-what">Shrinks videos for sharing</span><span class="tool-tag">iOS</span></a></li>
+        <li><a href="/speechtrim/"><span class="tool-name">SpeechTrim</span><span class="tool-what">Cuts silence and filler words</span><span class="tool-tag">iOS</span></a></li>
+        <li><a href="/steady-video/"><span class="tool-name">Steady</span><span class="tool-what">Stabilizes shaky video</span><span class="tool-tag">iOS</span></a></li>
+        <li><a href="/quietredact/"><span class="tool-name">QuietRedact</span><span class="tool-what">Redacts PDFs and images on-device</span><span class="tool-tag">iOS</span></a></li>
+        <li><a href="/pdfflow/"><span class="tool-name">PDF Flow</span><span class="tool-what">Edits and exports PDFs</span><span class="tool-tag">iOS</span></a></li>
+        <li><a href="/canvas/"><span class="tool-name">Charity Canvas</span><span class="tool-what">A million-pixel canvas for charity</span><span class="tool-tag">Web</span></a></li>
+      </ul>
+    </section>
+
+    <!-- 9 · CONTACT -->
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="contact-inner site-container">
+        <p class="eyebrow-pf">Get in touch</p>
+        <h2 id="contact-title">Working on <em>a mobile app?</em></h2>
+        <p>I'm open to freelance work in React Native and native iOS. For support with one of my apps, include the app name.</p>
+        <a class="contact-mail" href="mailto:oskarpolster.business@gmail.com">oskarpolster.business@gmail.com <span aria-hidden="true">↗</span></a>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer">
+  <footer class="site-footer pf-footer">
     <div class="site-container footer-inner">
       <a class="footer-brand" href="/">OSKAR POLSTER<span>© 2026</span></a>
       <p>Official developer website.</p>
-      <nav aria-label="Footer navigation"><a href="/#projects">Projects</a><a href="/">Home</a><a href="#contact">Contact</a><a href="/impressum/">Impressum</a></nav>
+      <nav aria-label="Footer navigation"><a href="/#projects">All projects</a><a href="/">Home</a><a href="#contact">Contact</a><a href="/impressum/">Impressum</a></nav>
     </div>
   </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="/developer/portfolio.js?v=6"></script>
+  <script src="/developer/ink.js?v=6"></script>
 </body>
 </html>
