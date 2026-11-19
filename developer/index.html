@@ -8,9 +8,9 @@
   <title>Oskar Polster — Mobile Developer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/developer/portfolio.css?v=7">
+  <link rel="stylesheet" href="/developer/portfolio.css?v=9">
   <script>
     // Theme before first paint: saved pick, else the system setting.
     (function () {
@@ -61,11 +61,11 @@
     <section class="flight" id="flight" aria-label="Apps at a glance">
       <div class="flight-stage">
         <div class="flight-words" aria-hidden="true">
-          <span data-step="0">Travel</span>
-          <span data-step="1">Training</span>
-          <span data-step="2">Focus</span>
-          <span data-step="3">Money</span>
-          <span data-step="4">Native</span>
+          <div class="fw" data-step="0"><span class="fw-tag">01 — Travel</span><span class="fw-name">Voyeva</span></div>
+          <div class="fw" data-step="1"><span class="fw-tag">02 — Training</span><span class="fw-name">Novus</span></div>
+          <div class="fw" data-step="2"><span class="fw-tag">03 — Focus</span><span class="fw-name">Unscroll</span></div>
+          <div class="fw" data-step="3"><span class="fw-tag">04 — Money</span><span class="fw-name">Stub</span></div>
+          <div class="fw fw-serif" data-step="4"><span class="fw-tag">05 — Under the hood</span><span class="fw-name">native</span></div>
         </div>
 
         <div class="flight-chips" aria-hidden="true">
@@ -95,11 +95,11 @@
         </div>
 
         <ol class="flight-captions">
-          <li data-step="0"><strong>Voyeva</strong> A trip recap, rendered on the phone. SwiftUI and MapKit.</li>
-          <li data-step="1"><strong>Novus</strong> A real run, coloured by pace. SwiftUI, HealthKit, watchOS.</li>
-          <li data-step="2"><strong>Unscroll</strong> Blocks apps with Apple's Screen Time APIs, from React Native.</li>
-          <li data-step="3"><strong>Stub</strong> Every receipt line item, then where the money went.</li>
-          <li data-step="4"><strong>All of them</strong> React Native where it helps, native code where it counts.</li>
+          <li data-step="0">A trip recap, rendered on the phone. SwiftUI and MapKit.</li>
+          <li data-step="1">A real run, coloured by pace. SwiftUI, HealthKit, watchOS.</li>
+          <li data-step="2">Blocks apps with Apple's Screen Time APIs, from React Native.</li>
+          <li data-step="3">Every receipt line item, then where the money went.</li>
+          <li data-step="4">React Native where it helps, native code where it counts.</li>
         </ol>
         <div class="flight-progress" aria-hidden="true"><span></span></div>
       </div>
@@ -156,7 +156,7 @@
               <li>Photos from the camera roll matched to the right trip day and pinned on the route</li>
             </ul>
             <ul class="chips"><li>SwiftUI</li><li>Firebase</li><li>Gemini</li><li>MapKit</li><li>WidgetKit</li><li>RevenueCat</li></ul>
-            <a class="chapter-link" href="/voyeva/">Product page <span aria-hidden="true">↗</span></a>
+            <a class="chapter-link" href="/developer/voyeva/">See the full app <span aria-hidden="true">→</span></a>
           </div>
           <div class="fan" aria-hidden="true">
             <div class="device fan-l"><div class="device-screen"><img src="/developer/shots/voyeva-1.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
@@ -201,7 +201,7 @@
               <li>AI coach on Gemini through a Cloud Function: it reads training summaries, never raw Health data, and only after an explicit consent screen</li>
             </ul>
             <ul class="chips"><li>SwiftUI</li><li>watchOS</li><li>HealthKit</li><li>Firebase</li><li>Gemini</li></ul>
-            <a class="chapter-link" href="/novus/">Product page <span aria-hidden="true">↗</span></a>
+            <a class="chapter-link" href="/developer/novus/">See the full app <span aria-hidden="true">→</span></a>
           </div>
           <div class="fan" aria-hidden="true">
             <div class="device fan-l"><div class="device-screen"><img src="/developer/shots/novus-1.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
@@ -237,7 +237,7 @@
               <li>The largest Jest suite of my RN apps, covering the parsing and money logic</li>
             </ul>
             <ul class="chips"><li>Expo SDK 57</li><li>TypeScript</li><li>expo-sqlite</li><li>Skia</li><li>Jest</li><li>Swift + Kotlin module</li></ul>
-            <a class="chapter-link" href="/stub/">Product page <span aria-hidden="true">↗</span></a>
+            <a class="chapter-link" href="/developer/stub/">See the full app <span aria-hidden="true">→</span></a>
           </div>
           <div class="scan" aria-hidden="true">
             <div class="receipt">
@@ -277,7 +277,7 @@
               <li>Five app extensions live in the Expo project: activity monitor, shield configuration, shield action, usage report and widget</li>
             </ul>
             <ul class="chips"><li>Expo</li><li>Screen Time API</li><li>DeviceActivity</li><li>MMKV</li><li>RevenueCat</li></ul>
-            <a class="chapter-link" href="/unscroll/">Product page <span aria-hidden="true">↗</span></a>
+            <a class="chapter-link" href="/developer/unscroll/">See the full app <span aria-hidden="true">→</span></a>
           </div>
           <div class="fan" aria-hidden="true">
             <div class="device fan-l"><div class="device-screen"><img src="/developer/shots/unscroll-2.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
@@ -308,7 +308,7 @@
               <li>Config plugins for privacy manifest, localized permission strings and Android signing</li>
             </ul>
             <ul class="chips"><li>Expo</li><li>AlarmKit</li><li>Kotlin</li><li>Vision</li><li>Sentry</li><li>Jest</li></ul>
-            <a class="chapter-link" href="/riseproof/">Product page <span aria-hidden="true">↗</span></a>
+            <a class="chapter-link" href="/developer/riseproof/">See the full app <span aria-hidden="true">→</span></a>
           </div>
           <div class="fan fan-store" aria-hidden="true">
             <img class="fan-l" src="/developer/shots/riseproof-3.jpg" alt="" loading="lazy">
@@ -340,7 +340,7 @@
               <li>Sentry crash reports; a separate EAS profile for Android test builds</li>
             </ul>
             <ul class="chips"><li>Expo</li><li>Core ML</li><li>Vision</li><li>Kotlin</li><li>Sentry</li><li>expo-sqlite</li></ul>
-            <a class="chapter-link" href="/ai-video-background-remover/">Product page <span aria-hidden="true">↗</span></a>
+            <a class="chapter-link" href="/developer/vbg/">See the full app <span aria-hidden="true">→</span></a>
           </div>
           <div class="fan fan-store" aria-hidden="true">
             <img class="fan-l" src="/developer/shots/vbg-2.jpg" alt="" loading="lazy">
@@ -369,14 +369,24 @@
       <div class="ar-stage site-container">
         <div class="browser" id="ar-browser">
           <div class="browser-bar"><span></span><span></span><span></span><p>AppReleaser · Portfolio</p></div>
-          <img class="browser-shot" src="/developer/shots/ar-app.jpg" alt="AppReleaser portfolio: every app's state in the App Store, Google Play, pricing and RevenueCat" width="1800" height="1055" loading="lazy">
+          <img class="browser-shot pf-light-only" src="/developer/shots/ar/portfolio-light.jpg" alt="AppReleaser portfolio: each app's state in the App Store, Google Play, pricing and RevenueCat" loading="lazy"><img class="browser-shot pf-dark-only" src="/developer/shots/ar/portfolio-dark.jpg" alt="AppReleaser portfolio: each app's state in the App Store, Google Play, pricing and RevenueCat" loading="lazy">
         </div>
-        <img class="ar-card ar-card-texts" src="/developer/shots/ar-texts.jpg" alt="AI-drafted store texts per locale with character limits" loading="lazy">
-        <img class="ar-card ar-card-prices" src="/developer/shots/ar-prices.jpg" alt="Yearly subscription price per country" loading="lazy">
-        <img class="ar-card ar-card-connections" src="/developer/shots/ar-connections.jpg" alt="Connections: App Store Connect, Google Play Console, RevenueCat, repository" loading="lazy">
-        <img class="ar-card ar-card-compliance" src="/developer/shots/ar-compliance.jpg" alt="Compliance answers pre-filled" loading="lazy">
+        <div class="ar-card ar-card-texts"><img class="ar-img pf-light-only" src="/developer/shots/ar/listing-light.jpg" alt="Store listing per locale with character limits and an AI draft" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/listing-dark.jpg" alt="Store listing per locale with character limits and an AI draft" loading="lazy"></div>
+        <div class="ar-card ar-card-prices"><img class="ar-img pf-light-only" src="/developer/shots/ar/pricing-light.jpg" alt="Yearly price per country" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/pricing-dark.jpg" alt="Yearly price per country" loading="lazy"></div>
+        <div class="ar-card ar-card-connections"><img class="ar-img pf-light-only" src="/developer/shots/ar/connections-light.jpg" alt="Connections to App Store Connect, Google Play Console and RevenueCat" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/connections-dark.jpg" alt="Connections to App Store Connect, Google Play Console and RevenueCat" loading="lazy"></div>
+        <div class="ar-card ar-card-compliance"><img class="ar-img pf-light-only" src="/developer/shots/ar/compliance-light.jpg" alt="Compliance answers pre-filled" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/compliance-dark.jpg" alt="Compliance answers pre-filled" loading="lazy"></div>
       </div>
-      <p class="ar-note site-container">The real interface with sample data. The product UI is German for now.</p>
+      <div class="ar-bento site-container">
+        <figure class="ar-tile ar-tile-wide"><img class="ar-img pf-light-only" src="/developer/shots/ar/release-light.jpg" alt="Release assistant with launch readiness" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/release-dark.jpg" alt="Release assistant with launch readiness" loading="lazy"><figcaption>Release assistant: what is left before review</figcaption></figure>
+        <figure class="ar-tile ar-tile-wide"><img class="ar-img pf-light-only" src="/developer/shots/ar/approval-light.jpg" alt="Before and after of every change before submitting" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/approval-dark.jpg" alt="Before and after of every change before submitting" loading="lazy"><figcaption>Every change as before and after, with a dry run</figcaption></figure>
+        <figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/rollout-light.jpg" alt="Submission and staged rollout" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/rollout-dark.jpg" alt="Submission and staged rollout" loading="lazy"><figcaption>Submission and staged rollout</figcaption></figure>
+        <figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/builds-light.jpg" alt="Builds from the local build agent" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/builds-dark.jpg" alt="Builds from the local build agent" loading="lazy"><figcaption>Builds from a local agent</figcaption></figure>
+        <figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/reviews-light.jpg" alt="Store reviews with an AI draft reply" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/reviews-dark.jpg" alt="Store reviews with an AI draft reply" loading="lazy"><figcaption>Reviews with draft replies</figcaption></figure>
+        <figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/revenuecat-light.jpg" alt="RevenueCat products and offerings" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/revenuecat-dark.jpg" alt="RevenueCat products and offerings" loading="lazy"><figcaption>RevenueCat products</figcaption></figure>
+        <figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/keychain-light.jpg" alt="Keys and certificates with expiry warnings" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/keychain-dark.jpg" alt="Keys and certificates with expiry warnings" loading="lazy"><figcaption>Keys and certificates</figcaption></figure>
+        <figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/insights-light.jpg" alt="Rating, crash rate and open reviews" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/insights-dark.jpg" alt="Rating, crash rate and open reviews" loading="lazy"><figcaption>Insights per app</figcaption></figure>
+      </div>
+      <p class="ar-note site-container">Real AppReleaser components with sample data and my own apps. The product itself ships in German today.</p>
       <div class="ar-grid site-container">
         <ul class="ar-features">
           <li><strong>Portfolio at a glance</strong> Every app's state in both stores, prices and RevenueCat on one screen</li>
@@ -454,7 +464,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-  <script src="/developer/portfolio.js?v=7"></script>
-  <script src="/developer/ink.js?v=7"></script>
+  <script src="/developer/portfolio.js?v=9"></script>
+  <script src="/developer/ink.js?v=9"></script>
 </body>
 </html>

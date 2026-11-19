@@ -1,0 +1,23 @@
+/* Home page. Builds on portfolio.css and product.css. */
+.home-hero { padding: clamp(140px, 16vw, 220px) 0 clamp(40px, 6vw, 80px); }
+.home-hero h1 { margin-top: 20px; max-width: 14ch; font-size: clamp(52px, 8.4vw, 132px); line-height: .9; letter-spacing: -.065em; font-weight: 500; }
+.home-hero h1 em { color: var(--accent-deep); }
+.home-lede { margin-top: 28px !important; max-width: 46ch; font-size: clamp(18px, 1.6vw, 22px); line-height: 1.5; color: var(--text-soft); letter-spacing: -.012em; }
+.home-apps { padding-top: clamp(60px, 8vw, 110px); }
+.home-head h2 { margin-top: 14px; font-size: clamp(44px, 7vw, 104px); line-height: .9; letter-spacing: -.06em; font-weight: 500; }
+.home-app-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: clamp(32px, 4vw, 56px) 0 0; padding: 0; list-style: none; }
+.home-app-grid a { position: relative; display: flex; flex-direction: column; gap: 8px; height: 100%; min-height: 520px; padding: 28px 28px 0; border-radius: 28px; overflow: hidden; text-decoration: none; color: inherit; transition: transform .35s cubic-bezier(.2, .8, .2, 1); }
+.home-app-grid a:hover { transform: translateY(-6px); }
+.home-app-grid a.tint-ink { color: var(--on-panel); }
+.home-app-grid a > img:first-child { width: 56px; height: 56px; border-radius: 14px; margin-bottom: 14px; box-shadow: 0 12px 24px -12px var(--shadow); }
+.home-app-kind { font-family: var(--mono); font-size: 11px; letter-spacing: .07em; text-transform: uppercase; opacity: .7; }
+.home-app-kind b { font-weight: 500; color: var(--accent-deep); }
+.tint-ink .home-app-kind b { color: var(--accent); }
+.home-app-grid strong { font-size: 34px; font-weight: 500; letter-spacing: -.05em; line-height: 1; }
+.home-app-grid a > span:not(.home-app-kind) { font-size: 15.5px; line-height: 1.5; opacity: .82; max-width: 30ch; }
+.home-app-shot { width: 62%; margin: auto auto -40px; border-radius: 26px 26px 0 0; box-shadow: 0 -10px 40px -20px var(--shadow); transition: transform .45s cubic-bezier(.2, .8, .2, 1); }
+.home-app-grid a:hover .home-app-shot { transform: translateY(-14px) rotate(-1.5deg); }
+.home-support { margin-top: 28px !important; font-size: 14px; color: var(--muted); }
+.home-support a { color: var(--text-soft); }
+@media (max-width: 980px) { .home-app-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 640px) { .home-app-grid { grid-template-columns: 1fr; } .home-app-grid a { min-height: 460px; } }

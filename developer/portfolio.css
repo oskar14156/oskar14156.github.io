@@ -18,8 +18,9 @@
   --blue: #e2ecfb;
   --mint: #ddf3ea;
   --shadow: rgba(17, 25, 22, 0.32);
-  --serif: "Instrument Serif", Georgia, "Times New Roman", serif;
-  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+  --serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --radius: 30px;
 }
 @media (prefers-color-scheme: dark) {
@@ -97,11 +98,12 @@ html:not(.has-ink) .intro-content { mix-blend-mode: normal; }
 .flight { position: relative; height: 520vh; background: var(--panel); color: var(--on-panel); }
 .flight-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: grid; place-items: center; perspective: 1400px; }
 .flight-words { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
-.flight-words span {
-  grid-area: 1 / 1; font-size: clamp(90px, 22vw, 380px); font-weight: 800; letter-spacing: -.06em; line-height: 1; text-transform: uppercase;
-  color: transparent; -webkit-text-stroke: 1.5px rgba(255, 254, 249, .2); opacity: 0;
-}
-.flight-words span:first-child { opacity: 1; }
+.fw { grid-area: 1 / 1; display: grid; justify-items: center; gap: 2vh; visibility: hidden; }
+.fw.is-active { visibility: visible; }
+.fw-tag { font-family: var(--mono); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+.fw-name { display: flex; overflow: hidden; padding: 0 .04em .06em; font-size: clamp(110px, 25vw, 440px); font-weight: 600; letter-spacing: -.075em; line-height: .86; color: #f2f1ea; }
+.fw-name .ch { display: inline-block; will-change: transform; }
+.fw-serif .fw-name { font-family: var(--serif); font-style: italic; font-weight: 300; letter-spacing: -.04em; color: var(--accent); }
 .flight-phone { position: relative; z-index: 3; width: min(330px, 31vh, 74vw); transform-style: preserve-3d; will-change: transform; }
 .device-lg { filter: drop-shadow(0 60px 70px rgba(0, 0, 0, .55)); }
 .flight-screen { opacity: 0; transition: opacity .45s ease; }
@@ -115,7 +117,7 @@ html:not(.has-ink) .intro-content { mix-blend-mode: normal; }
 }
 .chip-accent { background: var(--accent); color: #111916; border-color: var(--accent); }
 .flight-captions { position: absolute; z-index: 4; left: clamp(16px, 4vw, 56px); bottom: clamp(24px, 6vh, 64px); margin: 0; padding: 0; list-style: none; max-width: 360px; display: grid; }
-.flight-captions li { grid-area: 1 / 1; font-size: 16px; line-height: 1.5; color: rgba(255, 254, 249, .72); opacity: 0; transform: translateY(12px); transition: opacity .4s ease, transform .4s ease; }
+.flight-captions li { grid-area: 1 / 1; font-size: 17px; letter-spacing: -.01em; line-height: 1.5; color: rgba(255, 254, 249, .72); opacity: 0; transform: translateY(12px); transition: opacity .4s ease, transform .4s ease; }
 .flight-captions li.is-active { opacity: 1; transform: none; }
 .flight-captions strong { display: block; font-size: clamp(28px, 3vw, 40px); letter-spacing: -.03em; color: #fffef9; margin-bottom: 4px; }
 .flight-progress { position: absolute; z-index: 4; right: clamp(16px, 4vw, 56px); bottom: clamp(24px, 6vh, 64px); width: 140px; height: 2px; background: rgba(255, 254, 249, .16); }
@@ -223,7 +225,9 @@ html:not(.has-ink) .intro-content { mix-blend-mode: normal; }
 .browser-bar span:nth-child(3) { background: #28c840; }
 .browser-bar p { margin-left: 14px !important; font-size: 12px; color: rgba(255, 255, 255, .55); }
 .browser-shot { display: block; width: 100%; height: auto; }
-.ar-card { position: absolute; z-index: 2; height: auto; border-radius: 16px; box-shadow: 0 30px 60px -24px var(--shadow), 0 0 0 1px rgba(127, 127, 127, .18); will-change: transform; }
+.ar-card { position: absolute; z-index: 2; will-change: transform; }
+.ar-img { display: block; width: 100%; height: auto; border-radius: 16px; box-shadow: 0 30px 60px -24px var(--shadow), 0 0 0 1px rgba(127, 127, 127, .18); }
+.browser .ar-img, .browser-shot { border-radius: 0; box-shadow: none; display: block; width: 100%; height: auto; }
 .ar-card-texts { width: 38%; left: -4%; top: 58%; }
 .ar-card-prices { width: 20%; right: -3%; top: 6%; }
 .ar-card-connections { width: 34%; right: -5%; top: 62%; }
@@ -303,3 +307,42 @@ html:not(.has-ink) .intro-content { mix-blend-mode: normal; }
   .flight-stage { position: relative; height: 100svh; }
   .intro-cue span { animation: none; }
 }
+
+
+/* ---------- TYPOGRAPHY LAYER ----------
+   One grotesk at medium weights, a book serif for italic accents, mono for small labels. */
+.pf, .pf button { font-family: var(--sans); font-feature-settings: "ss01", "cv11"; }
+.pf em, .path-no { font-family: var(--serif); font-optical-sizing: auto; font-weight: 300; letter-spacing: -.02em; }
+.eyebrow-pf, .intro-kicker, .intro-cue, .chapter-kind, .tool-tag, .live, .pf-brand-name, .ar-note, .numbers-grid dt, .chip, .browser-bar p, .flight-progress + * {
+  font-family: var(--mono); font-weight: 400; letter-spacing: .08em; text-transform: uppercase;
+}
+.eyebrow-pf, .intro-kicker, .chapter-kind { font-size: 12px; }
+.intro-cue { font-size: 11px; }
+.chip { font-size: 12px; letter-spacing: .04em; text-transform: none; }
+.numbers-grid dt { font-size: 12px; line-height: 1.5; letter-spacing: .04em; }
+.pf-brand-name { font-size: 11px; letter-spacing: .14em; }
+.intro-title { font-weight: 600; letter-spacing: -.07em; line-height: .8; }
+.intro-line { font-weight: 400; letter-spacing: -.03em; }
+.path-head h2, .work-head h2, .practice h2, .ar-head h2, .tools-head h2, .contact h2 { font-weight: 500; letter-spacing: -.055em; line-height: .92; }
+.chapter h3 { font-weight: 500; letter-spacing: -.065em; line-height: .86; }
+.numbers-grid dd { font-weight: 400; letter-spacing: -.07em; }
+.path-card h3, .practice-grid h3 { font-weight: 500; letter-spacing: -.035em; }
+.chapter-lede, .work-intro, .ar-lede, .contact-inner > p { font-weight: 400; letter-spacing: -.012em; }
+.chapter-points li, .practice-grid p, .path-card p { letter-spacing: -.005em; }
+.pf-nav-link, .pf-theme button, .stack-marquee li, .chips li, .pf-gallery figcaption, .tool-name { font-weight: 500; }
+.pf-nav-cta, .contact-mail, .chapter-link { font-weight: 600; }
+.flight-captions strong { font-weight: 500; letter-spacing: -.045em; }
+.receipt, .receipt * { font-family: var(--mono); }
+.receipt-store, .receipt-total { font-weight: 500; }
+
+/* Dark theme intro: cream ink, so the header switches to dark text while it covers the screen. */
+body.ink-cream .pf-header { color: #111916; }
+body.ink-cream .pf-header .pf-theme button[aria-pressed="true"] { color: #f4f3ec; background: #111916; }
+
+/* AppReleaser: more panels in a bento grid */
+.ar-bento { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: clamp(80px, 10vw, 140px); align-items: start; }
+.ar-tile { margin: 0; }
+.ar-tile-wide { grid-column: span 2; }
+.ar-tile figcaption { margin-top: 12px; font-size: 13.5px; font-weight: 500; color: var(--text-soft); }
+@media (max-width: 980px) { .ar-bento { grid-template-columns: 1fr 1fr; } .ar-tile-wide { grid-column: auto; } }
+@media (max-width: 640px) { .ar-bento { grid-template-columns: 1fr; } .ar-tile-wide { grid-column: auto; } }

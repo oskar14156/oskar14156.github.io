@@ -3,163 +3,110 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Official website of independent software developer Oskar Polster, featuring apps and software projects.">
+  <meta name="description" content="Official website of independent app developer Oskar Polster: mobile apps for iOS and Android, built in Swift and React Native.">
   <meta name="google-site-verification" content="8AOThZMZqUVvmZpXsz2TkvNenVl_I-jNsZA8KAI0mUs" />
-  <title>Oskar Polster — Independent Software Developer</title>
+  <title>Oskar Polster — Independent App Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/developer/portfolio.css?v=9">
+  <link rel="stylesheet" href="/developer/product.css?v=9">
+  <link rel="stylesheet" href="/home.css?v=9">
+  <script>(function(){var t=null;try{t=localStorage.getItem('pf-theme')}catch(e){}if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;})();</script>
 </head>
-<body>
+<body class="developer-page pf pp home">
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <header class="site-header">
-    <div class="site-container header-inner">
-      <a class="brand" href="/" aria-label="Oskar Polster home">
-        <span class="brand-mark" aria-hidden="true">op<span>.</span></span>
-        <span class="brand-name">OSKAR<br>POLSTER</span>
-      </a>
-      <nav class="primary-nav" aria-label="Main navigation">
-        <a class="nav-link" href="/#projects">Projects</a>
-        <a class="nav-link" href="/developer/">Developer</a>
-        <a class="nav-contact" href="/developer/#contact">Say hello <span aria-hidden="true">↗</span></a>
-      </nav>
-    </div>
+  <header class="pf-header is-solid show-name" id="pf-header">
+    <a class="pf-brand" href="/" aria-label="Oskar Polster home">
+      <span class="brand-mark" aria-hidden="true">op<span>.</span></span>
+      <span class="pf-brand-name">OSKAR POLSTER</span>
+    </a>
+    <nav class="pf-nav" aria-label="Main navigation">
+      <a class="pf-nav-link" href="#apps">Apps</a>
+      <a class="pf-nav-link" href="#tools">Tools</a>
+      <a class="pf-nav-link" href="/developer/">Portfolio</a>
+      <div class="pf-theme" role="group" aria-label="Color theme">
+        <button type="button" data-set-theme="light" aria-pressed="false">Light</button>
+        <button type="button" data-set-theme="dark" aria-pressed="false">Dark</button>
+      </div>
+      <a class="pf-nav-cta" href="/developer/#contact">Say hello <span aria-hidden="true">↗</span></a>
+    </nav>
   </header>
 
   <main id="main">
-    <section class="hero-section" aria-labelledby="hero-title">
-      <div class="site-container">
-        <div class="hero-panel">
-          <div class="hero-glow hero-glow-one" aria-hidden="true"></div>
-          <div class="hero-glow hero-glow-two" aria-hidden="true"></div>
-          <div class="hero-copy">
-            <p class="eyebrow eyebrow-light"><span class="eyebrow-mark" aria-hidden="true"></span> Independent app &amp; software developer</p>
-            <h1 id="hero-title">Useful software.<br><span>Made with intention.</span></h1>
-            <p class="hero-description">I’m Oskar Polster. I build independent apps and focused digital projects, with care for the small details that make useful things feel simple.</p>
-            <div class="hero-actions">
-              <a class="button button-accent" href="#projects">Explore the work <span aria-hidden="true">↓</span></a>
-              <a class="button-link button-link-light" href="/developer/">Meet the developer <span aria-hidden="true">↗</span></a>
-            </div>
-          </div>
-
-          <div class="hero-art" aria-hidden="true">
-            <div class="art-grid"></div>
-            <div class="art-orbit art-orbit-outer"></div>
-            <div class="art-orbit art-orbit-inner"></div>
-            <div class="art-spark spark-one">✳</div>
-            <div class="art-spark spark-two">✳</div>
-            <div class="art-card art-card-top"><span class="art-card-icon">↗</span><span>Curiosity<br>in motion</span></div>
-            <div class="art-card art-card-bottom"><span class="art-status-dot"></span><span>Built independently</span></div>
-            <div class="art-monogram"><span>OP</span><i></i></div>
-            <p class="art-caption">Software<br>with a point of view.</p>
-          </div>
-
-          <div class="hero-index" aria-hidden="true"><span>01</span><span class="hero-index-line"></span><span>14</span></div>
-        </div>
-        <div class="hero-footnote"><span>Independent by nature</span><span>Thoughtful by design</span><span>Useful in the details</span></div>
+    <section class="home-hero site-container" aria-labelledby="home-title">
+      <p class="eyebrow-pf">Independent app developer · Lower Austria</p>
+      <h1 id="home-title">Apps for real life, <em>built down to the native layer.</em></h1>
+      <p class="home-lede">I'm Oskar Polster. I design and build mobile apps for iPhone and Android, in Swift and in React Native with native modules where the platform matters.</p>
+      <div class="pp-actions">
+        <a class="pp-btn pp-btn-solid" href="/developer/">See the portfolio <span aria-hidden="true">→</span></a>
+        <a class="pp-btn" href="https://play.google.com/store/apps/developer?id=Oskar+Polster" rel="noopener">Google Play <span aria-hidden="true">↗</span></a>
       </div>
     </section>
 
-    <section class="work-section site-container" id="projects" aria-labelledby="projects-title">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow"><span class="eyebrow-mark" aria-hidden="true"></span> A selection of apps &amp; projects</p>
-          <h2 id="projects-title">Made for real life.</h2>
-        </div>
-        <p class="section-intro">Small, focused tools for the moments that matter — from creative work to everyday routines.</p>
+    <section class="home-apps site-container" id="apps" aria-labelledby="apps-title">
+      <div class="home-head">
+        <p class="eyebrow-pf">Apps</p>
+        <h2 id="apps-title">Products.</h2>
       </div>
-
-      <div class="project-grid">
-        <article class="project-card project-card-lime">
-          <div class="project-card-top"><span class="project-index">01 / VIDEO</span><span class="project-symbol" aria-hidden="true">◒</span></div>
-          <h3><a href="/ai-video-background-remover/">Video Background Remover: AI <span aria-hidden="true">↗</span></a></h3>
-          <p>Remove a video background on your iPhone.</p>
-        </article>
-        <article class="project-card project-card-peach">
-          <div class="project-card-top"><span class="project-index">02 / FINANCE</span><span class="project-symbol" aria-hidden="true">↗</span></div>
-          <h3><a href="/belegfluss/">Belegfluss <span aria-hidden="true">↗</span></a></h3>
-          <p>Jede Position auf dem Bon. Ein Bild vom ganzen Jahr.</p>
-        </article>
-        <article class="project-card project-card-blue">
-          <div class="project-card-top"><span class="project-index">03 / PRIVACY</span><span class="project-symbol" aria-hidden="true">◌</span></div>
-          <h3><a href="/blur/">Blur Photo <span aria-hidden="true">↗</span></a></h3>
-          <p>Hide faces. Keep the moment.</p>
-        </article>
-        <article class="project-card project-card-ink">
-          <div class="project-card-top"><span class="project-index">04 / CREATIVE</span><span class="project-symbol" aria-hidden="true">✳</span></div>
-          <h3><a href="/canvas/">The Internet's Charity Canvas <span aria-hidden="true">↗</span></a></h3>
-          <p>One million pixels. Draw anything. 25¢ per euro goes to charity; the remainder is published.</p>
-        </article>
-        <article class="project-card project-card-blue">
-          <div class="project-card-top"><span class="project-index">05 / CREATIVE</span><span class="project-symbol" aria-hidden="true">◒</span></div>
-          <h3><a href="/cutout/">Cutout <span aria-hidden="true">↗</span></a></h3>
-          <p>Background gone. Details kept.</p>
-        </article>
-        <article class="project-card project-card-peach">
-          <div class="project-card-top"><span class="project-index">06 / VIDEO</span><span class="project-symbol" aria-hidden="true">▧</span></div>
-          <h3><a href="/mp4repair/">MP4 Repair <span aria-hidden="true">↗</span></a></h3>
-          <p>Help restoring broken MP4 and MOV video files.</p>
-        </article>
-        <article class="project-card project-card-lime">
-          <div class="project-card-top"><span class="project-index">07 / FITNESS</span><span class="project-symbol" aria-hidden="true">↗</span></div>
-          <h3><a href="/novus/">Novus <span aria-hidden="true">↗</span></a></h3>
-          <p>A fitness app built to help you train with clarity.</p>
-        </article>
-        <article class="project-card project-card-ink">
-          <div class="project-card-top"><span class="project-index">08 / PRIVACY</span><span class="project-symbol" aria-hidden="true">▤</span></div>
-          <h3><a href="/quietredact/">QuietRedact <span aria-hidden="true">↗</span></a></h3>
-          <p>On-device redaction for PDFs and images.</p>
-        </article>
-        <article class="project-card project-card-peach">
-          <div class="project-card-top"><span class="project-index">09 / ROUTINES</span><span class="project-symbol" aria-hidden="true">◷</span></div>
-          <h3><a href="/riseproof/">RiseProof <span aria-hidden="true">↗</span></a></h3>
-          <p>Prove you’re awake. Then the alarm stops.</p>
-        </article>
-        <article class="project-card project-card-blue">
-          <div class="project-card-top"><span class="project-index">10 / AUDIO</span><span class="project-symbol" aria-hidden="true">〰</span></div>
-          <h3><a href="/speechtrim/">SpeechTrim <span aria-hidden="true">↗</span></a></h3>
-          <p>Remove silence from audio and video; optionally detect filler words.</p>
-        </article>
-        <article class="project-card project-card-ink">
-          <div class="project-card-top"><span class="project-index">11 / VIDEO</span><span class="project-symbol" aria-hidden="true">⌁</span></div>
-          <h3><a href="/steady-video/">Steady <span aria-hidden="true">↗</span></a></h3>
-          <p>Video stabilization support and documentation.</p>
-        </article>
-        <article class="project-card project-card-lime">
-          <div class="project-card-top"><span class="project-index">12 / SAFETY</span><span class="project-symbol" aria-hidden="true">◎</span></div>
-          <h3><a href="/veil/">Veil <span aria-hidden="true">↗</span></a></h3>
-          <p>See the surveillance network you drive through.</p>
-        </article>
-        <article class="project-card project-card-peach">
-          <div class="project-card-top"><span class="project-index">13 / VIDEO</span><span class="project-symbol" aria-hidden="true">◖</span></div>
-          <h3><a href="/vidloud/">VidLoud <span aria-hidden="true">↗</span></a></h3>
-          <p>Make quiet videos louder. Processing stays on-device.</p>
-        </article>
-        <article class="project-card project-card-blue">
-          <div class="project-card-top"><span class="project-index">14 / TRAVEL</span><span class="project-symbol" aria-hidden="true">⌖</span></div>
-          <h3><a href="/voyeva/">Voyeva <span aria-hidden="true">↗</span></a></h3>
-          <p>Plan the trip. Share the journey.</p>
-        </article>
-      </div>
+      <ul class="home-app-grid">
+        <li><a href="/developer/voyeva/" class="tint-violet"><img src="/developer/shots/icons/voyeva.png" alt="" width="72" height="72"><span class="home-app-kind">Travel · iOS</span><strong>Voyeva</strong><span>Plan trips together, split costs, ask the AI, get a recap.</span><img class="home-app-shot" src="/developer/shots/voyeva-1.jpg" alt="" loading="lazy"></a></li>
+        <li><a href="/developer/novus/" class="tint-lime"><img src="/developer/shots/icons/novus.png" alt="" width="72" height="72"><span class="home-app-kind">Fitness · iOS + watchOS</span><strong>Novus</strong><span>Gym, running, nutrition and a coach that reads all of it.</span><img class="home-app-shot" src="/developer/shots/novus-1.jpg" alt="" loading="lazy"></a></li>
+        <li><a href="/developer/stub/" class="tint-peach"><img src="/developer/shots/icons/stub.png" alt="" width="72" height="72"><span class="home-app-kind">Finance · iOS + Android</span><strong>Stub</strong><span>Scan any receipt and see every line item.</span><img class="home-app-shot" src="/developer/shots/stub-1.jpg" alt="" loading="lazy"></a></li>
+        <li><a href="/developer/unscroll/" class="tint-blue"><img src="/developer/shots/icons/unscroll.png" alt="" width="72" height="72"><span class="home-app-kind">Wellbeing · iOS</span><strong>Unscroll</strong><span>Block the apps you choose and see your real screen time.</span><img class="home-app-shot" src="/developer/shots/unscroll-1.jpg" alt="" loading="lazy"></a></li>
+        <li><a href="/developer/riseproof/" class="tint-ink"><img src="/developer/shots/icons/riseproof.png" alt="" width="72" height="72"><span class="home-app-kind">Alarm · iOS + Android · <b>Google Play</b></span><strong>RiseProof</strong><span>An alarm that stops only once you prove you're awake.</span><img class="home-app-shot" src="/developer/shots/riseproof-1.jpg" alt="" loading="lazy"></a></li>
+        <li><a href="/developer/vbg/" class="tint-mint"><img src="/developer/shots/icons/vbg.png" alt="" width="72" height="72"><span class="home-app-kind">Video · iOS + Android · <b>Google Play</b></span><strong>Video Background Remover</strong><span>Remove the background from a whole video, on the phone.</span><img class="home-app-shot" src="/developer/shots/vbg-1.jpg" alt="" loading="lazy"></a></li>
+      </ul>
     </section>
 
-    <section class="developer-cta site-container" aria-labelledby="developer-cta-title">
-      <div class="developer-cta-inner">
-        <div class="cta-orb" aria-hidden="true"><span>O</span><i></i></div>
+    <section class="tools site-container" id="tools" aria-labelledby="tools-title">
+      <div class="tools-head">
         <div>
-          <p class="eyebrow eyebrow-light">The person behind the projects</p>
-          <h2 id="developer-cta-title">Independent software.<br><span>Personal attention.</span></h2>
+          <p class="eyebrow-pf eyebrow-muted">Tools</p>
+          <h2 id="tools-title">Small utilities.</h2>
         </div>
-        <a class="button button-outline" href="/developer/">More about Oskar <span aria-hidden="true">↗</span></a>
+        <p>Focused one-job apps and side projects. Each link opens the app's support, privacy and terms.</p>
+      </div>
+      <ul class="tool-list">
+        <li><a href="/mp4repair/"><span class="tool-name">MP4 Repair</span><span class="tool-what">Rebuilds broken MP4 and MOV files</span><span class="tool-tag">Play</span></a></li>
+        <li><a href="/blur/"><span class="tool-name">Blur Photo</span><span class="tool-what">Blurs faces in photos and videos</span><span class="tool-tag">Play</span></a></li>
+        <li><a href="/cutout/"><span class="tool-name">Cutout</span><span class="tool-what">Removes photo backgrounds on-device</span><span class="tool-tag">Play</span></a></li>
+        <li><a href="/vidloud/"><span class="tool-name">VidLoud</span><span class="tool-what">Makes quiet videos louder</span><span class="tool-tag">Play</span></a></li>
+        <li><a href="/veil/"><span class="tool-name">Veil</span><span class="tool-what">Maps license-plate cameras, with CarPlay</span><span class="tool-tag">iOS</span></a></li>
+        <li><a href="/compress/"><span class="tool-name">Compress</span><span class="tool-what">Shrinks videos for sharing</span><span class="tool-tag">iOS</span></a></li>
+        <li><a href="/speechtrim/"><span class="tool-name">SpeechTrim</span><span class="tool-what">Cuts silence and filler words</span><span class="tool-tag">iOS</span></a></li>
+        <li><a href="/steady-video/"><span class="tool-name">Steady</span><span class="tool-what">Stabilizes shaky video</span><span class="tool-tag">iOS</span></a></li>
+        <li><a href="/quietredact/"><span class="tool-name">QuietRedact</span><span class="tool-what">Redacts PDFs and images on-device</span><span class="tool-tag">iOS</span></a></li>
+        <li><a href="/pdfflow/"><span class="tool-name">PDF Flow</span><span class="tool-what">Edits and exports PDFs</span><span class="tool-tag">iOS</span></a></li>
+        <li><a href="/canvas/"><span class="tool-name">Charity Canvas</span><span class="tool-what">A million-pixel canvas for charity</span><span class="tool-tag">Web</span></a></li>
+        <li><a href="/belegfluss/"><span class="tool-name">Belegfluss</span><span class="tool-what">Receipts and expenses, German edition</span><span class="tool-tag">iOS</span></a></li>
+      </ul>
+      <p class="home-support">Support for the main apps: <a href="/voyeva/">Voyeva</a> · <a href="/novus/">Novus</a> · <a href="/stub/">Stub</a> · <a href="/unscroll/">Unscroll</a> · <a href="/riseproof/">RiseProof</a> · <a href="/ai-video-background-remover/">Video Background Remover</a></p>
+    </section>
+
+    <section class="contact" aria-labelledby="contact-title">
+      <div class="contact-inner site-container">
+        <p class="eyebrow-pf">The person behind the apps</p>
+        <h2 id="contact-title">How they are <em>built.</em></h2>
+        <p>Native modules in Swift and Kotlin, Expo and EAS, Firebase, release tooling. The portfolio shows each app in depth.</p>
+        <a class="contact-mail" href="/developer/">Open the portfolio <span aria-hidden="true">→</span></a>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer">
+  <footer class="site-footer pf-footer">
     <div class="site-container footer-inner">
       <a class="footer-brand" href="/">OSKAR POLSTER<span>© 2026</span></a>
       <p>Independent apps &amp; software projects.</p>
-      <nav aria-label="Footer navigation"><a href="/#projects">Projects</a><a href="/developer/">Developer</a><a href="/developer/#contact">Contact</a><a href="/impressum/">Impressum</a></nav>
+      <nav aria-label="Footer navigation"><a href="/developer/">Portfolio</a><a href="/developer/#contact">Contact</a><a href="/impressum/">Impressum</a></nav>
     </div>
   </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="/developer/product.js?v=9"></script>
 </body>
 </html>

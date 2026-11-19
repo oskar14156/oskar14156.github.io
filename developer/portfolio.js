@@ -92,7 +92,7 @@
       trigger: '#intro', start: 'top top', end: 'bottom bottom', scrub: .6, invalidateOnRefresh: true,
       onUpdate: (s) => {
         header.classList.toggle('show-name', s.progress > .96);
-        header.classList.toggle('on-dark', s.progress > .5 && s.progress < 1);
+        header.classList.toggle('on-dark', s.progress > .5 && s.progress < 1 && body.dataset.themeResolved !== 'dark');
       },
     },
   })
@@ -104,7 +104,28 @@
   /* ---------- 2 · Flight: one phone through five apps ---------- */
   const screens = document.querySelectorAll('.flight-screen');
   const captions = document.querySelectorAll('.flight-captions li');
-  const words = document.querySelectorAll('.flight-words span');
+  // Each app name is split into letters that roll up into place, like a split-flap board.
+  const words = [...document.querySelectorAll('.fw')];
+  words.forEach((w) => {
+    const name = w.querySelector('.fw-name');
+    name.innerHTML = [...name.textContent].map((ch) => '<span class="ch">' + ch + '</span>').join('');
+    gsap.set(name.querySelectorAll('.ch'), { yPercent: 110 });
+    gsap.set(w.querySelector('.fw-tag'), { opacity: 0, y: 10 });
+  });
+  let shownWord = null;
+  const showWord = (i) => {
+    const next = words.find((w) => w.dataset.step === String(i));
+    if (next === shownWord) return;
+    if (shownWord) {
+      const old = shownWord;
+      gsap.to(old.querySelectorAll('.ch'), { yPercent: -110, duration: .45, stagger: .025, ease: 'power3.in', overwrite: true, onComplete: () => old.classList.remove('is-active') });
+      gsap.to(old.querySelector('.fw-tag'), { opacity: 0, y: -10, duration: .3, overwrite: true });
+    }
+    next.classList.add('is-active');
+    gsap.fromTo(next.querySelectorAll('.ch'), { yPercent: 110 }, { yPercent: 0, duration: .8, stagger: .04, ease: 'power4.out', delay: shownWord ? .2 : 0, overwrite: true });
+    gsap.fromTo(next.querySelector('.fw-tag'), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: .5, delay: .35, overwrite: true });
+    shownWord = next;
+  };
   const bar = document.querySelector('.flight-progress span');
   let current = -1;
   const setStep = (i) => {
@@ -116,7 +137,7 @@
       if (s.tagName === 'VIDEO') { if (on) { s.preload = 'auto'; s.play().catch(() => {}); } else s.pause(); }
     });
     captions.forEach((c) => c.classList.toggle('is-active', c.dataset.step === String(i)));
-    words.forEach((w) => gsap.to(w, { opacity: w.dataset.step === String(i) ? 1 : 0, scale: w.dataset.step === String(i) ? 1 : .92, duration: .5, overwrite: true }));
+    showWord(i);
   };
   setStep(0);
   gsap.timeline({
@@ -205,7 +226,7 @@
   });
 
   /* ---------- Generic reveals ---------- */
-  gsap.utils.toArray('.practice-grid > div, .tool-list li, .numbers-grid > div').forEach((el) => {
+  gsap.utils.toArray('.practice-grid > div, .tool-list li, .numbers-grid > div, .ar-tile').forEach((el) => {
     gsap.from(el, { y: 40, opacity: 0, duration: .9, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 90%' } });
   });
 

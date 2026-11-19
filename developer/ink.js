@@ -97,10 +97,13 @@
 
   // Colours follow the page theme: paper + ink in light, ink-on-deeper-ink in dark.
   const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
+  // Light: dark ink rises over paper. Dark: cream ink rises over the night page, then
+  // fades away near the end so the dark scene after it follows without a seam.
+  let dark = false;
   const setColors = () => {
-    const dark = document.body.dataset.themeResolved === 'dark';
+    dark = document.body.dataset.themeResolved === 'dark';
     gl.uniform3fv(uPaper, hex(dark ? '#0b100e' : '#f4f3ec'));
-    gl.uniform3fv(uInk, hex(dark ? '#1a231f' : '#111916'));
+    gl.uniform3fv(uInk, hex(dark ? '#e8e7dd' : '#111916'));
   };
 
   let progress = 0, target = 0, raf = 0, px = .5, py = .5, inf = 0, infTarget = 0, timer;
@@ -118,6 +121,9 @@
     gl.uniform1f(uInf, inf);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
     track.style.setProperty('--ink', progress.toFixed(4));
+    const f = dark ? Math.min(1, Math.max(0, (progress - .8) / .16)) : 0;
+    canvas.style.opacity = String(1 - f * f * (3 - 2 * f));
+    document.body.classList.toggle('ink-cream', dark && progress > .42 && progress < .9);
   };
   const frame = () => {
     raf = 0;

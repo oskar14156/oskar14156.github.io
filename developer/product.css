@@ -1,0 +1,65 @@
+/* Product pages under /developer/<app>/. Builds on portfolio.css. */
+
+.pp main { padding-top: 0; }
+.pp-hero { position: relative; padding: clamp(120px, 14vw, 180px) 0 clamp(40px, 5vw, 64px); overflow: hidden; }
+.pp-hero.tint-ink { color: var(--on-panel); }
+.pp-hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(32px, 5vw, 80px); align-items: center; }
+.pp-icon { width: 88px; height: 88px; border-radius: 22px; box-shadow: 0 18px 40px -16px var(--shadow); margin-bottom: 28px; }
+.pp-hero h1 { margin-top: 14px; font-size: clamp(64px, 10vw, 156px); line-height: .84; letter-spacing: -.07em; font-weight: 500; }
+.pp-lede { margin-top: 24px !important; max-width: 30ch; font-size: clamp(19px, 1.8vw, 24px); line-height: 1.4; letter-spacing: -.015em; }
+.pp-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 32px; }
+.pp-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 20px; border-radius: 999px; font-size: 15px; font-weight: 600; text-decoration: none; color: inherit; border: 1px solid color-mix(in srgb, currentColor 25%, transparent); }
+.pp-btn-solid { background: var(--accent); color: #111916; border-color: var(--accent); }
+.pp-hero-phones { position: relative; display: grid; place-items: center; height: min(660px, 72vh); }
+.pp-hero-phones .pp-shot { grid-area: 1 / 1; width: min(250px, 40%); margin: 0; will-change: transform; }
+.pp-hero-phones .pp-shot figcaption { display: none; }
+.pp-hero-phones .pp-c { z-index: 2; width: min(280px, 45%); }
+.pp-hero-phones .pp-l { transform: translateX(-62%) rotate(-7deg) translateY(30px); }
+.pp-hero-phones .pp-r { transform: translateX(62%) rotate(7deg) translateY(30px); }
+.pp-facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin: clamp(48px, 6vw, 80px) auto 0; }
+.pp-facts div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 8px; padding-top: 16px; border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent); }
+.pp-facts dd { margin: 0; font-size: clamp(36px, 4.5vw, 64px); font-weight: 400; letter-spacing: -.06em; line-height: .95; }
+.pp-facts dt { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; opacity: .7; }
+
+.pp-chapter { padding-top: clamp(96px, 12vw, 168px); }
+.pp-chapter-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.4fr); gap: clamp(32px, 5vw, 80px); align-items: center; }
+.pp-flip .pp-chapter-text { order: 2; }
+.pp-no { font-family: var(--serif); font-style: italic; font-weight: 300; font-size: 72px; line-height: 1; color: var(--accent-deep); }
+.pp-chapter h2 { margin-top: 12px; font-size: clamp(36px, 4.6vw, 68px); line-height: .95; letter-spacing: -.055em; font-weight: 500; }
+.pp-chapter-text > p:last-child { margin-top: 18px !important; font-size: 18px; line-height: 1.55; color: var(--text-soft); max-width: 38ch; }
+.pp-strip { display: flex; gap: 18px; align-items: flex-start; justify-content: center; }
+.pp-strip .pp-shot { flex: 1 1 0; max-width: 240px; min-width: 0; margin: 0; }
+.pp-strip .pp-shot:nth-child(2) { margin-top: 48px; }
+.pp-strip .pp-shot:nth-child(4) { margin-top: 48px; }
+.pp-shot figcaption { margin-top: 14px; font-size: 13px; line-height: 1.4; font-weight: 500; color: var(--text-soft); }
+
+.pp-tech { padding-top: clamp(110px, 14vw, 190px); }
+.pp-tech h2 { margin-top: 16px; font-size: clamp(40px, 6vw, 88px); line-height: .92; letter-spacing: -.055em; font-weight: 500; }
+.pp-tech-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin: clamp(36px, 5vw, 56px) 0 0; background: var(--line); border: 1px solid var(--line); border-radius: 24px; overflow: hidden; }
+.pp-tech-grid div { padding: 26px 28px; background: var(--surface); }
+.pp-tech-grid dt { font-size: 19px; font-weight: 500; letter-spacing: -.025em; }
+.pp-tech-grid dd { margin: 8px 0 0; font-size: 15px; line-height: 1.55; color: var(--text-soft); }
+
+.pp-more { padding-top: clamp(96px, 12vw, 150px); }
+.pp-more-list { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin: 24px 0 0; padding: 0; list-style: none; }
+.pp-more-list a { display: grid; gap: 4px; padding: 18px; border: 1px solid var(--line); border-radius: 20px; text-decoration: none; color: inherit; transition: background-color .2s, transform .2s; }
+.pp-more-list a:hover { background: var(--surface); transform: translateY(-2px); }
+.pp-more-list img { width: 48px; height: 48px; border-radius: 12px; margin-bottom: 10px; }
+.pp-more-list span { font-weight: 500; letter-spacing: -.02em; }
+.pp-more-list small { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.pp .pf-footer a { color: inherit; }
+
+@media (max-width: 980px) {
+  .pp-hero-grid, .pp-chapter-grid { grid-template-columns: 1fr; }
+  .pp-flip .pp-chapter-text { order: 0; }
+  .pp-facts { grid-template-columns: 1fr 1fr; }
+  .pp-tech-grid { grid-template-columns: 1fr 1fr; }
+  .pp-more-list { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 640px) {
+  .pp-hero-phones { height: 440px; }
+  .pp-strip { overflow-x: auto; justify-content: flex-start; scroll-snap-type: x mandatory; padding-bottom: 12px; }
+  .pp-strip .pp-shot { flex: 0 0 62%; scroll-snap-align: start; margin-top: 0 !important; }
+  .pp-tech-grid, .pp-more-list { grid-template-columns: 1fr 1fr; }
+  .pp-tech-grid { grid-template-columns: 1fr; }
+}
