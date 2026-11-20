@@ -73,8 +73,8 @@
   }
 
   /* ---------- Header: solid after the intro, light text over dark scenes ---------- */
-  ScrollTrigger.create({ trigger: '#flight', start: 'top 70px', end: 'max', onToggle: (s) => header.classList.toggle('is-solid', s.isActive) });
-  ['#flight', '.tint-ink', '.contact'].forEach((sel) => document.querySelectorAll(sel).forEach((el) => {
+  ScrollTrigger.create({ trigger: '#voyage', start: 'top 70px', end: 'max', onToggle: (s) => header.classList.toggle('is-solid', s.isActive) });
+  ['#voyage', '#flight', '.tint-ink', '.contact'].forEach((sel) => document.querySelectorAll(sel).forEach((el) => {
     ScrollTrigger.create({ trigger: el, start: 'top 40px', end: 'bottom 40px', onToggle: (s) => header.classList.toggle('on-dark', s.isActive) });
   }));
 

@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/developer/portfolio.css?v=17">
+  <link rel="stylesheet" href="/developer/portfolio.css?v=21">
   <script>
     // Theme before first paint: saved pick, else the system setting.
     (function () {
@@ -57,6 +57,33 @@
       </div>
     </section>
 
+    <!-- 1b · VOYAGE: the recap plane flies a lap and dives into the phone -->
+    <section class="voyage" id="voyage" aria-labelledby="voyage-title">
+      <div class="vy-stage">
+        <canvas class="vy-map" aria-hidden="true"></canvas>
+        <div class="vy-dim" aria-hidden="true"></div>
+        <div class="vy-cap vy-cap-1">
+          <p class="vy-meta">Voyeva · real trip · March 13, 2026</p>
+          <h2 id="voyage-title">Vienna to Beijing, 7,461 km. The first of 53 stops.</h2>
+        </div>
+        <div class="vy-cap vy-cap-2">
+          <p class="vy-meta">China &amp; Japan · 21 days</p>
+          <p class="vy-big">28,278 km by plane, train and car, with every photo pinned where it was taken.</p>
+        </div>
+        <div class="vy-phone" aria-hidden="true">
+          <div class="device device-lg">
+            <div class="device-screen vy-screen"><video src="/developer/media/voyeva-recap.mp4?v=4" poster="/developer/media/voyeva-recap.jpg?v=4" muted loop playsinline preload="none"></video></div>
+            <img class="device-frame" src="/developer/shots/frame-black.png" alt="" width="980" height="2000">
+          </div>
+        </div>
+        <svg class="vy-plane" viewBox="-50 -50 100 100" aria-hidden="true"><path d="M0-47c3.6 0 5.2 7 5.2 15v22.5L47 11.5v8.2L5.2 9.6 4.2 31 16 40.5v6.6L1.6 43.4H-1.6L-16 47.1v-6.6L-4.2 31-5.2 9.6-47 19.7v-8.2L-5.2-9.5V-32c0-8 1.6-15 5.2-15z"/></svg>
+        <div class="vy-cap vy-cap-3">
+          <p class="vy-meta">Trip recap</p>
+          <p class="vy-big">The whole trip as a video, rendered on the phone: MapKit snapshots, the route, the photos, encoded with AVFoundation.</p>
+        </div>
+      </div>
+    </section>
+
     <!-- 2 · PHONE FLIGHT: one iPhone, five apps -->
     <section class="flight" id="flight" aria-label="Apps at a glance">
       <div class="flight-stage">
@@ -84,7 +111,7 @@
         <div class="flight-phone" id="flight-phone">
           <div class="device device-lg">
             <div class="device-screen">
-              <video class="flight-screen is-active" data-step="0" src="/developer/media/voyeva-recap.mp4?v=3" poster="/developer/media/voyeva-recap.jpg?v=3" muted loop playsinline preload="none" aria-label="Voyeva trip recap video"></video>
+              <img class="flight-screen is-active" data-step="0" src="/developer/shots/voyeva-8.jpg" alt="Voyeva map of a road trip in Japan with photos pinned along the route" loading="lazy">
               <img class="flight-screen" data-step="1" src="/developer/shots/novus-3.jpg" alt="Novus run through Vienna coloured by pace" loading="lazy">
               <img class="flight-screen" data-step="2" src="/developer/shots/unscroll-1.jpg" alt="Unscroll today screen" loading="lazy">
               <img class="flight-screen" data-step="3" src="/developer/shots/stub-3.jpg?v=4" alt="Stub Sankey diagram from income down to single products" loading="lazy">
@@ -95,7 +122,7 @@
         </div>
 
         <ol class="flight-captions">
-          <li data-step="0">A trip recap, rendered on the phone. SwiftUI and MapKit.</li>
+          <li data-step="0">A real road trip in Japan, photos pinned where they were taken. SwiftUI and MapKit.</li>
           <li data-step="1">A real run, coloured by pace. SwiftUI, HealthKit, watchOS.</li>
           <li data-step="2">Blocks apps with Apple's Screen Time APIs, from React Native.</li>
           <li data-step="3">A real receipt, scanned: every line item, categorised.</li>
@@ -134,7 +161,7 @@
           </div>
           <div class="fan" aria-hidden="true">
             <div class="device fan-l"><div class="device-screen"><img src="/developer/shots/voyeva-1.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
-            <div class="device fan-c"><div class="device-screen"><video src="/developer/media/voyeva-recap.mp4?v=3" poster="/developer/media/voyeva-recap.jpg?v=3" muted loop playsinline preload="none"></video></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+            <div class="device fan-c"><div class="device-screen"><video src="/developer/media/voyeva-recap.mp4?v=4" poster="/developer/media/voyeva-recap.jpg?v=4" muted loop playsinline preload="none"></video></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
             <div class="device fan-r"><div class="device-screen"><img src="/developer/shots/voyeva-4.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
           </div>
         </div>
@@ -161,6 +188,24 @@
           <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-20.jpg" alt="Travel passport and yearly recap" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Travel passport and yearly recap</figcaption></figure>
         </div><!--/gallery-->
       </article>
+
+      <section class="nr" id="novus-run" aria-labelledby="nr-title">
+        <div class="nr-stage">
+          <canvas class="nr-map" aria-hidden="true"></canvas>
+          <div class="nr-head">
+            <p class="nr-meta">Novus · real run · April 14, 2026</p>
+            <h2 id="nr-title">29.8 km, replayed from the route and heart rate.</h2>
+          </div>
+          <dl class="nr-stats">
+            <div><dt>Distance</dt><dd><span data-k="km">0.00</span><small>km</small></dd></div>
+            <div><dt>Moving time</dt><dd><span data-k="time">0:00:00</span></dd></div>
+            <div><dt>Pace</dt><dd><span data-k="pace">–</span><small>/km</small></dd></div>
+            <div><dt>Heart rate</dt><dd><span data-k="hr">–</span><small>bpm</small></dd></div>
+          </dl>
+          <p class="nr-legend" aria-hidden="true"><span class="nr-fast">faster</span><i></i><span>slower</span></p>
+          <p class="nr-foot">In Novus, workouts come in from HealthKit with their route and heart rate, and every run is drawn coloured by pace.</p>
+        </div>
+      </section>
 
       <article class="chapter tint-lime" id="novus">
         <div class="chapter-grid site-container">
@@ -246,6 +291,8 @@
           <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-11.jpg" alt="Stub Pro" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Stub Pro</figcaption></figure>
         </div><!--/gallery-->
       </article>
+
+      <section class="kz" id="kz-unscroll" aria-label="Unscroll, a short animated story"></section>
 
       <article class="chapter tint-blue" id="unscroll">
         <div class="chapter-grid site-container">
@@ -341,6 +388,51 @@
       </article>
     </section>
 
+    <!-- 6 · APPRELEASER -->
+    <section class="ar" id="appreleaser" aria-labelledby="ar-title">
+      <div class="ar-head site-container">
+        <p class="status-tag">In development</p>
+        <h2 id="ar-title">AppReleaser: both stores and RevenueCat in one dashboard.</h2>
+        <p class="ar-lede">Shipping many apps means App Store Connect, Google Play Console and RevenueCat open at once, with the same listing, screenshots and prices typed three times. AppReleaser reads what each store really has, shows what is missing before review, and writes the changes back through the official APIs.</p>
+      </div>
+      <div class="ar-stage site-container">
+        <div class="browser" id="ar-browser">
+          <div class="browser-bar"><span></span><span></span><span></span><p>AppReleaser · Portfolio</p></div>
+          <img class="browser-shot pf-light-only" src="/developer/shots/ar/portfolio-light.jpg" alt="AppReleaser portfolio: each app's state in the App Store, Google Play, pricing and RevenueCat" loading="lazy"><img class="browser-shot pf-dark-only" src="/developer/shots/ar/portfolio-dark.jpg" alt="AppReleaser portfolio: each app's state in the App Store, Google Play, pricing and RevenueCat" loading="lazy">
+        </div>
+        <div class="ar-card ar-card-texts"><img class="ar-img pf-light-only" src="/developer/shots/ar/listing-light.jpg" alt="Store listing per locale with character limits and an AI draft" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/listing-dark.jpg" alt="Store listing per locale with character limits and an AI draft" loading="lazy"></div>
+        <div class="ar-card ar-card-prices"><img class="ar-img pf-light-only" src="/developer/shots/ar/pricing-light.jpg" alt="Yearly price per country" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/pricing-dark.jpg" alt="Yearly price per country" loading="lazy"></div>
+        <div class="ar-card ar-card-connections"><img class="ar-img pf-light-only" src="/developer/shots/ar/connections-light.jpg" alt="Connections to App Store Connect, Google Play Console and RevenueCat" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/connections-dark.jpg" alt="Connections to App Store Connect, Google Play Console and RevenueCat" loading="lazy"></div>
+        <div class="ar-card ar-card-compliance"><img class="ar-img pf-light-only" src="/developer/shots/ar/compliance-light.jpg" alt="Compliance answers pre-filled" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/compliance-dark.jpg" alt="Compliance answers pre-filled" loading="lazy"></div>
+      </div>
+      <div class="ar-bento site-container">
+        <figure class="ar-tile ar-tile-wide"><img class="ar-img pf-light-only" src="/developer/shots/ar/release-light.jpg" alt="Release assistant with launch readiness" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/release-dark.jpg" alt="Release assistant with launch readiness" loading="lazy"><figcaption>Release assistant: what is left before review</figcaption></figure>
+        <figure class="ar-tile ar-tile-wide"><img class="ar-img pf-light-only" src="/developer/shots/ar/approval-light.jpg" alt="Before and after of every change before submitting" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/approval-dark.jpg" alt="Before and after of every change before submitting" loading="lazy"><figcaption>Every change as before and after, with a dry run</figcaption></figure>
+        <figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/rollout-light.jpg" alt="Submission and staged rollout" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/rollout-dark.jpg" alt="Submission and staged rollout" loading="lazy"><figcaption>Submission and staged rollout</figcaption></figure>
+        <figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/builds-light.jpg" alt="Builds from the local build agent" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/builds-dark.jpg" alt="Builds from the local build agent" loading="lazy"><figcaption>Builds from a local agent</figcaption></figure>
+        <figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/reviews-light.jpg" alt="Store reviews with an AI draft reply" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/reviews-dark.jpg" alt="Store reviews with an AI draft reply" loading="lazy"><figcaption>Reviews with draft replies</figcaption></figure>
+        <figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/revenuecat-light.jpg" alt="RevenueCat products and offerings" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/revenuecat-dark.jpg" alt="RevenueCat products and offerings" loading="lazy"><figcaption>RevenueCat products</figcaption></figure>
+        <figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/keychain-light.jpg" alt="Keys and certificates with expiry warnings" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/keychain-dark.jpg" alt="Keys and certificates with expiry warnings" loading="lazy"><figcaption>Keys and certificates</figcaption></figure>
+        <figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/insights-light.jpg" alt="Rating, crash rate and open reviews" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/insights-dark.jpg" alt="Rating, crash rate and open reviews" loading="lazy"><figcaption>Insights per app</figcaption></figure>
+      </div>
+      <p class="ar-note site-container">Real AppReleaser components with sample data and my own apps. <a href="/developer/appreleaser/">Walk through every screen of the real app →</a></p>
+      <div class="ar-grid site-container">
+        <ul class="ar-features">
+          <li><strong>Portfolio at a glance</strong> Every app's state in both stores, prices and RevenueCat on one screen</li>
+          <li><strong>Listings &amp; screenshots</strong> Apple and Google in 15 locales, checked against each store's limits, with AI drafts you approve</li>
+          <li><strong>Pricing</strong> Weekly, yearly and lifetime across 194 countries, with a read-only check of live store prices</li>
+          <li><strong>Release checklist</strong> 96 store-specific tasks and pre-filled compliance answers, so nothing is missing at review</li>
+        </ul>
+        <ul class="ar-facts">
+          <li><strong>593</strong> unit tests in CI on Linux and macOS</li>
+          <li><strong>512</strong> commits since October 2026</li>
+          <li><strong>Next.js 16</strong> · React 19 · TypeScript</li>
+          <li><strong>AES-256-GCM</strong> vault for store credentials</li>
+          <li><strong>Next up</strong> review submission from the dashboard, Sentry release health per version</li>
+        </ul>
+      </div>
+    </section>
+
     <!-- 3b · OPEN THE WORK: product pages open one after another -->
     <section class="stack" id="pages" aria-labelledby="stack-title">
       <div class="stack-stage">
@@ -387,51 +479,6 @@
       </div>
     </section>
 
-    <!-- 6 · APPRELEASER -->
-    <section class="ar" id="appreleaser" aria-labelledby="ar-title">
-      <div class="ar-head site-container">
-        <p class="status-tag">In development</p>
-        <h2 id="ar-title">AppReleaser: both stores and RevenueCat in one dashboard.</h2>
-        <p class="ar-lede">Shipping many apps means App Store Connect, Google Play Console and RevenueCat open at once, with the same listing, screenshots and prices typed three times. AppReleaser reads what each store really has, shows what is missing before review, and writes the changes back through the official APIs.</p>
-      </div>
-      <div class="ar-stage site-container">
-        <div class="browser" id="ar-browser">
-          <div class="browser-bar"><span></span><span></span><span></span><p>AppReleaser · Portfolio</p></div>
-          <img class="browser-shot pf-light-only" src="/developer/shots/ar/portfolio-light.jpg" alt="AppReleaser portfolio: each app's state in the App Store, Google Play, pricing and RevenueCat" loading="lazy"><img class="browser-shot pf-dark-only" src="/developer/shots/ar/portfolio-dark.jpg" alt="AppReleaser portfolio: each app's state in the App Store, Google Play, pricing and RevenueCat" loading="lazy">
-        </div>
-        <div class="ar-card ar-card-texts"><img class="ar-img pf-light-only" src="/developer/shots/ar/listing-light.jpg" alt="Store listing per locale with character limits and an AI draft" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/listing-dark.jpg" alt="Store listing per locale with character limits and an AI draft" loading="lazy"></div>
-        <div class="ar-card ar-card-prices"><img class="ar-img pf-light-only" src="/developer/shots/ar/pricing-light.jpg" alt="Yearly price per country" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/pricing-dark.jpg" alt="Yearly price per country" loading="lazy"></div>
-        <div class="ar-card ar-card-connections"><img class="ar-img pf-light-only" src="/developer/shots/ar/connections-light.jpg" alt="Connections to App Store Connect, Google Play Console and RevenueCat" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/connections-dark.jpg" alt="Connections to App Store Connect, Google Play Console and RevenueCat" loading="lazy"></div>
-        <div class="ar-card ar-card-compliance"><img class="ar-img pf-light-only" src="/developer/shots/ar/compliance-light.jpg" alt="Compliance answers pre-filled" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/compliance-dark.jpg" alt="Compliance answers pre-filled" loading="lazy"></div>
-      </div>
-      <div class="ar-bento site-container">
-        <figure class="ar-tile ar-tile-wide"><img class="ar-img pf-light-only" src="/developer/shots/ar/release-light.jpg" alt="Release assistant with launch readiness" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/release-dark.jpg" alt="Release assistant with launch readiness" loading="lazy"><figcaption>Release assistant: what is left before review</figcaption></figure>
-        <figure class="ar-tile ar-tile-wide"><img class="ar-img pf-light-only" src="/developer/shots/ar/approval-light.jpg" alt="Before and after of every change before submitting" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/approval-dark.jpg" alt="Before and after of every change before submitting" loading="lazy"><figcaption>Every change as before and after, with a dry run</figcaption></figure>
-        <figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/rollout-light.jpg" alt="Submission and staged rollout" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/rollout-dark.jpg" alt="Submission and staged rollout" loading="lazy"><figcaption>Submission and staged rollout</figcaption></figure>
-        <figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/builds-light.jpg" alt="Builds from the local build agent" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/builds-dark.jpg" alt="Builds from the local build agent" loading="lazy"><figcaption>Builds from a local agent</figcaption></figure>
-        <figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/reviews-light.jpg" alt="Store reviews with an AI draft reply" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/reviews-dark.jpg" alt="Store reviews with an AI draft reply" loading="lazy"><figcaption>Reviews with draft replies</figcaption></figure>
-        <figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/revenuecat-light.jpg" alt="RevenueCat products and offerings" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/revenuecat-dark.jpg" alt="RevenueCat products and offerings" loading="lazy"><figcaption>RevenueCat products</figcaption></figure>
-        <figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/keychain-light.jpg" alt="Keys and certificates with expiry warnings" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/keychain-dark.jpg" alt="Keys and certificates with expiry warnings" loading="lazy"><figcaption>Keys and certificates</figcaption></figure>
-        <figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/insights-light.jpg" alt="Rating, crash rate and open reviews" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/insights-dark.jpg" alt="Rating, crash rate and open reviews" loading="lazy"><figcaption>Insights per app</figcaption></figure>
-      </div>
-      <p class="ar-note site-container">Real AppReleaser components with sample data and my own apps. <a href="/developer/appreleaser/">Walk through every screen of the real app →</a></p>
-      <div class="ar-grid site-container">
-        <ul class="ar-features">
-          <li><strong>Portfolio at a glance</strong> Every app's state in both stores, prices and RevenueCat on one screen</li>
-          <li><strong>Listings &amp; screenshots</strong> Apple and Google in 15 locales, checked against each store's limits, with AI drafts you approve</li>
-          <li><strong>Pricing</strong> Weekly, yearly and lifetime across 194 countries, with a read-only check of live store prices</li>
-          <li><strong>Release checklist</strong> 96 store-specific tasks and pre-filled compliance answers, so nothing is missing at review</li>
-        </ul>
-        <ul class="ar-facts">
-          <li><strong>593</strong> unit tests in CI on Linux and macOS</li>
-          <li><strong>512</strong> commits since October 2026</li>
-          <li><strong>Next.js 16</strong> · React 19 · TypeScript</li>
-          <li><strong>AES-256-GCM</strong> vault for store credentials</li>
-          <li><strong>Next up</strong> review submission from the dashboard, Sentry release health per version</li>
-        </ul>
-      </div>
-    </section>
-
     <!-- 3 · NUMBERS -->
     <section class="numbers site-container" aria-label="In numbers">
       <dl class="numbers-grid">
@@ -461,7 +508,7 @@
     </section>
 
     <!-- 7 · HOW I SHIP -->
-    <section class="practice site-container" aria-labelledby="practice-title">
+    <section class="practice site-container" id="practice" aria-labelledby="practice-title">
             <h2 id="practice-title">How I ship an app.</h2>
       <div class="practice-grid">
         <div><h3>Builds &amp; releases</h3><p>EAS Build profiles for dev client, internal QA and production, EAS Submit, signing credentials, TestFlight and Play internal testing tracks, versioning.</p></div>
@@ -517,7 +564,14 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
   <script src="/developer/portfolio.js?v=17"></script>
   <script src="/developer/ink.js?v=15"></script>
+  <script src="/developer/voyage.js?v=2"></script>
+  <script src="/developer/kz-unscroll.js?v=3"></script>
+  <script src="/developer/novus-run.js?v=2"></script>
+  <script src="/developer/menu.js?v=1"></script>
 </body>
 </html>
