@@ -175,8 +175,8 @@
             <g class="kz-night-sky">
               <rect x="1062" y="196" width="286" height="286" fill="url(#kzWinNight)"/>
               ${stars}
-              <circle cx="1270" cy="262" r="70" fill="url(#kzMoonGlow)"/>
-              <circle cx="1270" cy="262" r="30" fill="#f3ecff"/><circle cx="1284" cy="252" r="26" fill="#1a0e52"/>
+              <g class="kz-moon"><circle cx="1270" cy="262" r="70" fill="url(#kzMoonGlow)"/>
+              <circle cx="1270" cy="262" r="30" fill="#f3ecff"/><circle cx="1284" cy="252" r="26" fill="#1a0e52"/></g>
               <path d="M1062 482 V430 h18 v-18 h22 v26 h14 v-40 h26 v34 h12 v-22 h20 v42 h16 v-56 h24 v36 h18 v-24 h22 v40 h16 v-30 h20 v20 h18 v-14 h20 v52Z" fill="#170d4c"/>
               ${cityWin}
             </g>
@@ -273,15 +273,21 @@
         <path class="kz-cuff" stroke="${C.shirtShade}" stroke-width="22" stroke-linecap="butt" fill="none"/>
         <path class="kz-arm-f-lo" stroke="${C.skin}" stroke-width="20" stroke-linecap="round" fill="none"/>
         <path class="kz-arm-f-lit" stroke="${C.glow}" stroke-width="7" stroke-linecap="round" fill="none" opacity="0"/>
-        <g class="kz-phone-hand">
-          <rect x="-14" y="-30" width="26" height="60" rx="8" fill="#3a2f7a"/>
-          <rect x="-12" y="-28" width="22" height="56" rx="7" fill="#251c58"/>
-          <rect x="-7" y="-24" width="13" height="15" rx="4" fill="#130c38"/><circle cx="-3" cy="-20" r="2.6" fill="#4a3f8f"/><circle cx="2.5" cy="-14" r="2.6" fill="#4a3f8f"/>
-          <path d="M-15 -26 V26" stroke="#c9fbff" stroke-width="3.2" stroke-linecap="round"/>
-          <path class="kz-feed" d="M-16 -18 V18" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" opacity=".8"/>
-        </g>
         <g class="kz-hand-f"><path d="M-4 -9 C 6 -11 16 -8 18 -1 C 19 6 13 10 4 10 C -4 10 -8 4 -7 -2Z" fill="${C.skin}"/><path d="M6 -8 C 14 -6 17 0 15 6" stroke="#e8907a" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M8 1 C 13 2 16 5 15 8 M8 5 C 12 6 14 9 13 10" stroke="#e8907a" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".8"/></g>
-        <ellipse class="kz-thumb" rx="7.5" ry="4.8" fill="${C.skin}"/>
+        <!-- the phone in his hand: palm under it, fingers round the back, thumb on the screen edge -->
+        <g class="kz-phone-hand">
+          <path d="M-5 -10 C 8 -15 22 -11 24 -2 C 25 7 16 13 4 12 C -5 11 -9 4 -8 -3Z" fill="${C.skin}"/>
+          <g class="kz-phone" transform="translate(16 -22)">
+            <g class="kz-thumb"><path d="M-16 24 C -25 16 -26 0 -23 -10 C -21 -17 -14 -17 -13 -10 L -11 20Z" fill="${C.skin}"/><path d="M-22 -9 q3 -4 6 -2" stroke="#e8907a" stroke-width="1.4" fill="none" stroke-linecap="round"/></g>
+            <rect x="-14" y="-30" width="26" height="60" rx="8" fill="#3a2f7a"/>
+            <rect x="-12" y="-28" width="22" height="56" rx="7" fill="#251c58"/>
+            <rect x="-7" y="-24" width="13" height="15" rx="4" fill="#130c38"/><circle cx="-3" cy="-20" r="2.6" fill="#4a3f8f"/><circle cx="2.5" cy="-14" r="2.6" fill="#4a3f8f"/>
+            <path d="M-15 -26 V26" stroke="#c9fbff" stroke-width="3.2" stroke-linecap="round"/>
+            <path class="kz-feed" d="M-16 -18 V18" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" opacity=".8"/>
+            <g fill="${C.skin}"><rect x="6" y="-4" width="12" height="8" rx="4"/><rect x="7" y="5" width="11" height="8" rx="4"/><rect x="6" y="14" width="10" height="7" rx="3.5"/></g>
+            <path d="M12 -2 h4 M12 7 h4 M11 16 h3" stroke="#e8907a" stroke-width="1.4" stroke-linecap="round"/>
+          </g>
+        </g>
         <path class="kz-beam" fill="url(#kzBeamG)" style="mix-blend-mode: screen" filter="url(#kzBlur3)"/>
         <g class="kz-startle" opacity="0" stroke="#ffd23f" stroke-width="7" stroke-linecap="round">
           <path d="M84 -300 l22 -30"/><path d="M114 -270 l34 -14"/><path d="M52 -310 l2 -36"/>
@@ -290,6 +296,17 @@
 
       <!-- the dark: everything outside the phone's light falls off into the night -->
       <rect class="kz-dark" width="1600" height="900" fill="#05031c" opacity=".62" mask="url(#kzDarkMask)"/>
+
+      <g class="kz-wallclock" transform="translate(178 186)">
+        <circle r="66" fill="#000" opacity=".25" filter="url(#kzBlur6)" transform="translate(4 8)"/>
+        <circle r="62" fill="#ff9d3c"/><circle r="54" fill="#f6f1ff"/><circle r="54" fill="none" stroke="#d9d0ff" stroke-width="2"/>
+        ${Array.from({ length: 12 }, (_, i) => { const a = i / 12 * Math.PI * 2, r1 = i % 3 ? 45 : 41; return `<path d="M${(Math.sin(a) * r1).toFixed(1)} ${(-Math.cos(a) * r1).toFixed(1)} L${(Math.sin(a) * 49).toFixed(1)} ${(-Math.cos(a) * 49).toFixed(1)}" stroke="#2a1580" stroke-width="${i % 3 ? 2.5 : 4.5}" stroke-linecap="round"/>`; }).join('')}
+        <path class="kz-hh" d="M0 6 V-28" stroke="#2a1580" stroke-width="6" stroke-linecap="round"/>
+        <path class="kz-mh" d="M0 8 V-42" stroke="#2a1580" stroke-width="4" stroke-linecap="round"/>
+        <path class="kz-sh" d="M0 10 V-46" stroke="#ff4f6d" stroke-width="2" stroke-linecap="round"/>
+        <circle r="5" fill="#ff4f6d"/>
+        <circle r="60" fill="#05031c" class="kz-clockdim" opacity=".35"/>
+      </g>
 
       <!-- flying phone (beat 3) -->
       <g class="kz-phone-fly" opacity="0">
@@ -338,9 +355,9 @@
   };
   // the phone is held low, at the chest, both hands; the head bows down to it
   const P = {
-    scroll:  { t: 'A', head: [74, -204, 24], f: [[46, -148], [62, -86], [118, -74]], b: [[30, -150], [44, -86], [102, -76]], legs: 'sit', phone: 38, eyes: 'tired', mouth: 'flat' },
-    startle: { t: 'B', head: [28, -232, -6], f: [[30, -160], [56, -96], [110, -110]], b: [[14, -162], [26, -96], [86, -108]], legs: 'sit', phone: 22, eyes: 'wide', mouth: 'o' },
-    windup:  { t: 'B', head: [24, -232, -10], f: [[24, -162], [-20, -182], [-48, -236]], b: [[14, -162], [54, -110], [98, -116]], legs: 'sit', phone: -150, eyes: 'wide', mouth: 'flat' },
+    scroll:  { t: 'A', head: [74, -204, 24], f: [[46, -148], [62, -86], [118, -74]], b: [[30, -150], [44, -86], [102, -76]], legs: 'sit', phone: 26, eyes: 'tired', mouth: 'flat' },
+    startle: { t: 'B', head: [28, -232, -6], f: [[30, -160], [56, -96], [110, -110]], b: [[14, -162], [26, -96], [86, -108]], legs: 'sit', phone: 36, eyes: 'wide', mouth: 'o' },
+    windup:  { t: 'B', head: [24, -232, -10], f: [[24, -162], [-20, -182], [-48, -236]], b: [[14, -162], [54, -110], [98, -116]], legs: 'sit', phone: 80, eyes: 'wide', mouth: 'flat' },
     release: { t: 'B', head: [32, -230, 2], f: [[34, -162], [88, -204], [148, -224]], b: [[14, -162], [20, -92], [40, -40]], legs: 'sit', phone: 40, eyes: 'wide', mouth: 'flat' },
     follow:  { t: 'A', head: [74, -206, 6], f: [[46, -148], [98, -100], [150, -70]], b: [[30, -150], [42, -82], [60, -28]], legs: 'sit', phone: 60, eyes: 'wide', mouth: 'flat' },
     look:    { t: 'B', head: [28, -232, -4], f: [[30, -160], [48, -88], [72, -22]], b: [[14, -162], [18, -90], [32, -24]], legs: 'sit', phone: 60, eyes: 'wide', mouth: 'flat' },
@@ -355,7 +372,7 @@
   const L = (a, b, t) => a + (b - a) * t;
   const LP = (a, b, t) => [L(a[0], b[0], t), L(a[1], b[1], t)];
   const span = (p, a, b) => Math.min(1, Math.max(0, (p - a) / (b - a)));
-  const KEYS_EL = ['torso', 'torso-clip', 'torso-back', 'torso-lit', 'pocket', 'leg-f', 'leg-f-hi', 'leg-b', 'shoe-f', 'shoe-b', 'arm-f-up', 'cuff', 'arm-f-lo', 'arm-f-lit', 'arm-b-up', 'arm-b-lo', 'hand-f', 'hand-b', 'thumb', 'phone-hand', 'head', 'face-lit', 'eyes-tired', 'eyes-wide', 'eyes-happy', 'mouth-flat', 'mouth-o', 'mouth-smile', 'feed', 'pupil', 'beam'];
+  const KEYS_EL = ['phone', 'torso', 'torso-clip', 'torso-back', 'torso-lit', 'pocket', 'leg-f', 'leg-f-hi', 'leg-b', 'shoe-f', 'shoe-b', 'arm-f-up', 'cuff', 'arm-f-lo', 'arm-f-lit', 'arm-b-up', 'arm-b-lo', 'hand-f', 'hand-b', 'thumb', 'phone-hand', 'head', 'face-lit', 'eyes-tired', 'eyes-wide', 'eyes-happy', 'mouth-flat', 'mouth-o', 'mouth-smile', 'feed', 'pupil', 'beam'];
   const elsOf = (root) => { const o = {}; KEYS_EL.forEach((k) => { o[k] = root.querySelector('.kz-' + k); }); return o; };
   const el = elsOf(host);
   // the same boy, outside on the hill
@@ -402,15 +419,18 @@
         const cf = LP(E, W, .08), cf2 = LP(E, W, .2);
         el.cuff.setAttribute('d', `M${cf} L${cf2}`);
         el['arm-f-lit'].setAttribute('d', `M${L(E[0], W[0], .25)} ${L(E[1], W[1], .25) - 8} L${W[0]} ${W[1] - 8}`);
-        const r0 = L(A.phone, B.phone, t);
-        const Wb = LP(A.b[2], B.b[2], t), hold = n0 === 'scroll' || n1 === 'scroll' || n0 === 'startle' || n1 === 'startle' ? 1 : 0;
-        const px = hold ? (W[0] + Wb[0]) / 2 + 4 : W[0] + 6, py = hold ? (W[1] + Wb[1]) / 2 - 20 : W[1] - 16;
-        const pr = hold ? r0 : r0 - 70;
-        el['phone-hand'].setAttribute('transform', `translate(${px} ${py}) rotate(${pr})`);
-        const th = (n0 === 'scroll' && n1 === 'scroll') ? Math.sin(time * 5) * 3 : 0;
-        const tp = rot([-15, 6 + th], pr);
-        el.thumb.setAttribute('transform', `translate(${px + tp[0]} ${py + tp[1]}) rotate(${pr + 70})`);
-        el._pr = pr;
+        const phi = L(A.phone, B.phone, t), grip = p < .402 && main !== undefined;
+        el['phone-hand'].setAttribute('transform', `translate(${W[0]} ${W[1]}) rotate(${fa})`);
+        el.phone.setAttribute('transform', `translate(16 -22) rotate(${phi})`);
+        const scrolling = n0 === 'scroll' && n1 === 'scroll';
+        // the thumb flicks up the screen and back, pivoting at its base
+        const sw = scrolling ? Math.max(0, Math.sin(time * 4.2)) ** 1.6 : 0;
+        el.thumb.setAttribute('transform', `rotate(${(-9 * sw).toFixed(2)} -15 22)`);
+        el['hand-f'].style.opacity = p < .402 ? 0 : 1;
+        // the screen edge, in body coordinates
+        const toBody = (v) => { const a1 = rot(v, phi), a2 = [a1[0] + 16, a1[1] - 22], a3 = rot(a2, fa); return [W[0] + a3[0], W[1] + a3[1]]; };
+        el._edge = [toBody([-15, -24]), toBody([-15, 24])];
+        const px = W[0], py = W[1];
         el._phone = [px, py];
       }
     }
@@ -432,11 +452,13 @@
     if (el.feed) el.feed.style.opacity = .55 + .45 * Math.sin(time * 9) * Math.sin(time * 3.1);
     if (main) {
       // the phone is a lamp: a soft cone from the screen up onto the face, and the room's dark opens around it
-      const so = rot([-16, -2], el._pr || 0), px = el._phone[0] + so[0], py = el._phone[1] + so[1] + 8, face = rot([30, 8], hd[2]); const fx = hd[0] + face[0], fy = hd[1] + face[1];
-      const dx = fx - px, dy = fy - py, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len, w0 = 10, w1 = 78, ext = 1.35;
-      const ex = px + dx * ext, ey = py + dy * ext;
-      el.beam.setAttribute('d', `M${px + nx * w0} ${py - 8 + ny * w0} L${ex + nx * w1} ${ey + ny * w1} Q${ex + dx / len * 30} ${ey + dy / len * 30} ${ex - nx * w1} ${ey - ny * w1} L${px - nx * w0} ${py - 8 - ny * w0}Z`);
-      beamG.setAttribute('cx', px); beamG.setAttribute('cy', py - 8); beamG.setAttribute('r', len * 1.5);
+      const [ea, eb] = el._edge, mx = (ea[0] + eb[0]) / 2, my = (ea[1] + eb[1]) / 2, face = rot([28, 6], hd[2]); const fx = hd[0] + face[0], fy = hd[1] + face[1];
+      const dx = fx - mx, dy = fy - my, len = Math.hypot(dx, dy) || 1, ux = dx / len, uy = dy / len;
+      let nx = eb[0] - ea[0], ny = eb[1] - ea[1]; const nl = Math.hypot(nx, ny) || 1; nx /= nl; ny /= nl;
+      const fxe = mx + dx * 1.35, fye = my + dy * 1.35, w1 = 70;
+      el.beam.setAttribute('d', `M${ea[0]} ${ea[1]} L${fxe - nx * w1} ${fye - ny * w1} Q${fxe + ux * 34} ${fye + uy * 34} ${fxe + nx * w1} ${fye + ny * w1} L${eb[0]} ${eb[1]}Z`);
+      beamG.setAttribute('cx', mx); beamG.setAttribute('cy', my); beamG.setAttribute('r', len * 1.5);
+      const px = mx, py = my;
       el.beam.style.opacity = light;
       const kx = kidX(p);
       hole.setAttribute('cx', kx + (px + fx) / 2); hole.setAttribute('cy', 540 + (py + fy) / 2);
@@ -446,8 +468,23 @@
   const kidX = (p) => 872 + 34 * EASE.io(span(p, .6, .66));
 
   const motesEl = [...qa('.kz-mote')].map((m) => ({ m, x: +m.getAttribute('cx'), y: +m.getAttribute('cy'), s: Math.random() * 6.28 }));
+  // three hours pass while he scrolls: 11:47 p.m. -> 2:47 a.m., the moon climbs across the window
+  const hh = q('.kz-hh'), mh = q('.kz-mh'), shd = q('.kz-sh'), moon = q('.kz-moon'), clockTxt = q('.kz-clock'), capMeta = q('.kz-cap-1 .kz-meta');
+  const pad = (n) => String(n).padStart(2, '0');
+  let lastMin = -1;
+  function clockAt(p, time) {
+    const k = span(p, .0, .24), m = (23 * 60 + 47 + 180 * k) % 1440;
+    hh.setAttribute('transform', `rotate(${((m / 60) % 12) * 30})`); mh.setAttribute('transform', `rotate(${(m % 60) * 6})`);
+    shd.setAttribute('transform', `rotate(${(k * 180 * 360 + time * 6) % 360})`);
+    moon.setAttribute('transform', `translate(${L(-190, 0, k)} ${L(150, 0, Math.sqrt(k))})`);
+    const mi = Math.floor(m);
+    if (mi !== lastMin) { lastMin = mi; const H = Math.floor(mi / 60), M = mi % 60;
+      clockTxt.textContent = `${pad(H)}:${pad(M)}`;
+      capMeta.textContent = `Unscroll · ${((H + 11) % 12) + 1}:${pad(M)} ${H >= 12 ? 'p.m.' : 'a.m.'}`; }
+  }
   gsap.ticker.add((time) => {
     const p = tl.progress();
+    clockAt(p, time);
     kidEl.setAttribute('transform', `translate(${kidX(p)} 540)`);
     drawKid(p, time, el, true); drawKid(.97, time, elOut, false);
     if (p > .5 && p < .82) motesEl.forEach((o) => { o.m.setAttribute('cx', (o.x + Math.sin(time * .3 + o.s) * 18).toFixed(1)); o.m.setAttribute('cy', (o.y + Math.cos(time * .23 + o.s) * 14 - (time * 6 % 40)).toFixed(1)); });
@@ -477,7 +514,7 @@
     .to(q('.kz-startle'), { opacity: 1, duration: .01 }, 0.255).to(q('.kz-startle'), { opacity: 0, duration: .02 }, 0.31)
     .to(qa('.kz-note'), { scale: .2, opacity: 0, duration: .04, stagger: .004, transformOrigin: '50% 50%' }, 0.27)
   // Beat 3 (0.34-0.52): wind up and throw; with the phone gone the room is lit only by the night
-    .set(el['phone-hand'], { opacity: 0 }, 0.402).set([el['thumb']], { opacity: 0 }, 0.402)
+    .set(el['phone-hand'], { opacity: 0 }, 0.402)
     .set(q('.kz-phone-fly'), { opacity: 1, x: 1024, y: 300, rotation: 40 }, 0.402)
     .to(q('.kz-phone-fly'), { x: 1290, rotation: 1120, duration: .08, ease: 'none' }, 0.402)
     .to(q('.kz-phone-fly'), { y: 170, duration: .03, ease: 'power1.out' }, 0.402)
@@ -492,6 +529,7 @@
     .to(q('.kz-dark'), { opacity: 0, duration: .09 }, 0.54)
     .to(q('.kz-morning'), { opacity: 1, duration: .09 }, 0.55)
     .to(q('.kz-clock'), { opacity: 0, duration: .02 }, 0.54)
+    .to(q('.kz-clockdim'), { opacity: 0, duration: .06 }, 0.54)
     .to(q('.kz-phone-fly'), { opacity: 0, duration: .03 }, 0.6)
   // Beat 5 (0.68-1): push through the window; the room blurs past, the landscape opens in depth
     .to(q('.kz-indoor'), { scale: 8, svgOrigin: WC, duration: .13, ease: 'power3.in' }, 0.68)

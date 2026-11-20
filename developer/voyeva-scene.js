@@ -77,6 +77,7 @@ function init() {
       uCloudG: { value: tex('/developer/media/earth/clouds-global.jpg', false) }, uCloudC: { value: tex('/developer/media/earth/clouds-corridor.jpg', false) },
       uStars: { value: tex('/developer/media/earth/night-sky.png') }, uCorr: { value: CORR }, uCCorr: { value: CCORR }, uPatch: { value: PATCH },
       uGroundP: { value: tex('/developer/media/earth/ground-patch.jpg?v=1') },
+      uSatG: { value: tex('/developer/media/earth/viirs-global.jpg?v=2') }, uSatC: { value: tex('/developer/media/earth/viirs-corridor.jpg?v=1') }, uSat: { value: 0 },
       uCloudAmt: { value: 1 }, uDetail: { value: 1 }, uSteps: { value: 64 }, uWind: { value: new THREE.Vector3() },
       uBoost: { value: unit(52, 28) }, uBoostAmt: { value: 1 }, uExposure: { value: 1 }, uDebug: { value: 0 }, uMap: { value: 0 }, uFine: { value: 1 },
       uMerc: { value: 0 }, uCloudVis: { value: 1 }, uFar: { value: 0 }, uPlaneLL: { value: new THREE.Vector2() }, uScr: { value: new THREE.Vector4(0, 0, 1, 1) }, uRtScale: { value: 1 }, uVpH: { value: 1 },
@@ -331,6 +332,7 @@ function init() {
     u.uDetail.value = 1 - span(Math.log(alt), Math.log(60), Math.log(900));
     u.uFine.value = 1 - span(Math.log(alt), Math.log(14), Math.log(60));
     u.uFar.value = span(Math.log(alt), Math.log(300), Math.log(4000));
+    u.uSat.value = ease(span(Math.log(alt), Math.log(220), Math.log(2200)));
     u.uCloudAmt.value = window.__noClouds ? 0 : 1;
     u.uCloudVis.value = 1 - easeIO(span(p, .6, .67));            // the recap's map has no clouds
     u.uBoostAmt.value = 1 - span(p, .16, .3);
@@ -484,8 +486,8 @@ const WORLD_FRAG = /* glsl */`
 precision highp float; precision highp sampler3D;
 in vec2 vUv; out highp vec4 fragOut;
 uniform mat4 uInvProj; uniform mat3 uCamRot; uniform vec3 uUp; uniform float uAlt; uniform vec3 uSun; uniform float uTime;
-uniform highp sampler3D uNoise; uniform sampler2D uGroundG, uGroundC, uGroundP, uCloudG, uCloudC, uStars; uniform vec4 uCorr, uCCorr, uPatch;
-uniform float uFar, uCloudVis, uCloudAmt, uDetail, uSteps, uBoostAmt, uExposure, uDebug, uMap, uFine, uMerc, uRtScale, uVpH; uniform vec2 uPlaneLL; uniform vec4 uScr;
+uniform highp sampler3D uNoise; uniform sampler2D uSatG, uSatC, uGroundG, uGroundC, uGroundP, uCloudG, uCloudC, uStars; uniform vec4 uCorr, uCCorr, uPatch;
+uniform float uSat, uFar, uCloudVis, uCloudAmt, uDetail, uSteps, uBoostAmt, uExposure, uDebug, uMap, uFine, uMerc, uRtScale, uVpH; uniform vec2 uPlaneLL; uniform vec4 uScr;
 const float MERC_W = 20.15; const vec2 ANCHOR = vec2(.533, .521); uniform vec3 uWind, uBoost;
 const float R = 6371.; const float CB = 1.4; const float CT = 7.8; const float AT = 70.;
 const float PI = 3.14159265;
@@ -508,6 +510,11 @@ vec3 groundCol(vec3 n){ vec2 ll = latlon(n); vec3 g = texture(uGroundG, vec2((ll
   float inP = smoothstep(0., .03, pu.x) * (1. - smoothstep(.97, 1., pu.x)) * smoothstep(0., .03, pu.y) * (1. - smoothstep(.97, 1., pu.y));
   if (inP > 0.) g = mix(g, texture(uGroundP, pu).rgb, inP);
   return g; }
+// the real Earth of 13 March 2026 (NOAA-20, NOAA-21, Suomi NPP VIIRS true colour, median of the three), clouds included
+vec3 satCol(vec3 n){ vec2 ll = latlon(n); vec3 g = texture(uSatG, vec2((ll.y + 180.) / 360., (ll.x + 90.) / 180.)).rgb;
+  vec2 cu = vec2((ll.y - uCorr.x) / (uCorr.y - uCorr.x), (ll.x - uCorr.z) / (uCorr.w - uCorr.z));
+  float inC = smoothstep(0., .02, cu.x) * (1. - smoothstep(.98, 1., cu.x)) * smoothstep(0., .04, cu.y) * (1. - smoothstep(.96, 1., cu.y));
+  if (inC > 0.) g = mix(g, texture(uSatC, cu).rgb, inC); return g; }
 float coverRaw(vec3 n){ vec2 ll = latlon(n); float c = texture(uCloudG, vec2((ll.y + 180.) / 360., (ll.x + 90.) / 180.)).r;
   vec2 cu = vec2((ll.y - uCCorr.x) / (uCCorr.y - uCCorr.x), (ll.x - uCCorr.z) / (uCCorr.w - uCCorr.z));
   float inC = smoothstep(0., .02, cu.x) * (1. - smoothstep(.98, 1., cu.x)) * smoothstep(0., .04, cu.y) * (1. - smoothstep(.96, 1., cu.y));
@@ -579,9 +586,10 @@ void main(){
   vec3 Ls;
   if (tE > 0.) {
     vec3 n = normalize(o + d * tE); vec3 g = groundCol(n);
+    if (uSat > 0.) g = mix(g, pow(satCol(n), vec3(1.12)) * 1.04, uSat);
     float ndl = dot(n, uSun); float day = smoothstep(-.1, .2, ndl);
     vec3 gs = pow(g, vec3(1. / 2.2)); float water = smoothstep(.03, .1, gs.b - gs.r) * (1. - smoothstep(.15, .35, dot(gs, vec3(.33))));
-    float sh = 1. - .7 * cover(normalize(n + uSun * .0012)) * uCloudVis;
+    float sh = 1. - .7 * cover(normalize(n + uSun * .0012)) * uCloudVis * (1. - uSat);
     vec3 col = g * 1.35;
     Ls = col * (SUN * .1 * max(ndl, 0.) * sh + vec3(.12, .16, .24) * day * .5);
     vec3 hv = normalize(uSun - d); Ls += water * SUN * .05 * pow(max(dot(n, hv), 0.), 220.) * sh;
@@ -596,7 +604,7 @@ void main(){
   vec2 cTop = sph(uAlt, mu, CT), cBot = sph(uAlt, mu, CB);
   float t0, t1;
   if (uAlt > CT) { t0 = cTop.x; t1 = cBot.x > 0. ? cBot.x : cTop.y; } else { t0 = 0.; t1 = cBot.x > 0. ? cBot.x : cTop.y; }
-  if (cTop.x > -1. && t1 > 0. && uCloudAmt > .001 && uCloudVis > .001) {
+  if (cTop.x > -1. && t1 > 0. && uCloudAmt > .001 && uCloudVis > .001 && uSat < .999) {
     t0 = max(t0, 0.); t1 = min(t1, t0 + 260.);
     int N = int(uSteps); float far = smoothstep(80., 1500., uAlt);
     N = int(mix(mix(float(N), 36., smoothstep(14., 70., uAlt)), 12., far));
@@ -626,13 +634,14 @@ void main(){
       }
     }
     tC = wsum > 0. ? tC / wsum : t1;
-    Lc *= uCloudVis; Tc = mix(1., Tc, uCloudVis);
+    float cv = uCloudVis * (1. - uSat); Lc *= cv; Tc = mix(1., Tc, cv);
   }
   // --- atmosphere in front of and behind the clouds
   vec3 Ta, Tb; vec3 L1, L2;
   if (Tc < .999) { float tm = clamp(tC, tA0, tA1); L1 = atmo(o, d, mu, tA0, tm, Ta); L2 = atmo(o, d, mu, tm, tA1, Tb); }
   else { L1 = atmo(o, d, mu, tA0, tA1, Ta); L2 = vec3(0.); Tb = vec3(1.); }
-  vec3 col = L1 + Ta * (Lc + Tc * (L2 + Tb * Ls));
+  float haze = 1. - .42 * uSat;
+  vec3 col = L1 * haze + mix(vec3(1.), Ta, haze) * (Lc + Tc * (L2 * haze + mix(vec3(1.), Tb, haze) * Ls));
   if (uMap > 0. && tE > 0.) {
     // the recap's map: flat satellite imagery, graded to Apple's look, no atmosphere
     vec3 nS = normalize(o + d * tE);

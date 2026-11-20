@@ -21,14 +21,13 @@
       <g class="ng-lanes" stroke="${LIME}" stroke-opacity=".18" stroke-width="2">${Array.from({ length: 16 }, (_, i) => `<path d="M${i * 70} ${GROUND + 6} l-30 80"/>`).join('')}</g>
       <rect x="0" y="${GROUND}" width="${W}" height="${H - GROUND}" fill="url(#ngFloor)"/>
       <path d="M0 ${GROUND} H${W}" stroke="${LIME}" stroke-opacity=".5" stroke-width="2"/>
-      <g class="ng-rack" stroke="${LIME}" stroke-opacity=".28" stroke-width="10" stroke-linecap="round" fill="none">
-        <path d="M318 ${GROUND} V330 M318 380 h44"/>
-      </g>
+      <g class="ng-rack"></g>
       <g class="ng-body" filter="url(#ngGlow)">
-        <g class="ng-bar"><circle class="ng-plate" r="46" fill="${LIME}" fill-opacity=".07" stroke="${LIME}" stroke-width="5"/><circle class="ng-plate2" r="31" fill="none" stroke="${LIME}" stroke-width="2.5" stroke-opacity=".45"/><circle class="ng-hub" r="10" fill="${LIME}"/></g>
         <path class="ng-p ng-leg-b" fill="#6f8a3c"/><path class="ng-p ng-arm-b" fill="#6f8a3c"/>
         <path class="ng-p ng-torso" fill="${LIME}"/><path class="ng-p ng-head" fill="${LIME}"/>
         <path class="ng-p ng-leg-f" fill="${LIME}"/><path class="ng-p ng-arm-f" fill="${LIME}"/>
+        <g class="ng-rack-front"></g>
+        <g class="ng-bar"><circle class="ng-plate" r="46" fill="${LIME}" fill-opacity=".1" stroke="${LIME}" stroke-width="5"/><circle class="ng-plate2" r="31" fill="none" stroke="${LIME}" stroke-width="2.5" stroke-opacity=".45"/><circle class="ng-hub" r="10" fill="${LIME}"/></g>
         <path class="ng-p ng-detail" fill="none" stroke="#0c120e" stroke-width="2.4" stroke-linecap="round" stroke-opacity=".55"/>
       </g>
     </svg>
@@ -44,7 +43,7 @@
 
   const q = (s) => host.querySelector(s);
   const E = { legF: q('.ng-leg-f'), legB: q('.ng-leg-b'), armF: q('.ng-arm-f'), armB: q('.ng-arm-b'), torso: q('.ng-torso'), head: q('.ng-head'), detail: q('.ng-detail'),
-    bar: q('.ng-bar'), lanes: q('.ng-lanes'), rack: q('.ng-rack') };
+    bar: q('.ng-bar'), lanes: q('.ng-lanes'), rack: q('.ng-rack'), rackF: q('.ng-rack-front') };
   const rep = q('.ng-rep'), vol = q('.ng-vol'), ex = q('.ng-ex'), cells = [...host.querySelectorAll('.ng-heat i')];
   // A deterministic training log: 4-5 sessions a week, heavier towards the end
   const levels = cells.map((_, i) => { const d = i % 7, w = Math.floor(i / 7); const s = Math.sin(i * 12.9898) * 43758.5453; const r = s - Math.floor(s);
@@ -74,8 +73,8 @@
   const cyc = (tab) => (ph) => { ph = ((ph % 1) + 1) % 1; let i = 0; while (i < tab.length - 2 && ph > tab[i + 1][0]) i++;
     const [x0, y0] = tab[i], [x1, y1] = tab[i + 1], t = (ph - x0) / (x1 - x0); const p0 = tab[(i - 1 + tab.length - 1) % (tab.length - 1)][1], p3 = tab[Math.min(tab.length - 1, i + 2)][1];
     const t2 = t * t, t3 = t2 * t; return .5 * ((2 * y0) + (-p0 + y1) * t + (2 * p0 - 5 * y0 + 4 * y1 - p3) * t2 + (-p0 + 3 * y0 - 3 * y1 + p3) * t3); };
-  const HIP = cyc([[0, 28], [.1, 22], [.25, 6], [.4, -14], [.5, -9], [.62, 12], [.78, 36], [.9, 33], [1, 28]]);
-  const KNEE = cyc([[0, 14], [.12, 38], [.28, 28], [.4, 16], [.52, 60], [.66, 110], [.8, 82], [.92, 26], [1, 14]]);
+  const HIP = cyc([[0, 26], [.1, 20], [.25, 4], [.4, -16], [.5, -10], [.62, 14], [.78, 42], [.9, 36], [1, 26]]);
+  const KNEE = cyc([[0, 14], [.12, 40], [.28, 28], [.4, 16], [.52, 66], [.66, 122], [.8, 88], [.92, 24], [1, 14]]);
   const PLANT = cyc([[0, -10], [.08, 0], [.3, 10], [.42, 42], [.55, 30], [.75, 2], [.9, -12], [1, -10]]);
   function legRun(H, ph) {
     const th = HIP(ph), kn = KNEE(ph), ts = th - kn;
@@ -87,67 +86,92 @@
   // ground speed: how far the stance foot travels back per cycle
   const STRIDE = (() => { const a = legRun([0, 0], .02), b = legRun([0, 0], .38); return (a.A[0] - b.A[0]) / .36; })();
 
+  // standing body for a front-foot position and a knee dip (0..1 of a full squat)
+  function stand(ax, d, mid) {
+    const ank = [ax, GROUND - 12], knee = add(ank, [Math.sin((3 + 33 * d) * D), -Math.cos((3 + 33 * d) * D)], L.shin);
+    const tA = (6 + 104 * d) * D, hip = [knee[0] - L.thigh * Math.sin(tA), knee[1] - L.thigh * Math.cos(tA)];
+    const lean = Math.asin(Math.max(-.2, Math.min(.78, (mid + 4 - hip[0]) / L.torso)));
+    return { hip, lean, sh: [hip[0] + Math.sin(lean) * L.torso, hip[1] - Math.cos(lean) * L.torso] };
+  }
+  const barOf = (sh, lean) => { const up = [Math.sin(lean), -Math.cos(lean)], back = [-Math.cos(lean), -Math.sin(lean)]; return add(add(sh, back, 15), up, -3); };
+  const STEP = 58, MID = 458;
+  const hookBar = (() => { const s0 = stand(MID - 6 + STEP, .1, MID + STEP); return barOf(s0.sh, s0.lean); })();
+  // rack: uprights just in front of the bar's racked position, J-hook cups, a safety arm, base plates
+  (() => { const x = hookBar[0] + 24, y = hookBar[1];
+    // far upright behind him, near upright (with the J-hook and safety arm) in front: the rack stands either side of the lifter
+    E.rack.innerHTML = `<path d="M${x + 16} ${GROUND} V${y - 150} M${x} ${GROUND} h56" stroke="${LIME}" stroke-opacity=".2" stroke-width="12" stroke-linecap="round" fill="none"/>
+      <path d="M${x + 16} ${y + 10} H${x - 12} V${y - 6}" stroke="${LIME}" stroke-opacity=".22" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`;
+    E.rackF.innerHTML = `<path d="M${x} ${GROUND} V${y - 160} M${x - 30} ${GROUND} h64" stroke="${LIME}" stroke-opacity=".38" stroke-width="13" stroke-linecap="round" fill="none"/>
+      <path d="M${x} ${y + 12} H${x - 30} V${y - 6}" stroke="${LIME}" stroke-opacity=".75" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M${x} ${y + 120} H${x - 70}" stroke="${LIME}" stroke-opacity=".35" stroke-width="8" stroke-linecap="round"/>
+      ${Array.from({ length: 9 }, (_, i) => `<circle cx="${x}" cy="${y - 140 + i * 30}" r="2.4" fill="#0c120e" opacity=".6"/>`).join('')}`; })();
+
   function frame(p, time) {
-    const cx = 450, mid = cx + 8, G = GROUND;
-    const runW = sm(span(p, .58, .68));
-    // ---- squat: foot planted, shin leans up to ~34°, thigh to just below parallel, trunk keeps the bar over mid-foot
-    const repPhase = span(p, .08, .5) * 3, k = Math.floor(Math.min(repPhase, 2.999)), f = repPhase - k;
-    const d = p < .08 || p > .5 ? 0 : (f < .45 ? sm(f / .45) : sm(1 - (f - .45) / .55));       // slower down, faster up
-    const ankS = [mid - 6, G - 12], kneeS = add(ankS, [Math.sin((3 + 33 * d) * D), -Math.cos((3 + 33 * d) * D)], L.shin);
-    const tA = (6 + 104 * d) * D, hipS = [kneeS[0] - L.thigh * Math.sin(tA), kneeS[1] - L.thigh * Math.cos(tA)];
-    const lean = Math.asin(Math.max(-.2, Math.min(.78, (mid + 4 - hipS[0]) / L.torso)));
-    const shS = [hipS[0] + Math.sin(lean) * L.torso, hipS[1] - Math.cos(lean) * L.torso];
-    const sq = { H: hipS, K: kneeS, A: ankS, fd: [1, 0], sh: shS, lean };
-    // ---- run
-    const cycles = Math.max(0, (p - .56)) * 26, ph = cycles % 1;
+    const cx = 450, G = GROUND;
+    // ---- 3 squats, walk the bar forward into the rack, let go, step back, run
+    const repPhase = span(p, .06, .46) * 3, k = Math.floor(Math.min(repPhase, 2.999)), f = repPhase - k;
+    const dRep = p < .06 || p > .46 ? 0 : (f < .45 ? sm(f / .45) : sm(1 - (f - .45) / .55));
+    const dip = Math.sin(Math.PI * span(p, .53, .565)) * .12;                         // a small knee dip sets the bar in the hooks
+    const sF = STEP * (sm(span(p, .47, .5)) - sm(span(p, .61, .635))), sB = STEP * (sm(span(p, .5, .53)) - sm(span(p, .59, .61)));
+    const lift = (a, b) => 18 * Math.sin(Math.PI * span(p, a, b));
+    const liftF = lift(.47, .5) + lift(.61, .635), liftB = lift(.5, .53) + lift(.59, .61);
+    const mid = MID + (sF + sB) / 2;
+    const S = stand(mid - 6, dRep + dip, mid);
+    const footF = [MID - 6 + sF, G - 12 - liftF], footB = [MID - 18 + sB, G - 12 - liftB];
+    const hip = [S.hip[0], S.hip[1] + 2 * (liftF + liftB) / 18];
+    const kneeOf = (H, A) => ik(H, A, L.thigh, L.shin, -1);
+    const sq = { H: hip, KF: kneeOf(hip, footF), AF: footF, KB: kneeOf([hip[0] - 4, hip[1]], footB), AB: footB, sh: [S.sh[0], S.sh[1] + (hip[1] - S.hip[1])], lean: S.lean };
+    // ---- run: fewer, bigger strides per scroll
+    const runW = sm(span(p, .63, .7));
+    const cycles = Math.max(0, (p - .63)) * 9, ph = cycles % 1;
     const Hr0 = [cx - 6, 0];
     let R = legRun(Hr0, ph), Lg = legRun(Hr0, ph + .5);
-    const flight = 7 * (Math.max(0, Math.sin((ph - .4) / .1 * Math.PI)) * (ph > .4 && ph < .5) + Math.max(0, Math.sin((ph - .9) / .1 * Math.PI)) * (ph > .9));
+    const flight = 9 * (Math.max(0, Math.sin((ph - .4) / .1 * Math.PI)) * (ph > .4 && ph < .5) + Math.max(0, Math.sin((ph - .9) / .1 * Math.PI)) * (ph > .9));
     const y0 = G - Math.max(lowY(R), lowY(Lg)) - flight;
     const sh_ = (o) => ({ H: [o.H[0], o.H[1] + y0], K: [o.K[0], o.K[1] + y0], A: [o.A[0], o.A[1] + y0], fd: o.fd });
     R = sh_(R); Lg = sh_(Lg);
-    const runLean = (8 + 1.5 * Math.sin(ph * 4 * Math.PI)) * D, Hr = R.H;
+    const runLean = (7 + 1.5 * Math.sin(ph * 4 * Math.PI)) * D, Hr = R.H;
     const shR = [Hr[0] + Math.sin(runLean) * L.torso, Hr[1] - Math.cos(runLean) * L.torso];
-    // ---- blend squat → run
-    const legF = { H: mixP(sq.H, R.H, runW), K: mixP(sq.K, R.K, runW), A: mixP(sq.A, R.A, runW), fd: mixP(sq.fd, R.fd, runW) };
-    const legB = { H: mixP([sq.H[0] - 4, sq.H[1]], Lg.H, runW), K: mixP([sq.K[0] - 10, sq.K[1] + 2], Lg.K, runW), A: mixP([sq.A[0] - 12, sq.A[1]], Lg.A, runW), fd: mixP(sq.fd, Lg.fd, runW) };
+    // ---- blend
+    const legF = { H: mixP(sq.H, R.H, runW), K: mixP(sq.KF, R.K, runW), A: mixP(sq.AF, R.A, runW), fd: mixP([1, 0], R.fd, runW) };
+    const legB = { H: mixP([sq.H[0] - 4, sq.H[1]], Lg.H, runW), K: mixP(sq.KB, Lg.K, runW), A: mixP(sq.AB, Lg.A, runW), fd: mixP([1, 0], Lg.fd, runW) };
     const H = legF.H, sh = mixP(sq.sh, shR, runW), lean2 = lerp(sq.lean, runLean, runW);
     const up = [Math.sin(lean2), -Math.cos(lean2)], back = [-Math.cos(lean2), -Math.sin(lean2)];
     const legPath = (lg, w) => cap(lg.H, lg.K, 17 * w, 12 * w) + cap(lg.K, lg.A, 12 * w, 7.5 * w) + footD(lg.A, lg.fd);
     E.legF.setAttribute('d', legPath(legF, 1)); E.legB.setAttribute('d', legPath(legB, .94));
-    // torso: hips to chest, with a chest bulge
     const chest = add(sh, up, -30);
     E.torso.setAttribute('d', cap(add(H, back, 2), chest, 19, 24) + cap(chest, add(sh, up, -4), 24, 18));
     const neck = add(sh, up, 10), headTilt = lerp(lean2 * .45, runLean * .2, runW);
     const hc = [neck[0] + Math.sin(headTilt) * 26 + 4, neck[1] - Math.cos(headTilt) * 26];
-    E.head.setAttribute('d', cap(add(sh, up, -2), neck, 8, 8) + `M${f1(hc[0] - 19)} ${f1(hc[1])} a19 22 0 1 0 38 0 a19 22 0 1 0 -38 0Z M${f1(hc[0] + 16)} ${f1(hc[1] + 2)} l7 4 l-7 3z`);
-    // ---- arms: on the bar (squat) / swinging with ~90° elbows (run)
-    const bar = add(add(sh, back, 15), up, -3);
-    const handF_s = add(bar, [8, 6]), handB_s = add(bar, [-2, 6]);
-    const elbowS = (hand) => { const a = ik(sh, hand, L.uarm, L.farm, 1), b = ik(sh, hand, L.uarm, L.farm, -1); return a[1] > b[1] ? a : b; };
-    const eF_s = elbowS(handF_s), eB_s = elbowS(handB_s);
-    const armRun = (phase) => { const a = 1.1 * (HIP(phase) - 10), e = 82 + 18 * Math.sin((phase - .1) * 2 * Math.PI);
-      const E1 = add(sh, dirV(-a), L.uarm), Hn = add(E1, dirV(-a + e), L.farm); return [E1, Hn]; };
+    E.head.setAttribute('d', cap(add(sh, up, -2), neck, 8, 8) + `M${f1(hc[0] - 19)} ${f1(hc[1])} a19 22 0 1 0 38 0 a19 22 0 1 0 -38 0Z`);
+    // ---- bar: on his back until it sits in the hooks; hands stay on it until then
+    const barBack = barOf(sq.sh, sq.lean), racked = p >= .565;
+    const bar = racked ? hookBar : barBack;
+    const release = sm(span(p, .565, .6));
+    const onBarF = add(bar, [8, 6]), onBarB = add(bar, [-2, 6]);
+    const hangF = add(sq.sh, [10, 116]), hangB = add(sq.sh, [-4, 114]);
+    const handF_s = mixP(onBarF, hangF, release), handB_s = mixP(onBarB, hangB, release);
+    const elbowS = (hand) => { const a = ik(sq.sh, hand, L.uarm, L.farm, 1), b = ik(sq.sh, hand, L.uarm, L.farm, -1); return a[1] > b[1] ? a : b; };
+    const elbowHang = (hand) => ik(sq.sh, hand, L.uarm, L.farm, 1);
+    const eF_s = mixP(elbowS(onBarF), elbowHang(hangF), release), eB_s = mixP(elbowS(onBarB), elbowHang(hangB), release);
+    const armRun = (phase) => { const a = 1.15 * (HIP(phase) - 10), e = 84 + 16 * Math.sin((phase - .1) * 2 * Math.PI);
+      const E1 = add(shR, dirV(-a), L.uarm), Hn = add(E1, dirV(-a + e), L.farm); return [E1, Hn]; };
     const [eF_r, hF_r] = armRun(ph + .5), [eB_r, hB_r] = armRun(ph);
     const eF = mixP(eF_s, eF_r, runW), hF = mixP(handF_s, hF_r, runW), eB = mixP(eB_s, eB_r, runW), hB = mixP(handB_s, hB_r, runW);
     E.armF.setAttribute('d', cap(sh, eF, 11, 8.5) + cap(eF, hF, 8.5, 6.5) + `M${f1(hF[0] - 8)} ${f1(hF[1])} a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0Z`);
     E.armB.setAttribute('d', cap(sh, eB, 10, 8) + cap(eB, hB, 8, 6) + `M${f1(hB[0] - 7)} ${f1(hB[1])} a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0Z`);
-    // a few dark lines so the silhouette reads in depth: knee, hip, shorts and shirt hem
     const hem = add(H, up, 22);
     E.detail.setAttribute('d', `M${f1(hem[0] - 18 * up[1] * -1)} ${f1(hem[1])} l${f1(back[0] * -30)} ${f1(back[1] * -30)} M${f1(legF.K[0] - 6)} ${f1(legF.K[1] - 10)} q6 8 0 16`);
-    // ---- treadmill floor moves at the stance foot's speed
+    // ---- treadmill floor; the rack and the bar stay behind as the run begins
     E.lanes.setAttribute('transform', `translate(${f1(-((cycles * STRIDE) % 70) * runW)} 0)`);
-    // ---- the barbell, seen end on; racked before the run
-    const rackT = sm(span(p, .52, .59));
-    const barP = [lerp(bar[0], 352, rackT), lerp(bar[1], 372, rackT)];
-    E.bar.setAttribute('transform', `translate(${f1(barP[0])} ${f1(barP[1])})`);
-    E.bar.style.opacity = 1 - span(p, .6, .66);
-    E.rack.style.opacity = .9 * (1 - span(p, .6, .66));
-    const reps = p < .08 ? 0 : Math.min(3, Math.floor(span(p, .08, .5) * 3 + (f > .5 ? .5 : 0)));
+    E.bar.setAttribute('transform', `translate(${f1(bar[0])} ${f1(bar[1])})`);
+    const gone = span(p, .68, .74);
+    E.bar.style.opacity = 1 - gone; E.rack.style.opacity = 1 - gone; E.rackF.style.opacity = 1 - gone;
+    const reps = p < .06 ? 0 : Math.min(3, Math.floor(span(p, .06, .46) * 3 + (f > .5 ? .5 : 0)));
     rep.textContent = reps;
     vol.textContent = (2400 + reps * 100).toLocaleString('en-US');
-    ex.textContent = p < .56 ? 'Back squat · set 3 of 3' : 'Then the run: 29.8 km';
-    const fill = Math.floor(span(p, .05, .55) * cells.length);
+    ex.textContent = p < .6 ? 'Back squat · set 3 of 3' : 'Then the run: 29.8 km';
+    const fill = Math.floor(span(p, .05, .5) * cells.length);
     cells.forEach((c, i) => { c.dataset.l = i < fill ? levels[i] : 0; });
     host.style.setProperty('--ng-p', p);
   }

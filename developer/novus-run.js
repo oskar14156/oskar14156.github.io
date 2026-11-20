@@ -18,16 +18,21 @@
   const easeIO = (t) => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
   const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
   const hms = (s) => `${Math.floor(s / 3600)}:${String(Math.floor(s / 60) % 60).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
-  const paceColor = (p) => {
-    const t = clamp((p - 330) / (520 - 330)), stops = [[200, 241, 105], [255, 210, 63], [255, 112, 82]];
-    const i = t < .5 ? 0 : 1, u = t < .5 ? t * 2 : (t - .5) * 2;
-    const c = stops[i].map((v, k) => Math.round(v + (stops[i + 1][k] - v) * u));
-    return `rgb(${c[0]},${c[1]},${c[2]})`;
-  };
+  // colour by heart rate: a vivid ramp, its breakpoints set at the run's own bpm quantiles so every hue is used
+  const RAMP = ['#4c7dff', '#22c7e8', '#3fe08a', '#c8f169', '#ffd23f', '#ff7a3d', '#ff2e63'], QS = [0, .08, .2, .38, .58, .8, 1];
+  let BP = [120, 150, 160, 170, 178, 186, 195];
+  const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+  const hrColor = (b) => { let i = 0; while (i < BP.length - 2 && b > BP[i + 1]) i++;
+    const u = clamp((b - BP[i]) / (BP[i + 1] - BP[i])), A = hex(RAMP[i]), B = hex(RAMP[i + 1]);
+    return `rgb(${A.map((v, k) => Math.round(v + (B[k] - v) * u)).join(',')})`; };
   let data = null, map = null, ready = false, progress = 0, marker = null, overview = null;
   const hr = sec.querySelector('.nr-hr svg'), hrLine = hr && hr.querySelector('.nr-hr-line'), hrArea = hr && hr.querySelector('.nr-hr-area'), hrDot = hr && hr.querySelector('.nr-hr-dot');
   let hrPts = [];
-  const buildHR = () => { const P = data.pts, n = P.length - 1; hrPts = P.map((q, k) => `${(k / n * 600).toFixed(1)} ${(110 - clamp(((q[4] || data.avgHR) - 120) / 80) * 100).toFixed(1)}`); };
+  const buildHR = () => { const P = data.pts, n = P.length - 1;
+    const hs = P.map((q) => q[4]).filter(Boolean).sort((x, y) => x - y); BP = QS.map((q) => hs[Math.min(hs.length - 1, Math.round(q * (hs.length - 1)))]);
+    for (let i = 1; i < BP.length; i++) if (BP[i] <= BP[i - 1]) BP[i] = BP[i - 1] + 1;
+    const g = sec.querySelector('#nrHrLine'); if (g) g.innerHTML = BP.map((b, i) => `<stop offset="${clamp((b - 120) / 80).toFixed(3)}" stop-color="${RAMP[i]}"/>`).join('');
+    const lg = sec.querySelector('.nr-legend'); if (lg) { lg.querySelector('i').style.background = `linear-gradient(90deg, ${RAMP.join(', ')})`; lg.querySelector('.nr-lo').textContent = BP[0]; lg.querySelector('.nr-hi').textContent = BP[BP.length - 1] + ' bpm'; } hrPts = P.map((q, k) => `${(k / n * 600).toFixed(1)} ${(110 - clamp(((q[4] || data.avgHR) - 120) / 80) * 100).toFixed(1)}`); };
   const FOLLOW_KM = 3;                                 // the camera rides along for the first kilometres
 
   // position along the run by distance, smoothly interpolated
@@ -65,8 +70,8 @@
     marker.setLngLat([r.lon, r.lat]);
     // the route so far, coloured by pace
     const P = data.pts, feats = [];
-    for (let k = 0; k < r.i; k++) feats.push({ type: 'Feature', properties: { c: paceColor(P[k][5] || 400) }, geometry: { type: 'LineString', coordinates: [[P[k][0], P[k][1]], [P[k + 1][0], P[k + 1][1]]] } });
-    feats.push({ type: 'Feature', properties: { c: paceColor(P[r.i][5] || 400) }, geometry: { type: 'LineString', coordinates: [[P[r.i][0], P[r.i][1]], [r.lon, r.lat]] } });
+    for (let k = 0; k < r.i; k++) feats.push({ type: 'Feature', properties: { c: hrColor(P[k][4] || data.avgHR) }, geometry: { type: 'LineString', coordinates: [[P[k][0], P[k][1]], [P[k + 1][0], P[k + 1][1]]] } });
+    feats.push({ type: 'Feature', properties: { c: hrColor(P[r.i][4] || data.avgHR) }, geometry: { type: 'LineString', coordinates: [[P[r.i][0], P[r.i][1]], [r.lon, r.lat]] } });
     map.getSource('done').setData({ type: 'FeatureCollection', features: feats });
     out.km.textContent = (m / 1000).toFixed(2); out.time.textContent = hms(r.secs);
     out.pace.textContent = r.pace ? mmss(r.pace) : '–'; out.hr.textContent = r.hr || '–';
