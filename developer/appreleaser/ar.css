@@ -53,3 +53,28 @@
 .arp-sub { margin-top: 18px !important; max-width: 24ch; font-size: clamp(24px, 2.6vw, 38px); line-height: 1.15; letter-spacing: -.035em; color: var(--text-soft); }
 .arp-hero .status-tag { display: block; }
 .arp-hero .pp-lede { max-width: 58ch; font-size: 18px; line-height: 1.55; color: var(--text-soft); }
+
+/* Click-through: cursor drives the real app, ending on a live store listing */
+.af { position: relative; height: 520vh; margin-top: clamp(60px, 8vw, 110px); }
+.af-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: grid; place-items: center; }
+.af-copy { position: absolute; left: clamp(16px, 5vw, 72px); top: 84px; display: flex; gap: 0 28px; align-items: baseline; flex-wrap: wrap; }
+.af-meta { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.af-title { margin-top: 10px !important; font-size: clamp(30px, 3.4vw, 52px); line-height: 1; letter-spacing: -.05em; font-weight: 500; }
+.af-step { margin-top: 12px !important; font-size: 18px; color: var(--text-soft); min-height: 1.4em; }
+.af-browser { width: min(1040px, 84vw, calc((100svh - 270px) * 1.6)); margin-top: 170px; transform: translateX(calc(var(--store, 0) * -16%)) scale(calc(1 - var(--store, 0) * .14)); transform-origin: 30% 50%; }
+.af-screens { position: relative; aspect-ratio: 1440 / 900; overflow: hidden; background: var(--surface); }
+.af-screen { position: absolute; inset: 0; opacity: 0; transition: opacity .35s ease; }
+.af-screen.is-on { opacity: 1; }
+.af-screen img { width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+.af-cursor { position: absolute; z-index: 4; width: 22px; height: 22px; margin: -2px 0 0 -2px; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .35)); transition: transform .12s; pointer-events: none; }
+.af-ripple { position: absolute; z-index: 3; width: 44px; height: 44px; border-radius: 50%; background: rgba(120, 140, 255, .35); border: 2px solid rgba(120, 140, 255, .8); opacity: 0; pointer-events: none; }
+.af-toast { position: absolute; z-index: 5; right: 3%; bottom: 5%; display: grid; gap: 2px; padding: 12px 16px; border-radius: 12px; background: #0f1a12; color: #fff; font-size: 14px; box-shadow: 0 20px 40px -18px rgba(0, 0, 0, .5); opacity: 0; transform: translateY(14px); transition: all .35s ease; }
+.af-toast b { color: #8ce99a; } .af-toast.is-on { opacity: 1; transform: none; }
+.af-store { position: absolute; right: clamp(16px, 5vw, 72px); top: 50%; width: min(340px, 30vw); padding: 20px; border-radius: 28px; background: var(--bg); box-shadow: 0 40px 80px -30px rgba(0, 0, 0, .45), 0 0 0 1px var(--line); opacity: var(--store, 0); transform: translate(calc((1 - var(--store, 0)) * 60px), -50%); }
+.af-store-head { display: flex; gap: 14px; align-items: center; }
+.af-store-head img { width: 64px; height: 64px; border-radius: 16px; }
+.af-store-head strong { display: block; font-size: 20px; letter-spacing: -.02em; } .af-store-head span { display: block; font-size: 13px; color: #1a7f4b; } .af-store-head em { font-style: normal; font-size: 12px; color: var(--muted); }
+.af-store button { width: 100%; margin-top: 16px; padding: 10px; border: 0; border-radius: 999px; background: #1a7f4b; color: #fff; font: inherit; font-weight: 600; }
+.af-store-shots { display: flex; gap: 8px; margin-top: 14px; } .af-store-shots img { width: 33%; border-radius: 10px; }
+.af-store-note { margin-top: 12px !important; font-size: 12px; line-height: 1.4; color: var(--muted); }
+@media (max-width: 900px) { .af-browser { width: 94vw; margin-top: 0; } .af-store { left: 16px; right: 16px; width: auto; top: auto; bottom: 16px; transform: translateY(calc((1 - var(--store, 0)) * 40px)); } .af-copy { right: 16px; } }

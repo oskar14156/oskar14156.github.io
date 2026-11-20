@@ -49,3 +49,12 @@
   });
   window.addEventListener('load', () => ScrollTrigger.refresh());
 })();
+
+/* Large screen panels: pan through the screen as the page scrolls */
+(function () {
+  if (!window.gsap || !window.ScrollTrigger || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('.pp-big-frame').forEach((f) => {
+    gsap.fromTo(f.querySelectorAll('img'), { objectPosition: '50% 6%', scale: 1.08 }, { objectPosition: '50% 94%', scale: 1, ease: 'none',
+      scrollTrigger: { trigger: f, start: 'top bottom', end: 'bottom top', scrub: true } });
+  });
+})();
