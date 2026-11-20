@@ -12,8 +12,8 @@
   <link rel="stylesheet" href="/styles.css">
   <link rel="stylesheet" href="/developer/portfolio.css?v=16">
   <link rel="stylesheet" href="/developer/product.css?v=16">
-  <link rel="stylesheet" href="/home.css?v=16">
-  <script>(function(){var t=null;try{t=localStorage.getItem('pf-theme')}catch(e){}if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;})();</script>
+  <link rel="stylesheet" href="/home.css?v=17">
+  <script>(function(){var t=null;try{t=localStorage.getItem('pf-theme')}catch(e){}var q=location.search.match(/theme=(light|dark)/);if(q)t=q[1];if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;})();</script>
 </head>
 <body class="developer-page pf pp home">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -36,13 +36,18 @@
   </header>
 
   <main id="main">
-    <section class="home-hero site-container" aria-labelledby="home-title">
-      <p class="status-tag">App developer · Lower Austria, near Vienna</p>
-      <h1 id="home-title">Apps for travel, training, money and focus.</h1>
-      <p class="home-lede">I'm Oskar Polster. I design and build mobile apps for iPhone and Android, in Swift and in React Native with native modules where the platform matters.</p>
-      <div class="pp-actions">
-        <a class="pp-btn pp-btn-solid" href="/developer/">See the portfolio <span aria-hidden="true">→</span></a>
-        <a class="pp-btn" href="https://play.google.com/store/apps/developer?id=Oskar+Polster" rel="noopener">Google Play <span aria-hidden="true">↗</span></a>
+    <section class="home-hero pp-hero" aria-labelledby="home-title">
+      <div class="pp-hero-grid site-container">
+        <div class="pp-hero-text">
+          <p class="status-tag">App developer · Lower Austria, near Vienna</p>
+          <h1 id="home-title">Apps for travel, training, money and focus.</h1>
+          <p class="home-lede">I'm Oskar Polster. I design and build mobile apps for iPhone and Android, in Swift and in React Native with native modules where the platform matters.</p>
+          <div class="pp-actions">
+            <a class="pp-btn pp-btn-solid" href="/developer/">See the portfolio <span aria-hidden="true">→</span></a>
+            <a class="pp-btn" href="https://play.google.com/store/apps/developer?id=Oskar+Polster" rel="noopener">Google Play <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="pp-hero-phones"><figure class="pp-shot pp-l"><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-1.jpg?v=4" alt="Voyeva trip overview"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt=""></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-1-dark.jpg?v=4" alt="Voyeva trip overview"><img class="pf-frame" src="/developer/shots/frame-black.png" alt=""></div></figure><figure class="pp-shot pp-c"><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-3.jpg?v=4" alt="Stub Sankey diagram for a year of receipts"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt=""></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-3-dark.jpg?v=4" alt="Stub Sankey diagram for a year of receipts"><img class="pf-frame" src="/developer/shots/frame-black.png" alt=""></div></figure><figure class="pp-shot pp-r"><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/novus-1.jpg?v=4" alt="Novus weekly training goal"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt=""></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/novus-1-dark.jpg?v=4" alt="Novus weekly training goal"><img class="pf-frame" src="/developer/shots/frame-black.png" alt=""></div></figure></div>
       </div>
     </section>
 
@@ -53,7 +58,7 @@
       <ul class="home-app-grid">
         <li><a href="/developer/voyeva/" class="tint-violet"><img src="/developer/shots/icons/voyeva.png" alt="" width="72" height="72"><span class="home-app-kind">Travel · iOS</span><strong>Voyeva</strong><span>Plan trips together, split costs, ask the AI, get a recap.</span><img class="home-app-shot" src="/developer/shots/voyeva-1.jpg" alt="" loading="lazy"></a></li>
         <li><a href="/developer/novus/" class="tint-lime"><img src="/developer/shots/icons/novus.png" alt="" width="72" height="72"><span class="home-app-kind">Fitness · iOS + watchOS</span><strong>Novus</strong><span>Gym, running, nutrition and a coach that reads all of it.</span><img class="home-app-shot" src="/developer/shots/novus-1.jpg" alt="" loading="lazy"></a></li>
-        <li><a href="/developer/stub/" class="tint-peach"><img src="/developer/shots/icons/stub.png" alt="" width="72" height="72"><span class="home-app-kind">Finance · iOS + Android</span><strong>Stub</strong><span>Scan any receipt and see every line item.</span><img class="home-app-shot" src="/developer/shots/stub-1.jpg?v=3" alt="" loading="lazy"></a></li>
+        <li><a href="/developer/stub/" class="tint-peach"><img src="/developer/shots/icons/stub.png" alt="" width="72" height="72"><span class="home-app-kind">Finance · iOS + Android</span><strong>Stub</strong><span>Scan any receipt and see every line item.</span><img class="home-app-shot" src="/developer/shots/stub-3.jpg?v=4" alt="" loading="lazy"></a></li>
         <li><a href="/developer/unscroll/" class="tint-blue"><img src="/developer/shots/icons/unscroll.png" alt="" width="72" height="72"><span class="home-app-kind">Wellbeing · iOS</span><strong>Unscroll</strong><span>Block the apps you choose and see your real screen time.</span><img class="home-app-shot" src="/developer/shots/unscroll-1.jpg" alt="" loading="lazy"></a></li>
         <li><a href="/developer/riseproof/" class="tint-ink"><img src="/developer/shots/icons/riseproof.png" alt="" width="72" height="72"><span class="home-app-kind">Alarm · iOS + Android · <b>Google Play</b></span><strong>RiseProof</strong><span>An alarm that stops only once you prove you're awake.</span><img class="home-app-shot" src="/developer/shots/riseproof-1.jpg" alt="" loading="lazy"></a></li>
         <li><a href="/developer/vbg/" class="tint-mint"><img src="/developer/shots/icons/vbg.png" alt="" width="72" height="72"><span class="home-app-kind">Video · iOS + Android · <b>Google Play</b></span><strong>Video Background Remover</strong><span>Remove the background from a whole video, on the phone.</span><img class="home-app-shot" src="/developer/shots/vbg-1.jpg" alt="" loading="lazy"></a></li>
@@ -104,6 +109,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-  <script src="/developer/product.js?v=9"></script>
+  <script src="/developer/product.js?v=17"></script>
 </body>
 </html>

@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/developer/portfolio.css?v=16">
+  <link rel="stylesheet" href="/developer/portfolio.css?v=17">
   <script>
     // Theme before first paint: saved pick, else the system setting.
     (function () {
@@ -84,10 +84,10 @@
         <div class="flight-phone" id="flight-phone">
           <div class="device device-lg">
             <div class="device-screen">
-              <video class="flight-screen is-active" data-step="0" src="/developer/media/voyeva-recap.mp4?v=2" poster="/developer/media/voyeva-recap.jpg?v=2" muted loop playsinline preload="none" aria-label="Voyeva trip recap video"></video>
+              <video class="flight-screen is-active" data-step="0" src="/developer/media/voyeva-recap.mp4?v=3" poster="/developer/media/voyeva-recap.jpg?v=3" muted loop playsinline preload="none" aria-label="Voyeva trip recap video"></video>
               <img class="flight-screen" data-step="1" src="/developer/shots/novus-3.jpg" alt="Novus run through Vienna coloured by pace" loading="lazy">
               <img class="flight-screen" data-step="2" src="/developer/shots/unscroll-1.jpg" alt="Unscroll today screen" loading="lazy">
-              <img class="flight-screen" data-step="3" src="/developer/shots/stub-1.jpg?v=3" alt="Stub Sankey diagram from income down to single products" loading="lazy">
+              <img class="flight-screen" data-step="3" src="/developer/shots/stub-3.jpg?v=4" alt="Stub Sankey diagram from income down to single products" loading="lazy">
               <img class="flight-screen" data-step="4" src="/developer/shots/voyeva-11.jpg" alt="Voyeva 3D globe" loading="lazy">
             </div>
             <img class="device-frame" src="/developer/shots/frame-black.png" alt="" width="640" height="1306">
@@ -105,17 +105,240 @@
       </div>
     </section>
 
-    <!-- 3 · NUMBERS -->
-    <section class="numbers site-container" aria-label="In numbers">
-      <dl class="numbers-grid">
-        <div><dd data-count="6">6</dd><dt>apps live on Google Play</dt></div>
-        <div><dd data-count="18">18</dd><dt>custom Expo native modules in Swift and Kotlin</dt></div>
-        <div><dd data-count="22">22</dd><dt>Expo config plugins written</dt></div>
-        <div><dd data-count="157" data-suffix="k">157k</dd><dt>lines of Swift in two native iOS apps</dt></div>
-      </dl>
-      <ul class="stack-marquee" aria-label="Main technologies">
-        <li>React Native</li><li>Expo · EAS</li><li>TypeScript</li><li>Swift · SwiftUI</li><li>Kotlin</li><li>Expo Modules API</li><li>Config plugins</li><li>Firebase</li><li>Sentry</li><li>RevenueCat</li><li>Jest</li><li>fastlane</li>
-      </ul>
+    <!-- 5 · PRODUCT APPS -->
+    <section class="work" id="work" aria-labelledby="work-title">
+      <div class="work-head site-container">
+        <h2 id="work-title">Six apps, built end to end.</h2>
+        <p class="work-intro">Full products with accounts, sync, subscriptions, crash reporting and release pipelines. Screens come from the iOS Simulator with demo data, from the store listings, and, for the Voyeva photo maps, from my own trips. The Light/Dark switch changes the screenshots too.</p>
+      </div>
+
+      <nav class="work-index" aria-label="Apps">
+        <ol class="site-container"><li><a href="#voyeva" data-app="voyeva"><img src="/developer/shots/icons/voyeva.png" alt="" width="22" height="22">Voyeva</a></li><li><a href="#novus" data-app="novus"><img src="/developer/shots/icons/novus.png" alt="" width="22" height="22">Novus</a></li><li><a href="#stub" data-app="stub"><img src="/developer/shots/icons/stub.png" alt="" width="22" height="22">Stub</a></li><li><a href="#unscroll" data-app="unscroll"><img src="/developer/shots/icons/unscroll.png" alt="" width="22" height="22">Unscroll</a></li><li><a href="#riseproof" data-app="riseproof"><img src="/developer/shots/icons/riseproof.png" alt="" width="22" height="22">RiseProof</a></li><li><a href="#vbg" data-app="vbg"><img src="/developer/shots/icons/vbg.png" alt="" width="22" height="22">Video BG Remover</a></li></ol>
+      </nav>
+
+      <article class="chapter tint-violet" id="voyeva">
+        <div class="chapter-grid site-container">
+          <div class="chapter-text">
+            <p class="chapter-kind">Travel · iOS · Native Swift</p>
+            <h3>Voyeva</h3>
+            <p class="chapter-lede">Plan trips together, split expenses, ask the AI what fits into a free afternoon, and get a recap of the whole journey.</p>
+            <ul class="chapter-points">
+              <li>SwiftUI, around 85,000 lines, plus a widget extension, a share extension and a macOS target</li>
+              <li>Firebase Auth (Apple and Google sign-in), Firestore, Cloud Functions, Storage and FCM push</li>
+              <li>A trip assistant on Gemini through a Cloud Function: it reads the itinerary and proposes changes you can apply</li>
+              <li>Tricount-style splitting with settle-up, and a spending analysis per category and person</li>
+              <li>Photos from the camera roll matched to the right trip day and pinned on the route</li>
+            </ul>
+            <ul class="chips"><li>SwiftUI</li><li>Firebase</li><li>Gemini</li><li>MapKit</li><li>WidgetKit</li><li>RevenueCat</li></ul>
+            <a class="chapter-link" href="/developer/voyeva/">See the full app <span aria-hidden="true">→</span></a>
+          </div>
+          <div class="fan" aria-hidden="true">
+            <div class="device fan-l"><div class="device-screen"><img src="/developer/shots/voyeva-1.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+            <div class="device fan-c"><div class="device-screen"><video src="/developer/media/voyeva-recap.mp4?v=3" poster="/developer/media/voyeva-recap.jpg?v=3" muted loop playsinline preload="none"></video></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+            <div class="device fan-r"><div class="device-screen"><img src="/developer/shots/voyeva-4.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+          </div>
+        </div>
+        <div class="pf-gallery" data-app="voyeva">
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-1.jpg" alt="Every trip at a glance" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="980" height="2000"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-1-dark.jpg" alt="Every trip at a glance" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Every trip at a glance</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-2.jpg" alt="Real trips: China &amp; Japan, UAE &amp; China, Spain" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Real trips: China &amp; Japan, UAE &amp; China, Spain</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-3.jpg" alt="Day-by-day timeline" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="980" height="2000"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-3-dark.jpg" alt="Day-by-day timeline" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Day-by-day timeline</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-4.jpg" alt="Ask the assistant about a free afternoon" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="980" height="2000"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-4-dark.jpg" alt="Ask the assistant about a free afternoon" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Ask the assistant about a free afternoon</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-5.jpg" alt="It proposes a change; you apply it" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>It proposes a change; you apply it</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-6.jpg" alt="Flights and trains on a satellite map" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Flights and trains on a satellite map</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-7.jpg" alt="Road trips follow the real roads" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Road trips follow the real roads</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-8.jpg" alt="Real trip, Japan: photos pinned along the drive" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Real trip, Japan: photos pinned along the drive</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-9.jpg" alt="Real trip, UAE: every photo where it was taken" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Real trip, UAE: every photo where it was taken</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-10.jpg" alt="Real trip, China: train route with photo stops" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Real trip, China: train route with photo stops</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-11.jpg" alt="Every journey on a 3D globe" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Every journey on a 3D globe</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-12.jpg" alt="Weather for each stop on the route" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Weather for each stop on the route</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-13.jpg" alt="Top sights for every city" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="980" height="2000"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-13-dark.jpg" alt="Top sights for every city" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Top sights for every city</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-14.jpg" alt="Friends&#x27; trips in a feed" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="980" height="2000"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-14-dark.jpg" alt="Friends&#x27; trips in a feed" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Friends&#x27; trips in a feed</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-15.jpg" alt="Shared costs with settle-up suggestions" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="980" height="2000"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-15-dark.jpg" alt="Shared costs with settle-up suggestions" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Shared costs with settle-up suggestions</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-16.jpg" alt="Shared budget per trip" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="980" height="2000"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-16-dark.jpg" alt="Shared budget per trip" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Shared budget per trip</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-17.jpg" alt="Spending by category" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="980" height="2000"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-17-dark.jpg" alt="Spending by category" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Spending by category</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-18.jpg" alt="Shared packing list" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="980" height="2000"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-18-dark.jpg" alt="Shared packing list" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Shared packing list</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-19.jpg" alt="Import bookings with any AI chat" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="980" height="2000"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-19-dark.jpg" alt="Import bookings with any AI chat" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Import bookings with any AI chat</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-20.jpg" alt="Travel passport and yearly recap" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Travel passport and yearly recap</figcaption></figure>
+        </div><!--/gallery-->
+      </article>
+
+      <article class="chapter tint-lime" id="novus">
+        <div class="chapter-grid site-container">
+          <div class="chapter-text">
+            <p class="chapter-kind">Fitness · iOS + watchOS · Native Swift</p>
+            <h3>Novus</h3>
+            <p class="chapter-lede">Gym and running in one place: plans, a training log, nutrition, supplements, routes on the map, and a coach that reads all of it.</p>
+            <ul class="chapter-points">
+              <li>SwiftUI and Core Data, around 72,000 lines, with a watchOS companion over WatchConnectivity</li>
+              <li>Runs and rides from HealthKit on a map, with pace, heart rate and elevation along the route</li>
+              <li>A year of training as a heatmap, muscle maps per session, Live Activities, widgets and Swift Charts</li>
+              <li>AI coach on Gemini through a Cloud Function: it reads training summaries, never raw Health data, and only after an explicit consent screen</li>
+            </ul>
+            <ul class="chips"><li>SwiftUI</li><li>watchOS</li><li>HealthKit</li><li>Firebase</li><li>Gemini</li></ul>
+            <a class="chapter-link" href="/developer/novus/">See the full app <span aria-hidden="true">→</span></a>
+          </div>
+          <div class="fan" aria-hidden="true">
+            <div class="device fan-l"><div class="device-screen"><img src="/developer/shots/novus-1.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+            <div class="device fan-c"><div class="device-screen"><img src="/developer/shots/novus-4.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+            <div class="device fan-r"><div class="device-screen"><img src="/developer/shots/novus-3.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+          </div>
+        </div>
+        <div class="pf-gallery" data-app="novus">
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/novus-1.jpg" alt="Weekly goal, streak and volume" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="980" height="2000"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/novus-1-dark.jpg" alt="Weekly goal, streak and volume" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Weekly goal, streak and volume</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-2.jpg" alt="Fifteen weeks of training at a glance" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Fifteen weeks of training at a glance</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-3.jpg" alt="A real run through Vienna, coloured by pace" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>A real run through Vienna, coloured by pace</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-4.jpg" alt="101 km along the Danube, with heart rate" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>101 km along the Danube, with heart rate</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/novus-5.jpg" alt="Gym history with muscle maps" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="980" height="2000"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/novus-5-dark.jpg" alt="Gym history with muscle maps" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Gym history with muscle maps</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/novus-6.jpg" alt="Which muscles each session hit" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="980" height="2000"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/novus-6-dark.jpg" alt="Which muscles each session hit" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Which muscles each session hit</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-7.jpg" alt="Nutrition calendar and macros" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Nutrition calendar and macros</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-8.jpg" alt="Supplement stack with a 30-day streak" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Supplement stack with a 30-day streak</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-9.jpg" alt="AI coach asks before any data leaves the phone" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>AI coach asks before any data leaves the phone</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/novus-10.jpg" alt="Coach reads six weeks of training" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="980" height="2000"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/novus-10-dark.jpg" alt="Coach reads six weeks of training" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Coach reads six weeks of training</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-11.jpg" alt="…and turns it into a plan" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>…and turns it into a plan</figcaption></figure>
+        </div><!--/gallery-->
+      </article>
+
+      <article class="chapter tint-peach" id="stub">
+        <div class="chapter-grid site-container">
+          <div class="chapter-text">
+            <p class="chapter-kind">Finance · iOS + Android · React Native</p>
+            <h3>Stub</h3>
+            <p class="chapter-lede">Point the camera at any receipt, or drop in photos and PDF invoices, several at once. Stub reads every line item and shows where the money went.</p>
+            <ul class="chapter-points">
+              <li>The system document scanner finds the edges and straightens the paper; a queue analyses many receipts in the background</li>
+              <li>On-device text recognition through a custom native module: Vision in Swift, a Kotlin implementation on Android</li>
+              <li>Expo Router, Zustand and expo-sqlite; charts drawn with Skia</li>
+              <li>The largest Jest suite of my RN apps, covering the parsing and money logic</li>
+            </ul>
+            <ul class="chips"><li>Expo SDK 57</li><li>TypeScript</li><li>expo-sqlite</li><li>Skia</li><li>Jest</li><li>Swift + Kotlin module</li></ul>
+            <a class="chapter-link" href="/developer/stub/">See the full app <span aria-hidden="true">→</span></a>
+          </div>
+          <div class="scan" aria-hidden="true">
+            <div class="receipt">
+              <p class="receipt-store">FRESH MARKET</p>
+              <p class="receipt-meta">Aug 15 · 18:42 · #4471</p>
+              <ul>
+                <li><span>Oat milk 1 l</span><span>2.49</span></li>
+                <li><span>Bananas</span><span>1.89</span></li>
+                <li><span>Sourdough bread</span><span>4.20</span></li>
+                <li><span>Greek yogurt</span><span>3.79</span></li>
+                <li><span>Coffee beans</span><span>12.99</span></li>
+                <li><span>Tomatoes</span><span>3.15</span></li>
+                <li><span>Olive oil</span><span>9.49</span></li>
+                <li><span>Pasta</span><span>1.99</span></li>
+              </ul>
+              <p class="receipt-total"><span>TOTAL</span><span>39.99</span></p>
+            </div>
+            <div class="device scan-phone"><div class="device-screen"><img src="/developer/shots/stub-8.jpg?v=4" alt="" loading="lazy"><span class="scan-beam"></span></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+          </div>
+        </div>
+        <div class="pf-gallery" data-app="stub">
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-1.jpg" alt="The month at a glance" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="980" height="2000"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-1-dark.jpg" alt="The month at a glance" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>The month at a glance</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-2.jpg" alt="Where the money comes from and goes" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="980" height="2000"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-2-dark.jpg" alt="Where the money comes from and goes" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Where the money comes from and goes</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-3.jpg" alt="A year of receipts, from income down to single products" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="980" height="2000"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-3-dark.jpg" alt="A year of receipts, from income down to single products" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>A year of receipts, from income down to single products</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-4.jpg" alt="Spending by category" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Spending by category</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-5.jpg" alt="Scan one receipt or a whole stack" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Scan one receipt or a whole stack</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-6.jpg" alt="Reading runs in the background" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Reading runs in the background</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-7.jpg" alt="A real scan: merchant, date, total, currency" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>A real scan: merchant, date, total, currency</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-8.jpg" alt="Every line item, already categorised" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Every line item, already categorised</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-9.jpg" alt="The receipt stays with its photo" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>The receipt stays with its photo</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-10.jpg" alt="Every receipt, searchable" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="980" height="2000"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-10-dark.jpg" alt="Every receipt, searchable" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Every receipt, searchable</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-11.jpg" alt="Stub Pro" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Stub Pro</figcaption></figure>
+        </div><!--/gallery-->
+      </article>
+
+      <article class="chapter tint-blue" id="unscroll">
+        <div class="chapter-grid site-container">
+          <div class="chapter-text">
+            <p class="chapter-kind">Wellbeing · iOS · React Native</p>
+            <h3>Unscroll</h3>
+            <p class="chapter-lede">Blocks the apps you choose, shows your real screen time and what it adds up to over a lifetime.</p>
+            <ul class="chapter-points">
+              <li>The UI is React Native, but blocking needs Apple's Screen Time APIs, which only exist in Swift</li>
+              <li>Native module on FamilyControls, ManagedSettings and DeviceActivity, plus a WidgetKit widget</li>
+              <li>Five app extensions live in the Expo project: activity monitor, shield configuration, shield action, usage report and widget</li>
+            </ul>
+            <ul class="chips"><li>Expo</li><li>Screen Time API</li><li>DeviceActivity</li><li>MMKV</li><li>RevenueCat</li></ul>
+            <a class="chapter-link" href="/developer/unscroll/">See the full app <span aria-hidden="true">→</span></a>
+          </div>
+          <div class="fan" aria-hidden="true">
+            <div class="device fan-l"><div class="device-screen"><img src="/developer/shots/unscroll-2.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+            <div class="device fan-c"><div class="device-screen"><img src="/developer/shots/unscroll-1.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+            <div class="device fan-r"><div class="device-screen"><img src="/developer/shots/unscroll-4.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+          </div>
+        </div>
+        <div class="pf-gallery" data-app="unscroll">
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-1.jpg" alt="Today: screen time and blocked time" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Today: screen time and blocked time</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-2.jpg" alt="Scheduled locks with Screen Time APIs" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Scheduled locks with Screen Time APIs</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-3.jpg" alt="Stats: times you said no" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Stats: times you said no</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-4.jpg" alt="Your life in weeks" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Your life in weeks</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-5.jpg" alt="Progress and milestones" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Progress and milestones</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-6.jpg" alt="Quick lock for an hour" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Quick lock for an hour</figcaption></figure>
+        </div><!--/gallery-->
+      </article>
+
+      <article class="chapter tint-ink" id="riseproof">
+        <div class="chapter-grid site-container">
+          <div class="chapter-text">
+            <p class="chapter-kind">Alarm · iOS + Android · React Native <span class="live">Live on Google Play</span></p>
+            <h3>RiseProof</h3>
+            <p class="chapter-lede">An alarm that only stops once you prove you're awake: push-ups counted by the camera, a photo of your made bed, or a brain game.</p>
+            <ul class="chapter-points">
+              <li>Alarms have to ring when the app is closed, so they run natively: AlarmKit and App Intents in Swift; on Android a ring service and boot-reschedule receivers in Kotlin</li>
+              <li>Push-ups and the photo task are checked on-device with Vision</li>
+              <li>Sentry with source maps for crash reports; RevenueCat for subscriptions on both stores</li>
+              <li>Config plugins for privacy manifest, localized permission strings and Android signing</li>
+            </ul>
+            <ul class="chips"><li>Expo</li><li>AlarmKit</li><li>Kotlin</li><li>Vision</li><li>Sentry</li><li>Jest</li></ul>
+            <a class="chapter-link" href="/developer/riseproof/">See the full app <span aria-hidden="true">→</span></a>
+          </div>
+          <div class="fan fan-store" aria-hidden="true">
+            <img class="fan-l" src="/developer/shots/riseproof-3.jpg" alt="" loading="lazy">
+            <img class="fan-c" src="/developer/shots/riseproof-1.jpg" alt="" loading="lazy">
+            <img class="fan-r" src="/developer/shots/riseproof-6.jpg" alt="" loading="lazy">
+          </div>
+        </div>
+        <div class="pf-gallery" data-app="riseproof">
+          <figure><img class="pf-store" src="/developer/shots/riseproof-1.jpg" alt="Push-ups counted on-device" loading="lazy" width="900" height="1956"><figcaption>Push-ups counted on-device</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/riseproof-2.jpg" alt="Rings through Silent and Focus" loading="lazy" width="900" height="1956"><figcaption>Rings through Silent and Focus</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/riseproof-3.jpg" alt="Photo proof checked with Vision" loading="lazy" width="900" height="1956"><figcaption>Photo proof checked with Vision</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/riseproof-4.jpg" alt="Brain games to wake up" loading="lazy" width="900" height="1956"><figcaption>Brain games to wake up</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/riseproof-5.jpg" alt="20+ missions to choose from" loading="lazy" width="900" height="1956"><figcaption>20+ missions to choose from</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/riseproof-6.jpg" alt="Streaks and stats" loading="lazy" width="900" height="1956"><figcaption>Streaks and stats</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/riseproof-7.jpg" alt="Wake-up history" loading="lazy" width="900" height="1956"><figcaption>Wake-up history</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/riseproof-8.jpg" alt="System-backed alarms" loading="lazy" width="900" height="1956"><figcaption>System-backed alarms</figcaption></figure>
+        </div><!--/gallery-->
+      </article>
+
+      <article class="chapter tint-mint" id="vbg">
+        <div class="chapter-grid site-container">
+          <div class="chapter-text">
+            <p class="chapter-kind">Video · iOS + Android · React Native <span class="live">Live on Google Play</span></p>
+            <h3>Video Background Remover</h3>
+            <p class="chapter-lede">Removes the background from a whole video on the phone, with no upload.</p>
+            <ul class="chapter-points">
+              <li>A native processing engine of about 37 files: Core ML, Vision, Core Image and BackgroundTasks in Swift, the matching pipeline in Kotlin</li>
+              <li>Exports HEVC with alpha and ProRes 4444 for video editors</li>
+              <li>Sentry crash reports; a separate EAS profile for Android test builds</li>
+            </ul>
+            <ul class="chips"><li>Expo</li><li>Core ML</li><li>Vision</li><li>Kotlin</li><li>Sentry</li><li>expo-sqlite</li></ul>
+            <a class="chapter-link" href="/developer/vbg/">See the full app <span aria-hidden="true">→</span></a>
+          </div>
+          <div class="fan fan-store" aria-hidden="true">
+            <img class="fan-l" src="/developer/shots/vbg-2.jpg" alt="" loading="lazy">
+            <img class="fan-c" src="/developer/shots/vbg-1.jpg" alt="" loading="lazy">
+            <img class="fan-r" src="/developer/shots/vbg-3.jpg" alt="" loading="lazy">
+          </div>
+        </div>
+        <div class="pf-gallery" data-app="vbg">
+          <figure><img class="pf-store" src="/developer/shots/vbg-1.jpg" alt="AI cutout on the phone" loading="lazy" width="900" height="1956"><figcaption>AI cutout on the phone</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/vbg-2.jpg" alt="Photo, color, blur or video background" loading="lazy" width="900" height="1956"><figcaption>Photo, color, blur or video background</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/vbg-3.jpg" alt="Green screen for editors" loading="lazy" width="900" height="1956"><figcaption>Green screen for editors</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/vbg-4.jpg" alt="HEVC with alpha and ProRes 4444" loading="lazy" width="900" height="1956"><figcaption>HEVC with alpha and ProRes 4444</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/vbg-5.jpg" alt="Refine edges frame by frame" loading="lazy" width="900" height="1956"><figcaption>Refine edges frame by frame</figcaption></figure>
+          <figure><img class="pf-store" src="/developer/shots/vbg-6.jpg" alt="Trim before processing" loading="lazy" width="900" height="1956"><figcaption>Trim before processing</figcaption></figure>
+        </div><!--/gallery-->
+      </article>
     </section>
 
     <!-- 3b · OPEN THE WORK: product pages open one after another -->
@@ -164,253 +387,6 @@
       </div>
     </section>
 
-    <!-- 4 · PATH: horizontal -->
-    <section class="path" id="path" aria-labelledby="path-title">
-      <div class="path-stage">
-        <div class="path-head site-container">
-                    <h2 id="path-title">Four stacks, in the order I learned them.</h2>
-        </div>
-        <ol class="path-track">
-          <li class="path-card"><span class="path-no">01</span><h3>Flutter &amp; Firebase</h3><p>My first production apps: Firebase Auth and Firestore, cross-platform UI, store releases.</p></li>
-          <li class="path-card"><span class="path-no">02</span><h3>Swift &amp; SwiftUI</h3><p>Two large native apps, Voyeva and Novus: Firebase Auth, Firestore, Cloud Functions, Storage, FCM and App Check; WidgetKit, a watchOS app, HealthKit, StoreKit.</p></li>
-          <li class="path-card"><span class="path-no">03</span><h3>React Native + Expo</h3><p>Expo SDK 57 and RN 0.86 on the New Architecture. Expo Router, EAS Build profiles for dev client, preview and production, EAS Submit, signing for iOS and Android.</p></li>
-          <li class="path-card path-card-accent"><span class="path-no">04</span><h3>Native code inside RN</h3><p>Swift and Kotlin modules on the Expo Modules API: AlarmKit, Screen Time, Core ML and Vision, CarPlay, MapKit, plus config plugins for everything the prebuild has to know.</p></li>
-        </ol>
-      </div>
-    </section>
-
-    <!-- 5 · PRODUCT APPS -->
-    <section class="work" id="work" aria-labelledby="work-title">
-      <div class="work-head site-container">
-                <h2 id="work-title">Six apps, built end to end.</h2>
-        <p class="work-intro">Full products with accounts, sync, subscriptions, crash reporting and release pipelines. Screens come from the iOS Simulator with demo data, from the store listings, and, for the Voyeva photo maps, from my own trips. The Light/Dark switch changes the screenshots too.</p>
-      </div>
-
-      <article class="chapter tint-violet" id="voyeva">
-        <div class="chapter-grid site-container">
-          <div class="chapter-text">
-            <p class="chapter-kind">Travel · iOS · Native Swift</p>
-            <h3>Voyeva</h3>
-            <p class="chapter-lede">Plan trips together, split expenses, ask the AI what fits into a free afternoon, and get a recap of the whole journey.</p>
-            <ul class="chapter-points">
-              <li>SwiftUI, around 85,000 lines, plus a widget extension, a share extension and a macOS target</li>
-              <li>Firebase Auth (Apple and Google sign-in), Firestore, Cloud Functions, Storage and FCM push</li>
-              <li>A trip assistant on Gemini through a Cloud Function: it reads the itinerary and proposes changes you can apply</li>
-              <li>Tricount-style splitting with settle-up, and a spending analysis per category and person</li>
-              <li>Photos from the camera roll matched to the right trip day and pinned on the route</li>
-            </ul>
-            <ul class="chips"><li>SwiftUI</li><li>Firebase</li><li>Gemini</li><li>MapKit</li><li>WidgetKit</li><li>RevenueCat</li></ul>
-            <a class="chapter-link" href="/developer/voyeva/">See the full app <span aria-hidden="true">→</span></a>
-          </div>
-          <div class="fan" aria-hidden="true">
-            <div class="device fan-l"><div class="device-screen"><img src="/developer/shots/voyeva-1.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
-            <div class="device fan-c"><div class="device-screen"><video src="/developer/media/voyeva-recap.mp4?v=2" poster="/developer/media/voyeva-recap.jpg?v=2" muted loop playsinline preload="none"></video></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
-            <div class="device fan-r"><div class="device-screen"><img src="/developer/shots/voyeva-4.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
-          </div>
-        </div>
-        <div class="pf-gallery" data-app="voyeva">
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-1.jpg" alt="Every trip at a glance" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-1-dark.jpg" alt="Every trip at a glance" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Every trip at a glance</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-2.jpg" alt="Real trips: China &amp; Japan, UAE &amp; China, Spain" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Real trips: China &amp; Japan, UAE &amp; China, Spain</figcaption></figure>
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-3.jpg" alt="Day-by-day timeline" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-3-dark.jpg" alt="Day-by-day timeline" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Day-by-day timeline</figcaption></figure>
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-4.jpg" alt="Ask the assistant about a free afternoon" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-4-dark.jpg" alt="Ask the assistant about a free afternoon" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Ask the assistant about a free afternoon</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-5.jpg" alt="It proposes a change; you apply it" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>It proposes a change; you apply it</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-6.jpg" alt="Flights and trains on a satellite map" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Flights and trains on a satellite map</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-7.jpg" alt="Road trips follow the real roads" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Road trips follow the real roads</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-8.jpg" alt="Real trip, Japan: photos pinned along the drive" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Real trip, Japan: photos pinned along the drive</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-9.jpg" alt="Real trip, UAE: every photo where it was taken" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Real trip, UAE: every photo where it was taken</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-10.jpg" alt="Real trip, China: train route with photo stops" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Real trip, China: train route with photo stops</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-11.jpg" alt="Every journey on a 3D globe" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Every journey on a 3D globe</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-12.jpg" alt="Weather for each stop on the route" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Weather for each stop on the route</figcaption></figure>
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-13.jpg" alt="Top sights for every city" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-13-dark.jpg" alt="Top sights for every city" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Top sights for every city</figcaption></figure>
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-14.jpg" alt="Friends&#x27; trips in a feed" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-14-dark.jpg" alt="Friends&#x27; trips in a feed" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Friends&#x27; trips in a feed</figcaption></figure>
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-15.jpg" alt="Tricount-style splitting and settle-up" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-15-dark.jpg" alt="Tricount-style splitting and settle-up" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Tricount-style splitting and settle-up</figcaption></figure>
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-16.jpg" alt="Shared budget per trip" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-16-dark.jpg" alt="Shared budget per trip" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Shared budget per trip</figcaption></figure>
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-17.jpg" alt="Spending by category" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-17-dark.jpg" alt="Spending by category" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Spending by category</figcaption></figure>
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-18.jpg" alt="Shared packing list" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-18-dark.jpg" alt="Shared packing list" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Shared packing list</figcaption></figure>
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-19.jpg" alt="Import bookings with any AI chat" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-19-dark.jpg" alt="Import bookings with any AI chat" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Import bookings with any AI chat</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-20.jpg" alt="Travel passport and yearly recap" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Travel passport and yearly recap</figcaption></figure>
-        </div><!--/gallery-->
-      </article>
-
-      <article class="chapter tint-lime" id="novus">
-        <div class="chapter-grid site-container">
-          <div class="chapter-text">
-            <p class="chapter-kind">Fitness · iOS + watchOS · Native Swift</p>
-            <h3>Novus</h3>
-            <p class="chapter-lede">Gym and running in one place: plans, a training log, nutrition, supplements, routes on the map, and a coach that reads all of it.</p>
-            <ul class="chapter-points">
-              <li>SwiftUI and Core Data, around 72,000 lines, with a watchOS companion over WatchConnectivity</li>
-              <li>Runs and rides from HealthKit on a map, with pace, heart rate and elevation along the route</li>
-              <li>A year of training as a heatmap, muscle maps per session, Live Activities, widgets and Swift Charts</li>
-              <li>AI coach on Gemini through a Cloud Function: it reads training summaries, never raw Health data, and only after an explicit consent screen</li>
-            </ul>
-            <ul class="chips"><li>SwiftUI</li><li>watchOS</li><li>HealthKit</li><li>Firebase</li><li>Gemini</li></ul>
-            <a class="chapter-link" href="/developer/novus/">See the full app <span aria-hidden="true">→</span></a>
-          </div>
-          <div class="fan" aria-hidden="true">
-            <div class="device fan-l"><div class="device-screen"><img src="/developer/shots/novus-1.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
-            <div class="device fan-c"><div class="device-screen"><img src="/developer/shots/novus-4.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
-            <div class="device fan-r"><div class="device-screen"><img src="/developer/shots/novus-3.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
-          </div>
-        </div>
-        <div class="pf-gallery" data-app="novus">
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/novus-1.jpg" alt="Weekly goal, streak and volume" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/novus-1-dark.jpg" alt="Weekly goal, streak and volume" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Weekly goal, streak and volume</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-2.jpg" alt="Fifteen weeks of training at a glance" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Fifteen weeks of training at a glance</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-3.jpg" alt="A real run through Vienna, coloured by pace" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>A real run through Vienna, coloured by pace</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-4.jpg" alt="101 km along the Danube, with heart rate" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>101 km along the Danube, with heart rate</figcaption></figure>
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/novus-5.jpg" alt="Gym history with muscle maps" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/novus-5-dark.jpg" alt="Gym history with muscle maps" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Gym history with muscle maps</figcaption></figure>
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/novus-6.jpg" alt="Which muscles each session hit" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/novus-6-dark.jpg" alt="Which muscles each session hit" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Which muscles each session hit</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-7.jpg" alt="Nutrition calendar and macros" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Nutrition calendar and macros</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-8.jpg" alt="Supplement stack with a 30-day streak" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Supplement stack with a 30-day streak</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-9.jpg" alt="AI coach asks before any data leaves the phone" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>AI coach asks before any data leaves the phone</figcaption></figure>
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/novus-10.jpg" alt="Coach reads six weeks of training" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/novus-10-dark.jpg" alt="Coach reads six weeks of training" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Coach reads six weeks of training</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-11.jpg" alt="…and turns it into a plan" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>…and turns it into a plan</figcaption></figure>
-        </div><!--/gallery-->
-      </article>
-
-      <article class="chapter tint-peach" id="stub">
-        <div class="chapter-grid site-container">
-          <div class="chapter-text">
-            <p class="chapter-kind">Finance · iOS + Android · React Native</p>
-            <h3>Stub</h3>
-            <p class="chapter-lede">Point the camera at any receipt, or drop in photos and PDF invoices, several at once. Stub reads every line item and shows where the money went.</p>
-            <ul class="chapter-points">
-              <li>The system document scanner finds the edges and straightens the paper; a queue analyses many receipts in the background</li>
-              <li>On-device text recognition through a custom native module: Vision in Swift, a Kotlin implementation on Android</li>
-              <li>Expo Router, Zustand and expo-sqlite; charts drawn with Skia</li>
-              <li>The largest Jest suite of my RN apps, covering the parsing and money logic</li>
-            </ul>
-            <ul class="chips"><li>Expo SDK 57</li><li>TypeScript</li><li>expo-sqlite</li><li>Skia</li><li>Jest</li><li>Swift + Kotlin module</li></ul>
-            <a class="chapter-link" href="/developer/stub/">See the full app <span aria-hidden="true">→</span></a>
-          </div>
-          <div class="scan" aria-hidden="true">
-            <div class="receipt">
-              <p class="receipt-store">FRESH MARKET</p>
-              <p class="receipt-meta">Aug 15 · 18:42 · #4471</p>
-              <ul>
-                <li><span>Oat milk 1 l</span><span>2.49</span></li>
-                <li><span>Bananas</span><span>1.89</span></li>
-                <li><span>Sourdough bread</span><span>4.20</span></li>
-                <li><span>Greek yogurt</span><span>3.79</span></li>
-                <li><span>Coffee beans</span><span>12.99</span></li>
-                <li><span>Tomatoes</span><span>3.15</span></li>
-                <li><span>Olive oil</span><span>9.49</span></li>
-                <li><span>Pasta</span><span>1.99</span></li>
-              </ul>
-              <p class="receipt-total"><span>TOTAL</span><span>39.99</span></p>
-            </div>
-            <div class="device scan-phone"><div class="device-screen"><img src="/developer/shots/stub-5.jpg?v=3" alt="" loading="lazy"><span class="scan-beam"></span></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
-          </div>
-        </div>
-        <div class="pf-gallery" data-app="stub">
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-1.jpg" alt="A year of receipts, from income down to single products" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-1-dark.jpg" alt="A year of receipts, from income down to single products" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>A year of receipts, from income down to single products</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-2.jpg" alt="Scan one receipt or a whole stack" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Scan one receipt or a whole stack</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-3.jpg" alt="Reading runs in the background" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Reading runs in the background</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-4.jpg" alt="A real scan: merchant, date, total, currency" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>A real scan: merchant, date, total, currency</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-5.jpg" alt="Every line item, already categorised" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Every line item, already categorised</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-6.jpg" alt="The receipt stays with its photo" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>The receipt stays with its photo</figcaption></figure>
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-7.jpg" alt="Every receipt, searchable" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-7-dark.jpg" alt="Every receipt, searchable" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Every receipt, searchable</figcaption></figure>
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-8.jpg" alt="The month at a glance" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-8-dark.jpg" alt="The month at a glance" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>The month at a glance</figcaption></figure>
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-9.jpg" alt="Where the money comes from and goes" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-9-dark.jpg" alt="Where the money comes from and goes" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Where the money comes from and goes</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-10.jpg" alt="Spending by category" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Spending by category</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-11.jpg" alt="Stub Pro" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Stub Pro</figcaption></figure>
-        </div><!--/gallery-->
-      </article>
-
-      <article class="chapter tint-blue" id="unscroll">
-        <div class="chapter-grid site-container">
-          <div class="chapter-text">
-            <p class="chapter-kind">Wellbeing · iOS · React Native</p>
-            <h3>Unscroll</h3>
-            <p class="chapter-lede">Blocks the apps you choose, shows your real screen time and what it adds up to over a lifetime.</p>
-            <ul class="chapter-points">
-              <li>The UI is React Native, but blocking needs Apple's Screen Time APIs, which only exist in Swift</li>
-              <li>Native module on FamilyControls, ManagedSettings and DeviceActivity, plus a WidgetKit widget</li>
-              <li>Five app extensions live in the Expo project: activity monitor, shield configuration, shield action, usage report and widget</li>
-            </ul>
-            <ul class="chips"><li>Expo</li><li>Screen Time API</li><li>DeviceActivity</li><li>MMKV</li><li>RevenueCat</li></ul>
-            <a class="chapter-link" href="/developer/unscroll/">See the full app <span aria-hidden="true">→</span></a>
-          </div>
-          <div class="fan" aria-hidden="true">
-            <div class="device fan-l"><div class="device-screen"><img src="/developer/shots/unscroll-2.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
-            <div class="device fan-c"><div class="device-screen"><img src="/developer/shots/unscroll-1.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
-            <div class="device fan-r"><div class="device-screen"><img src="/developer/shots/unscroll-4.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
-          </div>
-        </div>
-        <div class="pf-gallery" data-app="unscroll">
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-1.jpg" alt="Today: screen time and blocked time" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Today: screen time and blocked time</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-2.jpg" alt="Scheduled locks with Screen Time APIs" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Scheduled locks with Screen Time APIs</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-3.jpg" alt="Stats: times you said no" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Stats: times you said no</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-4.jpg" alt="Your life in weeks" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Your life in weeks</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-5.jpg" alt="Progress and milestones" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Progress and milestones</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-6.jpg" alt="Quick lock for an hour" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Quick lock for an hour</figcaption></figure>
-        </div><!--/gallery-->
-      </article>
-
-      <article class="chapter tint-ink" id="riseproof">
-        <div class="chapter-grid site-container">
-          <div class="chapter-text">
-            <p class="chapter-kind">Alarm · iOS + Android · React Native <span class="live">Live on Google Play</span></p>
-            <h3>RiseProof</h3>
-            <p class="chapter-lede">An alarm that only stops once you prove you're awake: push-ups counted by the camera, a photo of your made bed, or a brain game.</p>
-            <ul class="chapter-points">
-              <li>Alarms have to ring when the app is closed, so they run natively: AlarmKit and App Intents in Swift; on Android a ring service and boot-reschedule receivers in Kotlin</li>
-              <li>Push-ups and the photo task are checked on-device with Vision</li>
-              <li>Sentry with source maps for crash reports; RevenueCat for subscriptions on both stores</li>
-              <li>Config plugins for privacy manifest, localized permission strings and Android signing</li>
-            </ul>
-            <ul class="chips"><li>Expo</li><li>AlarmKit</li><li>Kotlin</li><li>Vision</li><li>Sentry</li><li>Jest</li></ul>
-            <a class="chapter-link" href="/developer/riseproof/">See the full app <span aria-hidden="true">→</span></a>
-          </div>
-          <div class="fan fan-store" aria-hidden="true">
-            <img class="fan-l" src="/developer/shots/riseproof-3.jpg" alt="" loading="lazy">
-            <img class="fan-c" src="/developer/shots/riseproof-1.jpg" alt="" loading="lazy">
-            <img class="fan-r" src="/developer/shots/riseproof-6.jpg" alt="" loading="lazy">
-          </div>
-        </div>
-        <div class="pf-gallery" data-app="riseproof">
-          <figure><img class="pf-store" src="/developer/shots/riseproof-1.jpg" alt="Push-ups counted on-device" loading="lazy" width="600" height="1304"><figcaption>Push-ups counted on-device</figcaption></figure>
-          <figure><img class="pf-store" src="/developer/shots/riseproof-2.jpg" alt="Rings through Silent and Focus" loading="lazy" width="600" height="1304"><figcaption>Rings through Silent and Focus</figcaption></figure>
-          <figure><img class="pf-store" src="/developer/shots/riseproof-3.jpg" alt="Photo proof checked with Vision" loading="lazy" width="600" height="1304"><figcaption>Photo proof checked with Vision</figcaption></figure>
-          <figure><img class="pf-store" src="/developer/shots/riseproof-4.jpg" alt="Brain games to wake up" loading="lazy" width="600" height="1304"><figcaption>Brain games to wake up</figcaption></figure>
-          <figure><img class="pf-store" src="/developer/shots/riseproof-5.jpg" alt="20+ missions to choose from" loading="lazy" width="600" height="1304"><figcaption>20+ missions to choose from</figcaption></figure>
-          <figure><img class="pf-store" src="/developer/shots/riseproof-6.jpg" alt="Streaks and stats" loading="lazy" width="600" height="1304"><figcaption>Streaks and stats</figcaption></figure>
-          <figure><img class="pf-store" src="/developer/shots/riseproof-7.jpg" alt="Wake-up history" loading="lazy" width="600" height="1304"><figcaption>Wake-up history</figcaption></figure>
-          <figure><img class="pf-store" src="/developer/shots/riseproof-8.jpg" alt="System-backed alarms" loading="lazy" width="600" height="1304"><figcaption>System-backed alarms</figcaption></figure>
-        </div><!--/gallery-->
-      </article>
-
-      <article class="chapter tint-mint" id="vbg">
-        <div class="chapter-grid site-container">
-          <div class="chapter-text">
-            <p class="chapter-kind">Video · iOS + Android · React Native <span class="live">Live on Google Play</span></p>
-            <h3>Video Background Remover</h3>
-            <p class="chapter-lede">Removes the background from a whole video on the phone, with no upload.</p>
-            <ul class="chapter-points">
-              <li>A native processing engine of about 37 files: Core ML, Vision, Core Image and BackgroundTasks in Swift, the matching pipeline in Kotlin</li>
-              <li>Exports HEVC with alpha and ProRes 4444 for video editors</li>
-              <li>Sentry crash reports; a separate EAS profile for Android test builds</li>
-            </ul>
-            <ul class="chips"><li>Expo</li><li>Core ML</li><li>Vision</li><li>Kotlin</li><li>Sentry</li><li>expo-sqlite</li></ul>
-            <a class="chapter-link" href="/developer/vbg/">See the full app <span aria-hidden="true">→</span></a>
-          </div>
-          <div class="fan fan-store" aria-hidden="true">
-            <img class="fan-l" src="/developer/shots/vbg-2.jpg" alt="" loading="lazy">
-            <img class="fan-c" src="/developer/shots/vbg-1.jpg" alt="" loading="lazy">
-            <img class="fan-r" src="/developer/shots/vbg-3.jpg" alt="" loading="lazy">
-          </div>
-        </div>
-        <div class="pf-gallery" data-app="vbg">
-          <figure><img class="pf-store" src="/developer/shots/vbg-1.jpg" alt="AI cutout on the phone" loading="lazy" width="600" height="1304"><figcaption>AI cutout on the phone</figcaption></figure>
-          <figure><img class="pf-store" src="/developer/shots/vbg-2.jpg" alt="Photo, color, blur or video background" loading="lazy" width="600" height="1304"><figcaption>Photo, color, blur or video background</figcaption></figure>
-          <figure><img class="pf-store" src="/developer/shots/vbg-3.jpg" alt="Green screen for editors" loading="lazy" width="600" height="1304"><figcaption>Green screen for editors</figcaption></figure>
-          <figure><img class="pf-store" src="/developer/shots/vbg-4.jpg" alt="HEVC with alpha and ProRes 4444" loading="lazy" width="600" height="1304"><figcaption>HEVC with alpha and ProRes 4444</figcaption></figure>
-          <figure><img class="pf-store" src="/developer/shots/vbg-5.jpg" alt="Refine edges frame by frame" loading="lazy" width="600" height="1304"><figcaption>Refine edges frame by frame</figcaption></figure>
-          <figure><img class="pf-store" src="/developer/shots/vbg-6.jpg" alt="Trim before processing" loading="lazy" width="600" height="1304"><figcaption>Trim before processing</figcaption></figure>
-        </div><!--/gallery-->
-      </article>
-    </section>
-
     <!-- 6 · APPRELEASER -->
     <section class="ar" id="appreleaser" aria-labelledby="ar-title">
       <div class="ar-head site-container">
@@ -453,6 +429,34 @@
           <li><strong>AES-256-GCM</strong> vault for store credentials</li>
           <li><strong>Next up</strong> review submission from the dashboard, Sentry release health per version</li>
         </ul>
+      </div>
+    </section>
+
+    <!-- 3 · NUMBERS -->
+    <section class="numbers site-container" aria-label="In numbers">
+      <dl class="numbers-grid">
+        <div><dd data-count="6">6</dd><dt>apps live on Google Play</dt></div>
+        <div><dd data-count="18">18</dd><dt>custom Expo native modules in Swift and Kotlin</dt></div>
+        <div><dd data-count="22">22</dd><dt>Expo config plugins written</dt></div>
+        <div><dd data-count="157" data-suffix="k">157k</dd><dt>lines of Swift in two native iOS apps</dt></div>
+      </dl>
+      <ul class="stack-marquee" aria-label="Main technologies">
+        <li>React Native</li><li>Expo · EAS</li><li>TypeScript</li><li>Swift · SwiftUI</li><li>Kotlin</li><li>Expo Modules API</li><li>Config plugins</li><li>Firebase</li><li>Sentry</li><li>RevenueCat</li><li>Jest</li><li>fastlane</li>
+      </ul>
+    </section>
+
+    <!-- 4 · PATH: horizontal -->
+    <section class="path" id="path" aria-labelledby="path-title">
+      <div class="path-stage">
+        <div class="path-head site-container">
+                    <h2 id="path-title">Four stacks, in the order I learned them.</h2>
+        </div>
+        <ol class="path-track">
+          <li class="path-card"><span class="path-no">01</span><h3>Flutter &amp; Firebase</h3><p>My first production apps: Firebase Auth and Firestore, cross-platform UI, store releases.</p></li>
+          <li class="path-card"><span class="path-no">02</span><h3>Swift &amp; SwiftUI</h3><p>Two large native apps, Voyeva and Novus: Firebase Auth, Firestore, Cloud Functions, Storage, FCM and App Check; WidgetKit, a watchOS app, HealthKit, StoreKit.</p></li>
+          <li class="path-card"><span class="path-no">03</span><h3>React Native + Expo</h3><p>Expo SDK 57 and RN 0.86 on the New Architecture. Expo Router, EAS Build profiles for dev client, preview and production, EAS Submit, signing for iOS and Android.</p></li>
+          <li class="path-card path-card-accent"><span class="path-no">04</span><h3>Native code inside RN</h3><p>Swift and Kotlin modules on the Expo Modules API: AlarmKit, Screen Time, Core ML and Vision, CarPlay, MapKit, plus config plugins for everything the prebuild has to know.</p></li>
+        </ol>
       </div>
     </section>
 
@@ -513,7 +517,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-  <script src="/developer/portfolio.js?v=15"></script>
+  <script src="/developer/portfolio.js?v=17"></script>
   <script src="/developer/ink.js?v=15"></script>
 </body>
 </html>

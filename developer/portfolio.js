@@ -246,5 +246,13 @@
     gsap.from(el, { y: 40, opacity: 0, duration: .9, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 90%' } });
   });
 
-  window.addEventListener('load', () => ScrollTrigger.refresh());
+  /* ---------- Sticky app index: marks the chapter in view ---------- */
+  const indexLinks = [...document.querySelectorAll('.work-index a')];
+  indexLinks.forEach((a) => {
+    ScrollTrigger.create({ trigger: '#' + a.dataset.app, start: 'top 55%', end: 'bottom 55%',
+      onToggle: (st) => { if (st.isActive) indexLinks.forEach((l) => l.classList.toggle('is-active', l === a)); } });
+  });
+
+  ScrollTrigger.sort();
+  window.addEventListener('load', () => { ScrollTrigger.sort(); ScrollTrigger.refresh(); });
 })();

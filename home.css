@@ -1,6 +1,6 @@
 /* Home page. Builds on portfolio.css and product.css. */
-.home-hero { padding: clamp(140px, 16vw, 220px) 0 clamp(40px, 6vw, 80px); }
-.home-hero h1 { margin-top: 20px; max-width: 14ch; font-size: clamp(52px, 8.4vw, 132px); line-height: .9; letter-spacing: -.065em; font-weight: 500; }
+.home-hero { padding: clamp(120px, 13vw, 170px) 0 clamp(40px, 6vw, 80px); }
+.home-hero h1 { margin-top: 20px; max-width: 12ch; font-size: clamp(48px, 6.4vw, 104px); line-height: .9; letter-spacing: -.065em; font-weight: 500; }
 .home-hero h1 em { color: var(--accent-deep); }
 .home-lede { margin-top: 28px !important; max-width: 46ch; font-size: clamp(18px, 1.6vw, 22px); line-height: 1.5; color: var(--text-soft); letter-spacing: -.012em; }
 .home-apps { padding-top: clamp(60px, 8vw, 110px); }

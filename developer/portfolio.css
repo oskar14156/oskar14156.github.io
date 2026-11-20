@@ -384,3 +384,12 @@ body.ink-cream .pf-header .pf-theme button[aria-pressed="true"] { color: #f4f3ec
 .chips li + li::before { content: "/"; margin: 0 .6em; opacity: .4; }
 .tint-ink .chips li { color: rgba(255, 254, 249, .7); }
 .browser-bar p { text-transform: none; letter-spacing: .02em; }
+
+/* Sticky app index above the chapters (Shopify Editions style table of contents). */
+.work-index { position: sticky; top: 72px; z-index: 6; margin-bottom: 8px; background: color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-block: 1px solid var(--line); }
+.work-index ol { display: flex; gap: clamp(14px, 2.6vw, 34px); margin: 0 auto; padding-block: 10px; list-style: none; overflow-x: auto; scrollbar-width: none; }
+.work-index a { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; letter-spacing: -.01em; color: var(--muted); text-decoration: none; white-space: nowrap; transition: color .25s; }
+.work-index img { width: 22px; height: 22px; border-radius: 6px; opacity: .55; filter: grayscale(1); transition: opacity .25s, filter .25s; }
+.work-index a:hover, .work-index a.is-active { color: var(--text); }
+.work-index a.is-active img, .work-index a:hover img { opacity: 1; filter: none; }
+@media (max-width: 720px) { .work-index { top: 64px; } .work-index a { font-size: 13px; } }
