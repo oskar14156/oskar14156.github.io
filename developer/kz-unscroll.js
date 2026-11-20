@@ -280,14 +280,14 @@
           <path class="kz-palm" d="M-5 -10 C 8 -15 22 -11 24 -2 C 25 7 16 13 4 12 C -5 11 -9 4 -8 -3Z" fill="${C.skin}"/>
           <g class="kz-phone" transform="translate(16 -22)">
             <g class="kz-grip-s kz-thumb"><path d="M-16 24 C -25 16 -26 0 -23 -10 C -21 -17 -14 -17 -13 -10 L -11 20Z" fill="${C.skin}"/><path d="M-22 -9 q3 -4 6 -2" stroke="#e8907a" stroke-width="1.4" fill="none" stroke-linecap="round"/></g>
-            <rect x="-22" y="-34" width="14" height="68" rx="7" fill="#bff8ff" opacity=".35" filter="url(#kzBlur6)" class="kz-halo-s"/>
-            <rect x="-13" y="-31" width="24" height="62" rx="7" fill="#1d1640"/>
-            <rect x="-9" y="-27" width="16" height="54" rx="5" fill="#261d52"/>
-            <path d="M-14 -25 V25" stroke="#d8fdff" stroke-width="3.4" stroke-linecap="round"/>
-            <path class="kz-feed" d="M-15 -16 V16" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" opacity=".8"/>
-            <g class="kz-grip-s"><g fill="${C.skin}"><rect x="5" y="-4" width="12" height="8" rx="4"/><rect x="6" y="5" width="11" height="8" rx="4"/><rect x="5" y="14" width="10" height="7" rx="3.5"/></g>
-            <path d="M11 -2 h4 M11 7 h4 M10 16 h3" stroke="#e8907a" stroke-width="1.4" stroke-linecap="round"/></g>
-            <g class="kz-grip-t" opacity="0"><path d="M-16 14 C -18 26 -10 36 2 36 C 14 36 18 26 15 16 C 12 10 -12 8 -16 14Z" fill="${C.skin}"/><path d="M-9 20 q4 3 8 0 M1 21 q4 3 8 0 M-6 28 q6 3 12 0" stroke="#e8907a" stroke-width="1.5" fill="none" stroke-linecap="round"/></g>
+            <rect x="-20" y="-34" width="12" height="68" rx="6" fill="#bff8ff" opacity=".4" filter="url(#kzBlur6)" class="kz-halo-s"/>
+            <rect x="-12" y="-31" width="9" height="62" rx="4.5" fill="#1d1640"/>
+            <path d="M-5 -28 V28" stroke="#3a2f7a" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M-12 -27 V27" stroke="#e6feff" stroke-width="3" stroke-linecap="round"/>
+            <path class="kz-feed" d="M-13 -16 V16" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity=".8"/>
+            <g class="kz-grip-s"><g fill="${C.skin}"><rect x="-6" y="-4" width="12" height="8" rx="4"/><rect x="-5" y="5" width="11" height="8" rx="4"/><rect x="-6" y="14" width="10" height="7" rx="3.5"/></g>
+            <path d="M0 -2 h4 M1 7 h4 M-1 16 h3" stroke="#e8907a" stroke-width="1.4" stroke-linecap="round"/></g>
+            <g class="kz-grip-t" opacity="0"><path d="M-18 14 C -20 26 -14 36 -6 36 C 4 36 8 26 5 16 C 2 10 -14 8 -18 14Z" fill="${C.skin}"/><path d="M-14 20 q4 3 7 0 M-6 21 q4 3 7 0 M-12 28 q6 3 11 0" stroke="#e8907a" stroke-width="1.5" fill="none" stroke-linecap="round"/></g>
           </g>
         </g>
         <path class="kz-beam" fill="url(#kzBeamG)" style="mix-blend-mode: screen" filter="url(#kzBlur3)"/>
@@ -439,7 +439,7 @@
         el['hand-f'].style.opacity = p < .4 ? 0 : 1;
         // the screen edge, in body coordinates
         const toBody = (v) => { const a1 = rot(v, phi), a2 = [a1[0] + gx, a1[1] + gy], a3 = rot(a2, fa); return [W[0] + a3[0], W[1] + a3[1]]; };
-        el._edge = [toBody([-15, -24]), toBody([-15, 24])];
+        el._edge = [toBody([-12, -24]), toBody([-12, 24])];
         const px = W[0], py = W[1];
         el._phone = [px, py];
       }
