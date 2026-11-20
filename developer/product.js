@@ -16,7 +16,7 @@
   media.addEventListener('change', sync);
   sync();
 
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !window.gsap || !window.ScrollTrigger) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !window.gsap || !window.ScrollTrigger || location.search.includes('static')) return;
   gsap.registerPlugin(ScrollTrigger);
   if (window.Lenis) {
     const lenis = new Lenis({ lerp: .11 });

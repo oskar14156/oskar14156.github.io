@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AppReleaser: App Store Connect, Google Play, PricingKit and RevenueCat in one self-hosted release dashboard. Built by Oskar Polster.">
+  <title>AppReleaser — Oskar Polster</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/developer/portfolio.css?v=11">
+  <link rel="stylesheet" href="/developer/product.css?v=11">
+  <link rel="stylesheet" href="/developer/appreleaser/ar.css?v=11">
+  <script>(function(){var t=null;try{t=localStorage.getItem('pf-theme')}catch(e){}var q=location.search.match(/theme=(light|dark)/);if(q)t=q[1];if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;})();</script>
+</head>
+<body class="developer-page pf pp arp">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="pf-header is-solid show-name" id="pf-header">
+    <a class="pf-brand" href="/developer/" aria-label="Back to the portfolio"><span class="brand-mark" aria-hidden="true">op<span>.</span></span><span class="pf-brand-name">OSKAR POLSTER</span></a>
+    <nav class="pf-nav" aria-label="Main navigation">
+      <a class="pf-nav-link" href="/developer/#work">All work</a>
+      <div class="pf-theme" role="group" aria-label="Color theme"><button type="button" data-set-theme="light" aria-pressed="false">Light</button><button type="button" data-set-theme="dark" aria-pressed="false">Dark</button></div>
+      <a class="pf-nav-cta" href="/developer/#contact">Get in touch <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="arp-hero site-container">
+      <p class="eyebrow-pf">In development · Self-hosted release tooling</p>
+      <h1>AppReleaser. <em>Two stores, one dashboard.</em></h1>
+      <p class="pp-lede">Shipping many apps means App Store Connect, Google Play Console and RevenueCat open at once, with the same listing, screenshots and prices typed three times. AppReleaser reads what each store really has, shows what is missing before review, and writes changes back through the official APIs, only after you approve them.</p>
+      <dl class="pp-facts">
+        <div><dd>593</dd><dt>unit tests in CI</dt></div>
+        <div><dd>512</dd><dt>commits since October</dt></div>
+        <div><dd>194</dd><dt>countries in PricingKit</dt></div>
+        <div><dd>96</dd><dt>release checks per app</dt></div>
+      </dl>
+      <div class="arp-open" aria-hidden="true">
+        <div class="browser arp-hero-browser"><div class="browser-bar"><span></span><span></span><span></span><p>AppReleaser · Portfolio</p></div><div class="arp-hero-shot"><img class="pf-light-only" src="/developer/shots/arx/overview-light.jpg" alt="" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/overview-dark.jpg" alt="" loading="lazy"></div></div>
+      </div>
+    </section>
+
+    <section class="sc site-container" aria-label="A walk through AppReleaser">
+      <nav class="sc-nav" aria-label="Chapters"><ol><li><a href="#ch-0" data-ch="0"><span>01</span>Portfolio</a></li><li><a href="#ch-1" data-ch="1"><span>02</span>App Store &amp; Google Play</a></li><li><a href="#ch-2" data-ch="2"><span>03</span>PricingKit</a></li><li><a href="#ch-3" data-ch="3"><span>04</span>RevenueCat</a></li><li><a href="#ch-4" data-ch="4"><span>05</span>Release Studio</a></li><li><a href="#ch-5" data-ch="5"><span>06</span>AI</a></li></ol></nav>
+      <div class="sc-grid">
+        <div class="sc-steps">
+      <div class="sc-step" data-i="0" data-ch="0">
+        <p class="sc-ch" id="ch-0"><span>01</span> Portfolio</p><h2>Every app, both stores, one screen</h2>
+        <h3>Live status for every app</h3>
+        <p>Which version is live, what is in review, whether prices and RevenueCat are in order. Read-only checks against the stores, refreshed in the background.</p>
+        <div class="sc-inline"><img class="pf-light-only" src="/developer/shots/arx/overview-light.jpg" alt="Live status for every app" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/overview-dark.jpg" alt="Live status for every app" loading="lazy"></div>
+      </div>
+      <div class="sc-step" data-i="1" data-ch="0">
+        
+        <h3>Each app&#x27;s launch plan</h3>
+        <p>What is missing before the next release, per app, with the next step on top.</p>
+        <div class="sc-inline"><img class="pf-light-only" src="/developer/shots/arx/launch-light.jpg" alt="Each app&#x27;s launch plan" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/launch-dark.jpg" alt="Each app&#x27;s launch plan" loading="lazy"></div>
+      </div>
+      <div class="sc-step" data-i="2" data-ch="1">
+        <p class="sc-ch" id="ch-1"><span>02</span> App Store &amp; Google Play</p><h2>Listings, screenshots and submission</h2>
+        <h3>Store text in 15 languages</h3>
+        <p>Title, subtitle, keywords and description per locale, checked against each store&#x27;s character limits, with a live preview of both store pages.</p>
+        <div class="sc-inline"><img class="pf-light-only" src="/developer/shots/arx/listing-light.jpg" alt="Store text in 15 languages" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/listing-dark.jpg" alt="Store text in 15 languages" loading="lazy"></div>
+      </div>
+      <div class="sc-step" data-i="3" data-ch="1">
+        
+        <h3>Submit and roll out</h3>
+        <p>Submission, release notes and staged rollouts for Apple and Google from one place. Submissions stay locked until the server explicitly allows them.</p>
+        <div class="sc-inline"><img class="pf-light-only" src="/developer/shots/arx/publish-light.jpg" alt="Submit and roll out" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/publish-dark.jpg" alt="Submit and roll out" loading="lazy"></div>
+      </div>
+      <div class="sc-step" data-i="4" data-ch="2">
+        <p class="sc-ch" id="ch-2"><span>03</span> PricingKit</p><h2>Regional prices without spreadsheets</h2>
+        <h3>Pick a strategy</h3>
+        <p>Purchasing power, Big Mac index, Netflix-style or a custom factor. The preview shows every country before anything is touched.</p>
+        <div class="sc-inline"><img class="pf-light-only" src="/developer/shots/arx/pricing-strategy-light.jpg" alt="Pick a strategy" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/pricing-strategy-dark.jpg" alt="Pick a strategy" loading="lazy"></div>
+      </div>
+      <div class="sc-step" data-i="5" data-ch="2">
+        
+        <h3>Dry run first</h3>
+        <p>A plan lists every change per country against the live store price. Nothing is written until you approve it by typing the exact phrase.</p>
+        <div class="sc-inline"><img class="pf-light-only" src="/developer/shots/arx/pricing-plan-light.jpg" alt="Dry run first" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/pricing-plan-dark.jpg" alt="Dry run first" loading="lazy"></div>
+      </div>
+      <div class="sc-step" data-i="6" data-ch="2">
+        
+        <h3>All apps at once</h3>
+        <p>A read-only monitor across every app and store, plus weekly, yearly and lifetime planning for the whole portfolio.</p>
+        <div class="sc-inline"><img class="pf-light-only" src="/developer/shots/arx/pricing-planner-light.jpg" alt="All apps at once" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/pricing-planner-dark.jpg" alt="All apps at once" loading="lazy"></div>
+      </div>
+      <div class="sc-step" data-i="7" data-ch="3">
+        <p class="sc-ch" id="ch-3"><span>04</span> RevenueCat</p><h2>Products, offerings and entitlements</h2>
+        <h3>The live catalogue</h3>
+        <p>Products from both stores, offerings and entitlements, linked to the right app. Keys are stored encrypted per app.</p>
+        <div class="sc-inline"><img class="pf-light-only" src="/developer/shots/arx/revenuecat-light.jpg" alt="The live catalogue" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/revenuecat-dark.jpg" alt="The live catalogue" loading="lazy"></div>
+      </div>
+      <div class="sc-step" data-i="8" data-ch="3">
+        
+        <h3>Products in both stores</h3>
+        <p>A guided flow that creates the subscription in App Store Connect, Google Play and RevenueCat with matching IDs.</p>
+        <div class="sc-inline"><img class="pf-light-only" src="/developer/shots/arx/products-wizard-light.jpg" alt="Products in both stores" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/products-wizard-dark.jpg" alt="Products in both stores" loading="lazy"></div>
+      </div>
+      <div class="sc-step" data-i="9" data-ch="4">
+        <p class="sc-ch" id="ch-4"><span>05</span> Release Studio</p><h2>Nothing missing at review</h2>
+        <h3>96 store-specific tasks</h3>
+        <p>Every requirement Apple and Google check at review, with a guide, a place for evidence and what the API could confirm.</p>
+        <div class="sc-inline"><img class="pf-light-only" src="/developer/shots/arx/checklist-light.jpg" alt="96 store-specific tasks" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/checklist-dark.jpg" alt="96 store-specific tasks" loading="lazy"></div>
+      </div>
+      <div class="sc-step" data-i="10" data-ch="5">
+        <p class="sc-ch" id="ch-5"><span>06</span> AI</p><h2>From the repository to the listing</h2>
+        <h3>Reads the code, drafts the store text</h3>
+        <p>Connect the repository and AppReleaser understands the app, then drafts listings and compliance answers for you to review.</p>
+        <div class="sc-inline"><img class="pf-light-only" src="/developer/shots/arx/assistant-light.jpg" alt="Reads the code, drafts the store text" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/assistant-dark.jpg" alt="Reads the code, drafts the store text" loading="lazy"></div>
+      </div>
+        </div>
+        <div class="sc-stage" aria-hidden="true">
+          <div class="browser sc-browser">
+            <div class="browser-bar"><span></span><span></span><span></span><p class="sc-url">appreleaser.local</p></div>
+            <div class="sc-screens"><div class="sc-screen" data-i="0"><img class="pf-light-only" src="/developer/shots/arx/overview-light.jpg" alt="Live status for every app" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/overview-dark.jpg" alt="Live status for every app" loading="lazy"></div><div class="sc-screen" data-i="1"><img class="pf-light-only" src="/developer/shots/arx/launch-light.jpg" alt="Each app&#x27;s launch plan" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/launch-dark.jpg" alt="Each app&#x27;s launch plan" loading="lazy"></div><div class="sc-screen" data-i="2"><img class="pf-light-only" src="/developer/shots/arx/listing-light.jpg" alt="Store text in 15 languages" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/listing-dark.jpg" alt="Store text in 15 languages" loading="lazy"></div><div class="sc-screen" data-i="3"><img class="pf-light-only" src="/developer/shots/arx/publish-light.jpg" alt="Submit and roll out" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/publish-dark.jpg" alt="Submit and roll out" loading="lazy"></div><div class="sc-screen" data-i="4"><img class="pf-light-only" src="/developer/shots/arx/pricing-strategy-light.jpg" alt="Pick a strategy" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/pricing-strategy-dark.jpg" alt="Pick a strategy" loading="lazy"></div><div class="sc-screen" data-i="5"><img class="pf-light-only" src="/developer/shots/arx/pricing-plan-light.jpg" alt="Dry run first" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/pricing-plan-dark.jpg" alt="Dry run first" loading="lazy"></div><div class="sc-screen" data-i="6"><img class="pf-light-only" src="/developer/shots/arx/pricing-planner-light.jpg" alt="All apps at once" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/pricing-planner-dark.jpg" alt="All apps at once" loading="lazy"></div><div class="sc-screen" data-i="7"><img class="pf-light-only" src="/developer/shots/arx/revenuecat-light.jpg" alt="The live catalogue" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/revenuecat-dark.jpg" alt="The live catalogue" loading="lazy"></div><div class="sc-screen" data-i="8"><img class="pf-light-only" src="/developer/shots/arx/products-wizard-light.jpg" alt="Products in both stores" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/products-wizard-dark.jpg" alt="Products in both stores" loading="lazy"></div><div class="sc-screen" data-i="9"><img class="pf-light-only" src="/developer/shots/arx/checklist-light.jpg" alt="96 store-specific tasks" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/checklist-dark.jpg" alt="96 store-specific tasks" loading="lazy"></div><div class="sc-screen" data-i="10"><img class="pf-light-only" src="/developer/shots/arx/assistant-light.jpg" alt="Reads the code, drafts the store text" loading="lazy"><img class="pf-dark-only" src="/developer/shots/arx/assistant-dark.jpg" alt="Reads the code, drafts the store text" loading="lazy"></div></div>
+          </div>
+          <div class="sc-progress"><span></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pp-tech site-container" aria-labelledby="tech-title">
+      <p class="eyebrow-pf">How it's built</p>
+      <h2 id="tech-title">Under the hood.</h2>
+      <dl class="pp-tech-grid">
+        <div><dt>Next.js 16 · React 19</dt><dd>App Router, server actions and a typed API layer, in TypeScript throughout</dd></div>
+        <div><dt>Store APIs</dt><dd>App Store Connect API, Google Android Publisher API, RevenueCat API v2, Huawei token exchange</dd></div>
+        <div><dt>Safety first</dt><dd>Every write is a dry run first, approved by typing an exact phrase; live writes are off unless the server allows them</dd></div>
+        <div><dt>Secrets</dt><dd>Store keys in an AES-256-GCM vault with local or cloud KMS, scoped per app and organisation</dd></div>
+        <div><dt>Drizzle · Postgres</dt><dd>Multi-tenant data with background jobs for status sweeps, reviews and notifications</dd></div>
+        <div><dt>593 tests</dt><dd>Unit tests, a local smoke test against every API route and a browser QA that screenshots every page in both themes</dd></div>
+      </dl>
+    </section>
+
+    <section class="pp-tech site-container" aria-labelledby="panels-title">
+      <p class="eyebrow-pf">Product views</p>
+      <h2 id="panels-title">Every view, in English.</h2>
+      <p class="arp-note">The product UI ships in German today; these are the same components rendered with English sample text and my own apps.</p>
+      <div class="ar-bento"><figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/release-light.jpg" alt="Release assistant" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/release-dark.jpg" alt="Release assistant" loading="lazy"><figcaption>Release assistant</figcaption></figure><figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/listing-light.jpg" alt="Store listing with an AI draft" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/listing-dark.jpg" alt="Store listing with an AI draft" loading="lazy"><figcaption>Store listing with an AI draft</figcaption></figure><figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/approval-light.jpg" alt="Every change as before and after" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/approval-dark.jpg" alt="Every change as before and after" loading="lazy"><figcaption>Every change as before and after</figcaption></figure><figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/rollout-light.jpg" alt="Staged rollout" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/rollout-dark.jpg" alt="Staged rollout" loading="lazy"><figcaption>Staged rollout</figcaption></figure><figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/pricing-light.jpg" alt="Price per country" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/pricing-dark.jpg" alt="Price per country" loading="lazy"><figcaption>Price per country</figcaption></figure><figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/revenuecat-light.jpg" alt="RevenueCat products" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/revenuecat-dark.jpg" alt="RevenueCat products" loading="lazy"><figcaption>RevenueCat products</figcaption></figure><figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/builds-light.jpg" alt="Builds from a local agent" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/builds-dark.jpg" alt="Builds from a local agent" loading="lazy"><figcaption>Builds from a local agent</figcaption></figure><figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/reviews-light.jpg" alt="Reviews with draft replies" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/reviews-dark.jpg" alt="Reviews with draft replies" loading="lazy"><figcaption>Reviews with draft replies</figcaption></figure><figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/keychain-light.jpg" alt="Keys and certificates" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/keychain-dark.jpg" alt="Keys and certificates" loading="lazy"><figcaption>Keys and certificates</figcaption></figure><figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/insights-light.jpg" alt="Insights per app" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/insights-dark.jpg" alt="Insights per app" loading="lazy"><figcaption>Insights per app</figcaption></figure></div>
+    </section>
+
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="contact-inner site-container">
+        <p class="eyebrow-pf">Get in touch</p>
+        <h2 id="contact-title">Working on <em>a mobile app?</em></h2>
+        <p>I'm open to freelance work in React Native and native iOS.</p>
+        <a class="contact-mail" href="mailto:oskarpolster.business@gmail.com">oskarpolster.business@gmail.com <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer pf-footer"><div class="site-container footer-inner"><a class="footer-brand" href="/developer/">OSKAR POLSTER<span>© 2026</span></a><p>Screens from a local instance with sample data; no store was contacted.</p><nav aria-label="Footer navigation"><a href="/developer/">Portfolio</a><a href="/">Home</a><a href="/impressum/">Impressum</a></nav></div></footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="/developer/product.js?v=12s"></script>
+  <script src="/developer/appreleaser/ar.js?v=11"></script>
+</body>
+</html>

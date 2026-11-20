@@ -169,6 +169,22 @@
     });
   });
 
+  /* ---------- 3b · Open the work: each window rises over the previous one ---------- */
+  const wins = gsap.utils.toArray('.win');
+  if (wins.length) {
+    root.classList.add('has-stack');
+    document.querySelector('.stack').style.setProperty('--wins', wins.length);
+    wins.forEach((w, i) => { if (i) gsap.set(w, { y: () => window.innerHeight, rotateX: 18, scale: .94 }); w.style.zIndex = i + 1; });
+    const tl = gsap.timeline({ scrollTrigger: { trigger: '.stack', start: 'top top', end: 'bottom bottom', scrub: 1,
+      onUpdate: (st) => { const a = Math.min(wins.length - 1, Math.round(st.progress * (wins.length - 1))); wins.forEach((w, i) => { w.style.pointerEvents = i === a ? 'auto' : 'none'; }); } } });
+    wins.forEach((w, i) => {
+      if (!i) return;
+      tl.to(w, { y: 0, rotateX: 0, scale: 1, duration: 1, ease: 'power2.out' }, i - 1)
+        .to(wins[i - 1], { scale: .92, yPercent: -1.5, opacity: .3, filter: 'blur(2px)', duration: 1, ease: 'power1.in' }, i - 1);
+    });
+    tl.to({}, { duration: .4 });
+  }
+
   /* ---------- 4 · Path: horizontal on wide screens ---------- */
   const mm = gsap.matchMedia();
   mm.add('(min-width: 761px)', () => {

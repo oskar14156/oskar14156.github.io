@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/developer/portfolio.css?v=9">
+  <link rel="stylesheet" href="/developer/portfolio.css?v=15">
   <script>
     // Theme before first paint: saved pick, else the system setting.
     (function () {
@@ -30,7 +30,7 @@
     </a>
     <nav class="pf-nav" aria-label="Main navigation">
       <a class="pf-nav-link" href="#work">Work</a>
-      <a class="pf-nav-link" href="#appreleaser">AppReleaser</a>
+      <a class="pf-nav-link" href="/developer/appreleaser/">AppReleaser</a>
       <a class="pf-nav-link" href="#tools">Side projects</a>
       <div class="pf-theme" role="group" aria-label="Color theme">
         <button type="button" data-set-theme="light" aria-pressed="false">Light</button>
@@ -87,7 +87,7 @@
               <video class="flight-screen is-active" data-step="0" src="/developer/media/voyeva-recap.mp4" poster="/developer/media/voyeva-recap.jpg" muted loop playsinline preload="none" aria-label="Voyeva trip recap video"></video>
               <img class="flight-screen" data-step="1" src="/developer/shots/novus-3.jpg" alt="Novus run through Vienna coloured by pace" loading="lazy">
               <img class="flight-screen" data-step="2" src="/developer/shots/unscroll-1.jpg" alt="Unscroll today screen" loading="lazy">
-              <img class="flight-screen" data-step="3" src="/developer/shots/stub-3.jpg" alt="Stub money flow" loading="lazy">
+              <img class="flight-screen" data-step="3" src="/developer/shots/stub-4.jpg" alt="Stub line items from a scanned receipt" loading="lazy">
               <img class="flight-screen" data-step="4" src="/developer/shots/voyeva-11.jpg" alt="Voyeva 3D globe" loading="lazy">
             </div>
             <img class="device-frame" src="/developer/shots/frame-black.png" alt="" width="640" height="1306">
@@ -98,7 +98,7 @@
           <li data-step="0">A trip recap, rendered on the phone. SwiftUI and MapKit.</li>
           <li data-step="1">A real run, coloured by pace. SwiftUI, HealthKit, watchOS.</li>
           <li data-step="2">Blocks apps with Apple's Screen Time APIs, from React Native.</li>
-          <li data-step="3">Every receipt line item, then where the money went.</li>
+          <li data-step="3">A real receipt, scanned: every line item, categorised.</li>
           <li data-step="4">React Native where it helps, native code where it counts.</li>
         </ol>
         <div class="flight-progress" aria-hidden="true"><span></span></div>
@@ -116,6 +116,53 @@
       <ul class="stack-marquee" aria-label="Main technologies">
         <li>React Native</li><li>Expo · EAS</li><li>TypeScript</li><li>Swift · SwiftUI</li><li>Kotlin</li><li>Expo Modules API</li><li>Config plugins</li><li>Firebase</li><li>Sentry</li><li>RevenueCat</li><li>Jest</li><li>fastlane</li>
       </ul>
+    </section>
+
+    <!-- 3b · OPEN THE WORK: product pages open one after another -->
+    <section class="stack" id="pages" aria-labelledby="stack-title">
+      <div class="stack-stage">
+        <div class="stack-head site-container">
+          <p class="eyebrow-pf">Open the work</p>
+          <h2 id="stack-title">Seven products. <em>Keep scrolling, each one opens.</em></h2>
+        </div>
+        <div class="stack-windows">
+          <a class="win" href="/developer/voyeva/" data-i="0">
+            <div class="browser win-browser"><div class="browser-bar"><span></span><span></span><span></span><p>oskar14156.github.io/developer/voyeva</p></div>
+              <img class="pf-light-only" src="/developer/shots/pages/voyeva-light.jpg" alt="Voyeva page" loading="lazy"><img class="pf-dark-only" src="/developer/shots/pages/voyeva-dark.jpg" alt="Voyeva page" loading="lazy"></div>
+            <span class="win-label"><b>01</b> Voyeva <small>Travel · native Swift</small> <i>Open →</i></span>
+          </a>
+          <a class="win" href="/developer/novus/" data-i="1">
+            <div class="browser win-browser"><div class="browser-bar"><span></span><span></span><span></span><p>oskar14156.github.io/developer/novus</p></div>
+              <img class="pf-light-only" src="/developer/shots/pages/novus-light.jpg" alt="Novus page" loading="lazy"><img class="pf-dark-only" src="/developer/shots/pages/novus-dark.jpg" alt="Novus page" loading="lazy"></div>
+            <span class="win-label"><b>02</b> Novus <small>Fitness · Swift + watchOS</small> <i>Open →</i></span>
+          </a>
+          <a class="win" href="/developer/stub/" data-i="2">
+            <div class="browser win-browser"><div class="browser-bar"><span></span><span></span><span></span><p>oskar14156.github.io/developer/stub</p></div>
+              <img class="pf-light-only" src="/developer/shots/pages/stub-light.jpg" alt="Stub page" loading="lazy"><img class="pf-dark-only" src="/developer/shots/pages/stub-dark.jpg" alt="Stub page" loading="lazy"></div>
+            <span class="win-label"><b>03</b> Stub <small>Receipts · React Native</small> <i>Open →</i></span>
+          </a>
+          <a class="win" href="/developer/unscroll/" data-i="3">
+            <div class="browser win-browser"><div class="browser-bar"><span></span><span></span><span></span><p>oskar14156.github.io/developer/unscroll</p></div>
+              <img class="pf-light-only" src="/developer/shots/pages/unscroll-light.jpg" alt="Unscroll page" loading="lazy"><img class="pf-dark-only" src="/developer/shots/pages/unscroll-dark.jpg" alt="Unscroll page" loading="lazy"></div>
+            <span class="win-label"><b>04</b> Unscroll <small>Screen Time · React Native</small> <i>Open →</i></span>
+          </a>
+          <a class="win" href="/developer/riseproof/" data-i="4">
+            <div class="browser win-browser"><div class="browser-bar"><span></span><span></span><span></span><p>oskar14156.github.io/developer/riseproof</p></div>
+              <img class="pf-light-only" src="/developer/shots/pages/riseproof-light.jpg" alt="RiseProof page" loading="lazy"><img class="pf-dark-only" src="/developer/shots/pages/riseproof-dark.jpg" alt="RiseProof page" loading="lazy"></div>
+            <span class="win-label"><b>05</b> RiseProof <small>Alarm · React Native</small> <i>Open →</i></span>
+          </a>
+          <a class="win" href="/developer/vbg/" data-i="5">
+            <div class="browser win-browser"><div class="browser-bar"><span></span><span></span><span></span><p>oskar14156.github.io/developer/vbg</p></div>
+              <img class="pf-light-only" src="/developer/shots/pages/vbg-light.jpg" alt="Video Background Remover page" loading="lazy"><img class="pf-dark-only" src="/developer/shots/pages/vbg-dark.jpg" alt="Video Background Remover page" loading="lazy"></div>
+            <span class="win-label"><b>06</b> Video Background Remover <small>Video · React Native</small> <i>Open →</i></span>
+          </a>
+          <a class="win" href="/developer/appreleaser/" data-i="6">
+            <div class="browser win-browser"><div class="browser-bar"><span></span><span></span><span></span><p>oskar14156.github.io/developer/appreleaser</p></div>
+              <img class="pf-light-only" src="/developer/shots/pages/appreleaser-light.jpg" alt="AppReleaser page" loading="lazy"><img class="pf-dark-only" src="/developer/shots/pages/appreleaser-dark.jpg" alt="AppReleaser page" loading="lazy"></div>
+            <span class="win-label"><b>07</b> AppReleaser <small>Release tooling · Next.js</small> <i>Open →</i></span>
+          </a>
+        </div>
+      </div>
     </section>
 
     <!-- 4 · PATH: horizontal -->
@@ -255,13 +302,20 @@
               </ul>
               <p class="receipt-total"><span>TOTAL</span><span>39.99</span></p>
             </div>
-            <div class="device scan-phone"><div class="device-screen"><img src="/developer/shots/stub-1.jpg" alt="" loading="lazy"><span class="scan-beam"></span></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+            <div class="device scan-phone"><div class="device-screen"><img src="/developer/shots/stub-4.jpg" alt="" loading="lazy"><span class="scan-beam"></span></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
           </div>
         </div>
         <div class="pf-gallery" data-app="stub">
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-1.jpg" alt="Monthly overview from scanned receipts" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Monthly overview from scanned receipts</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-2.jpg" alt="Budgets per category" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Budgets per category</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-3.jpg" alt="Where the money goes, as a Sankey diagram" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Where the money goes, as a Sankey diagram</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-1.jpg" alt="Scan one receipt or a whole stack" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Scan one receipt or a whole stack</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-2.jpg" alt="Reading runs in the background" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Reading runs in the background</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-3.jpg" alt="A real scan: merchant, date, total, currency" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>A real scan: merchant, date, total, currency</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-4.jpg" alt="Every line item, already categorised" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Every line item, already categorised</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-5.jpg" alt="The receipt stays with its photo" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>The receipt stays with its photo</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-6.jpg" alt="Every receipt, searchable" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-6-dark.jpg" alt="Every receipt, searchable" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Every receipt, searchable</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-7.jpg" alt="The month at a glance" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-7-dark.jpg" alt="The month at a glance" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>The month at a glance</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-8.jpg" alt="Where the money comes from and goes" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-8-dark.jpg" alt="Where the money comes from and goes" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Where the money comes from and goes</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-9.jpg" alt="Spending by category" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Spending by category</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-10.jpg" alt="Stub Pro" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Stub Pro</figcaption></figure>
         </div><!--/gallery-->
       </article>
 
@@ -386,7 +440,7 @@
         <figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/keychain-light.jpg" alt="Keys and certificates with expiry warnings" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/keychain-dark.jpg" alt="Keys and certificates with expiry warnings" loading="lazy"><figcaption>Keys and certificates</figcaption></figure>
         <figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/insights-light.jpg" alt="Rating, crash rate and open reviews" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/insights-dark.jpg" alt="Rating, crash rate and open reviews" loading="lazy"><figcaption>Insights per app</figcaption></figure>
       </div>
-      <p class="ar-note site-container">Real AppReleaser components with sample data and my own apps. The product itself ships in German today.</p>
+      <p class="ar-note site-container">Real AppReleaser components with sample data and my own apps. <a href="/developer/appreleaser/">Walk through every screen of the real app →</a></p>
       <div class="ar-grid site-container">
         <ul class="ar-features">
           <li><strong>Portfolio at a glance</strong> Every app's state in both stores, prices and RevenueCat on one screen</li>
@@ -464,7 +518,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-  <script src="/developer/portfolio.js?v=9"></script>
-  <script src="/developer/ink.js?v=9"></script>
+  <script src="/developer/portfolio.js?v=15"></script>
+  <script src="/developer/ink.js?v=15"></script>
 </body>
 </html>

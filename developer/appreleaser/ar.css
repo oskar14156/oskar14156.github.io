@@ -1,0 +1,51 @@
+/* AppReleaser page: a sticky browser whose screens open one after another as the steps scroll by. */
+.arp-hero { padding: clamp(130px, 15vw, 200px) 0 0; }
+.arp-hero h1 { margin-top: 18px; max-width: 13ch; font-size: clamp(54px, 8.5vw, 136px); line-height: .88; letter-spacing: -.065em; font-weight: 500; }
+.arp-hero h1 em { color: var(--accent-deep); }
+.arp-hero .pp-facts { margin-top: clamp(40px, 5vw, 64px); }
+.arp-open { margin-top: clamp(60px, 8vw, 110px); perspective: 1800px; }
+.arp-hero-browser { transform-origin: 50% 0; }
+.arp-hero-shot img { display: block; width: 100%; height: auto; }
+.arp-note { margin-top: 14px !important; max-width: 60ch; color: var(--muted); font-size: 15px; }
+
+/* Chapter rail */
+.sc { padding-top: clamp(100px, 12vw, 160px); }
+.sc-nav { position: sticky; top: 70px; z-index: 5; margin-bottom: 28px; padding: 8px 0; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.sc-nav ol { display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; overflow-x: auto; scrollbar-width: none; }
+.sc-nav a { display: inline-flex; gap: 8px; align-items: baseline; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); font-size: 14px; font-weight: 500; text-decoration: none; color: var(--text-soft); white-space: nowrap; transition: background-color .25s, color .25s, border-color .25s; }
+.sc-nav a span { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.sc-nav a.is-active { background: var(--text); color: var(--bg); border-color: var(--text); }
+.sc-nav a.is-active span { color: var(--accent); }
+
+.sc-grid { display: grid; grid-template-columns: minmax(0, .62fr) minmax(0, 1.38fr); gap: clamp(28px, 4vw, 64px); }
+.sc-step { min-height: 92vh; display: flex; flex-direction: column; justify-content: center; padding: 6vh 0; opacity: .32; transition: opacity .4s ease; }
+.sc-step.is-active { opacity: 1; }
+.sc-ch { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.sc-ch span { color: var(--accent-deep); }
+.sc-step h2 { margin: 10px 0 34px !important; font-size: clamp(34px, 3.6vw, 54px); line-height: .95; letter-spacing: -.055em; font-weight: 500; }
+.sc-step h3 { font-size: 24px; letter-spacing: -.035em; font-weight: 500; }
+.sc-step > p:not(.sc-ch) { margin-top: 12px !important; font-size: 17px; line-height: 1.55; color: var(--text-soft); max-width: 36ch; }
+.sc-inline { display: none; }
+
+.sc-stage { position: sticky; top: calc(50vh - min(30vw, 300px)); height: fit-content; }
+.sc-browser { perspective: 1600px; }
+.sc-screens { position: relative; aspect-ratio: 1440 / 900; overflow: hidden; background: var(--surface); }
+.sc-screen { position: absolute; inset: 0; opacity: 0; transform: translateY(6%) scale(.97); clip-path: inset(10% 8% 0 8% round 14px); transition: opacity .55s ease, transform .75s cubic-bezier(.2, .8, .2, 1), clip-path .75s cubic-bezier(.2, .8, .2, 1); }
+.sc-screen img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+.sc-screen.is-active { opacity: 1; transform: none; clip-path: inset(0 0 0 0 round 0); }
+.sc-screen.is-past { opacity: 0; transform: translateY(-4%) scale(.96); }
+.sc-url { transition: opacity .3s; }
+.sc-progress { height: 2px; margin-top: 16px; background: var(--line); }
+.sc-progress span { display: block; height: 100%; background: var(--accent-deep); transform-origin: 0 50%; transform: scaleX(0); transition: transform .4s ease; }
+
+.arp .ar-bento { margin-top: clamp(32px, 4vw, 48px); }
+
+@media (max-width: 980px) {
+  .sc-grid { grid-template-columns: 1fr; }
+  .sc-stage { display: none; }
+  .sc-step { min-height: 0; opacity: 1; padding: 40px 0; }
+  .sc-inline { display: block; margin-top: 20px; border-radius: 12px; overflow: hidden; box-shadow: 0 24px 50px -28px var(--shadow), 0 0 0 1px var(--line); }
+  .sc-inline img { width: 100%; height: auto; }
+  .sc-nav { top: 60px; }
+}
+@media (prefers-reduced-motion: reduce) { .sc-screen { transition: none; } }

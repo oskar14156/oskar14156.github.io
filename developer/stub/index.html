@@ -9,9 +9,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/developer/portfolio.css?v=9">
-  <link rel="stylesheet" href="/developer/product.css?v=9">
-  <script>(function(){var t=null;try{t=localStorage.getItem('pf-theme')}catch(e){}if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;})();</script>
+  <link rel="stylesheet" href="/developer/portfolio.css?v=12">
+  <link rel="stylesheet" href="/developer/product.css?v=12">
+  <script>(function(){var t=null;try{t=localStorage.getItem('pf-theme')}catch(e){}var q=location.search.match(/theme=(light|dark)/);if(q)t=q[1];if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;})();</script>
 </head>
 <body class="developer-page pf pp">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -40,9 +40,31 @@
           <p class="pp-lede">Point the camera at any receipt, or import photos and PDF invoices, many at once. Stub reads every line item and shows where the money goes.</p>
           <div class="pp-actions"><a class="pp-btn" href="/stub/">Support &amp; legal <span aria-hidden="true">↗</span></a></div>
         </div>
-        <div class="pp-hero-phones"><figure class="pp-shot pp-r"><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-1.jpg" alt="Monthly overview from scanned receipts" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" alt=""></div><figcaption>Monthly overview from scanned receipts</figcaption></figure></div>
+        <div class="pp-hero-phones"><figure class="pp-shot pp-l"><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-1.jpg" alt="Scan one receipt or a whole stack" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" alt=""></div><figcaption>Scan one receipt or a whole stack</figcaption></figure><figure class="pp-shot pp-c"><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-4.jpg" alt="Every line item, already categorised" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" alt=""></div><figcaption>Every line item, already categorised</figcaption></figure><figure class="pp-shot pp-r"><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-7.jpg" alt="The month at a glance" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt=""></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-7-dark.jpg" alt="The month at a glance" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" alt=""></div><figcaption>The month at a glance</figcaption></figure></div>
       </div>
-      <dl class="pp-facts site-container"><div><dd>77</dd><dt>Jest test files</dt></div><div><dd>2</dd><dt>platforms</dt></div><div><dd>1</dd><dt>native OCR module</dt></div><div><dd>Expo 57</dd><dt>SDK</dt></div></dl>
+      <dl class="pp-facts site-container"><div><dd>9/9</dd><dt>items read from a real receipt</dt></div><div><dd>77</dd><dt>Jest test files</dt></div><div><dd>261</dd><dt>demo receipts, 12 months</dt></div><div><dd>2</dd><dt>platforms</dt></div></dl>
+    </section>
+
+    <section class="pp-chapter">
+      <div class="pp-chapter-grid site-container">
+        <div class="pp-chapter-text">
+          <p class="pp-no">01</p>
+          <h2>Scan anything, as many as you like</h2>
+          <p>Point the camera at a receipt or pick a stack of photos and PDF invoices. The system scanner straightens the paper, and a queue reads everything in the background while you keep scanning.</p>
+        </div>
+        <div class="pp-strip"><figure class="pp-shot "><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-1.jpg" alt="Scan one receipt or a whole stack" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" alt=""></div><figcaption>Scan one receipt or a whole stack</figcaption></figure><figure class="pp-shot "><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-2.jpg" alt="Reading runs in the background" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" alt=""></div><figcaption>Reading runs in the background</figcaption></figure><figure class="pp-shot "><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-5.jpg" alt="The receipt stays with its photo" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" alt=""></div><figcaption>The receipt stays with its photo</figcaption></figure></div>
+      </div>
+    </section>
+
+    <section class="pp-chapter pp-flip">
+      <div class="pp-chapter-grid site-container">
+        <div class="pp-chapter-text">
+          <p class="pp-no">02</p>
+          <h2>Every line item, not just the total</h2>
+          <p>This BILLA receipt was printed, photographed and scanned for real. Stub found the store, the date, all nine items in German, translated and categorised them, and noticed the receipt was in euros.</p>
+        </div>
+        <div class="pp-strip"><figure class="pp-shot "><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-3.jpg" alt="A real scan: merchant, date, total, currency" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" alt=""></div><figcaption>A real scan: merchant, date, total, currency</figcaption></figure><figure class="pp-shot "><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-4.jpg" alt="Every line item, already categorised" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" alt=""></div><figcaption>Every line item, already categorised</figcaption></figure></div>
+      </div>
     </section>
 
     <section class="pp-chapter">
@@ -50,9 +72,9 @@
         <div class="pp-chapter-text">
           <p class="pp-no">03</p>
           <h2>Where the money goes</h2>
-          <p>A monthly overview, budgets per category and a Sankey diagram from income to spending.</p>
+          <p>Twelve months of receipts become a monthly overview, budgets, a searchable list and a Sankey diagram from income to every category.</p>
         </div>
-        <div class="pp-strip"><figure class="pp-shot "><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-1.jpg" alt="Monthly overview from scanned receipts" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" alt=""></div><figcaption>Monthly overview from scanned receipts</figcaption></figure><figure class="pp-shot "><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-2.jpg" alt="Budgets per category" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" alt=""></div><figcaption>Budgets per category</figcaption></figure><figure class="pp-shot "><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-3.jpg" alt="Where the money goes, as a Sankey diagram" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" alt=""></div><figcaption>Where the money goes, as a Sankey diagram</figcaption></figure></div>
+        <div class="pp-strip"><figure class="pp-shot "><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-7.jpg" alt="The month at a glance" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt=""></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-7-dark.jpg" alt="The month at a glance" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" alt=""></div><figcaption>The month at a glance</figcaption></figure><figure class="pp-shot "><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-6.jpg" alt="Every receipt, searchable" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt=""></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-6-dark.jpg" alt="Every receipt, searchable" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" alt=""></div><figcaption>Every receipt, searchable</figcaption></figure><figure class="pp-shot "><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-8.jpg" alt="Where the money comes from and goes" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt=""></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-8-dark.jpg" alt="Where the money comes from and goes" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" alt=""></div><figcaption>Where the money comes from and goes</figcaption></figure><figure class="pp-shot "><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-9.jpg" alt="Spending by category" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" alt=""></div><figcaption>Spending by category</figcaption></figure></div>
       </div>
     </section>
 
@@ -88,6 +110,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-  <script src="/developer/product.js?v=9"></script>
+  <script src="/developer/product.js?v=12s"></script>
 </body>
 </html>
