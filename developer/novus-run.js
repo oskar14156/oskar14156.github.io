@@ -26,6 +26,8 @@
     const u = clamp((b - BP[i]) / (BP[i + 1] - BP[i])), A = hex(RAMP[i]), B = hex(RAMP[i + 1]);
     return `rgb(${A.map((v, k) => Math.round(v + (B[k] - v) * u)).join(',')})`; };
   let data = null, map = null, ready = false, progress = 0, marker = null, overview = null;
+  const ge = sec.querySelector('.nr-ge'), geDot = sec.querySelector('.nr-ge-dot'); let geOk = !!ge;
+  if (ge) ge.addEventListener('error', () => { geOk = false; ge.remove(); geDot.remove(); });
   const hr = sec.querySelector('.nr-hr svg'), hrLine = hr && hr.querySelector('.nr-hr-line'), hrArea = hr && hr.querySelector('.nr-hr-area'), hrDot = hr && hr.querySelector('.nr-hr-dot');
   let hrPts = [];
   const buildHR = () => { const P = data.pts, n = P.length - 1;
@@ -68,6 +70,14 @@
       zoom: lerp(follow.zoom - intro * 1.4, o.zoom, t), pitch: lerp(follow.pitch - intro * 18, o.pitch, t), bearing: angLerp(follow.bearing - intro * 30, o.bearing, t),
     });
     marker.setLngLat([r.lon, r.lat]);
+    // the Google Earth flight (pre-rendered, scrubbed): streets in real 3D for the first 3 km, then the climb
+    if (ge && geOk) {
+      const vt = p < .46 ? lerp(0, 15, span(p, .03, .46)) : lerp(15, 21.97, span(p, .46, .64));
+      if (ge.readyState >= 1 && Math.abs(ge.currentTime - vt) > 1 / 50) { try { ge.currentTime = vt; } catch (e) {} }
+      const geVis = 1 - span(p, .6, .66);
+      ge.style.opacity = geVis; geDot.style.opacity = (1 - span(p, .44, .5)) * span(p, .02, .04);
+      marker.getElement().style.opacity = geVis > .99 ? 0 : 1 - geVis;
+    }
     // the route so far, coloured by pace
     const P = data.pts, feats = [];
     for (let k = 0; k < r.i; k++) feats.push({ type: 'Feature', properties: { c: hrColor(P[k][4] || data.avgHR) }, geometry: { type: 'LineString', coordinates: [[P[k][0], P[k][1]], [P[k + 1][0], P[k + 1][1]]] } });
@@ -131,6 +141,7 @@
   let loading = false;
   const load = () => {
     if (loading) return; loading = true;
+    if (ge) { ge.src = ge.dataset.src.replace('{w}', innerWidth < 800 ? '960' : '1600'); ge.load(); }
     const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css'; document.head.appendChild(css);
     const s = document.createElement('script'); s.src = 'https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js';
     Promise.all([fetch('/developer/data/novus-run.json').then((r) => r.json()), new Promise((res, rej) => { s.onload = res; s.onerror = rej; document.head.appendChild(s); })])
