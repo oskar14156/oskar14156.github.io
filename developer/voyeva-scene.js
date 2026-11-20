@@ -24,7 +24,7 @@ function init() {
   const caps = [...sec.querySelectorAll('.vs-cap')];
   const NS = 'http://www.w3.org/2000/svg', routeSvg = document.createElementNS(NS, 'svg');
   routeSvg.setAttribute('class', 'vs-route'); routeSvg.setAttribute('aria-hidden', 'true');
-  routeSvg.innerHTML = '<polyline class="vs-route-glow" fill="none" stroke="#2fc6f0" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".22"/><polyline class="vs-route-core" fill="none" stroke="#2fc6f0" stroke-linecap="round" stroke-linejoin="round"/>';
+  routeSvg.innerHTML = '<polyline class="vs-route-glow" fill="none" stroke="#041026" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".55"/><polyline class="vs-route-core" fill="none" stroke="#2fc6f0" stroke-linecap="round" stroke-linejoin="round"/>';
   clipBox.insertBefore(routeSvg, planeIcon);
   const routeGlow = routeSvg.firstChild, routeCore = routeSvg.lastChild;
   const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -169,21 +169,27 @@ function init() {
     g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('prev', new THREE.Float32BufferAttribute(prv, 3));
     g.setAttribute('next', new THREE.Float32BufferAttribute(nxt, 3)); g.setAttribute('side', new THREE.Float32BufferAttribute(side, 1));
     g.setAttribute('along', new THREE.Float32BufferAttribute(along, 1)); g.setIndex(idx);
-    const glow = new THREE.Mesh(g, lineMat(color, width * 3.2)); glow.material.uniforms.uOpacity.value = .22; glow.frustumCulled = false;
+    // a dark casing under a bright core keeps the route readable over white cloud
+    const glow = new THREE.Mesh(g, lineMat(0x041026, width * 2.5)); glow.material.uniforms.uOpacity.value = .55; glow.frustumCulled = false;
     const core = new THREE.Mesh(g, lineMat(color, width)); core.frustumCulled = false;
     scene.add(glow, core); const L = { glow, core, start, end, fn, width }; lines.push(L); return L;
   };
   const CYAN = 0x2fc6f0, GOLD = 0xf2b02c, RED = 0xef4b4b;
-  const mainLine = addLine(main, CYAN, 2.6, 0, 0);
-  addLine(groundPath([P.VIE, P.BUD]), GOLD, 2.2, 0, .1);
-  addLine(groundPath([P.PEK, P.XIY, P.CKG]), RED, 2.2, .3, .5);
-  addLine(groundPath([P.CKG, P.KWL, P.YSO]), GOLD, 2.2, .42, .58);
-  addLine(flightArc(P.KWL, P.KIX), CYAN, 2.4, .5, .7);
-  addLine(groundPath([P.OSA, P.NGO, P.SKG]), GOLD, 2.2, .62, .76);
-  addLine(flightArc(P.NGO, P.CTS), CYAN, 2.4, .7, .84);
-  addLine(flightArc(P.CTS, P.VIE), CYAN, 2.4, .8, 1);
+  const mainLine = addLine(main, CYAN, 3.4, 0, 0);
+  addLine(groundPath([P.VIE, P.BUD]), GOLD, 3, 0, .1);
+  addLine(groundPath([P.PEK, P.XIY, P.CKG]), RED, 3, .3, .5);
+  addLine(groundPath([P.CKG, P.KWL, P.YSO]), GOLD, 3, .42, .58);
+  addLine(flightArc(P.KWL, P.KIX), CYAN, 3, .5, .7);
+  addLine(groundPath([P.OSA, P.NGO, P.SKG]), GOLD, 3, .62, .76);
+  addLine(flightArc(P.NGO, P.CTS), CYAN, 3, .7, .84);
+  addLine(flightArc(P.CTS, P.VIE), CYAN, 3, .8, 1);
   const dotTex = new THREE.CanvasTexture((() => { const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d');
     x.fillStyle = 'rgba(255,255,255,.28)'; x.beginPath(); x.arc(32, 32, 30, 0, 7); x.fill(); x.fillStyle = '#fff'; x.beginPath(); x.arc(32, 32, 15, 0, 7); x.fill(); return c; })());
+  // stop names, shown as each leg reaches them
+  const STOPS = [['VIE', 'Vienna', 0, -1], ['BUD', 'Budapest', 0, 1], ['PEK', 'Beijing', .3, 1], ['XIY', "Xi'an", .4, -1], ['CKG', 'Chongqing', .5, -1],
+    ['KWL', 'Guilin', .55, 1], ['KIX', 'Osaka', .7, -1], ['NGO', 'Nagoya', .68, 1], ['CTS', 'Sapporo', .84, 1]].map(([k, name, at, side]) => {
+    const el = document.createElement('div'); el.className = 'vs-stop' + (side < 0 ? ' vs-stop-l' : ''); el.textContent = name; clipBox.insertBefore(el, planeIcon);
+    return { el, P: unit(...P[k]).multiplyScalar(R + 12), at: lerp(.3, .52, at), side }; });
   const cities = ['VIE', 'BUD', 'PEK', 'KIX', 'CTS', 'CKG', 'NGO'].map((k) => { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: dotTex, sizeAttenuation: false, depthTest: false, transparent: true, toneMapped: false }));
     s.position.copy(unit(...P[k])).multiplyScalar(R + 12); s.scale.setScalar(.012); scene.add(s); return s; });
 
@@ -356,8 +362,8 @@ function init() {
       const k = L === mainLine ? 1 : span(p, lerp(.3, .52, L.start), lerp(.3, .52, L.end));
       if (L !== mainLine) { L.core.material.uniforms.uDraw.value = L.glow.material.uniforms.uDraw.value = k; }
       const fade = L === mainLine ? lineK : lineK * (1 - easeIO(span(p, .6, .68)));
-      L.core.material.uniforms.uOpacity.value = fade; L.glow.material.uniforms.uOpacity.value = .22 * fade * (1 - span(p, .62, .7));
-      [L.core, L.glow].forEach((m) => { m.material.uniforms.uCamDir.value.copy(camDir); m.material.uniforms.uWidth.value = (m === L.glow ? L.width * 3.2 : L.width) * wScale; m.visible = fade > .002; });
+      L.core.material.uniforms.uOpacity.value = fade; L.glow.material.uniforms.uOpacity.value = .55 * fade * (1 - span(p, .62, .7));
+      [L.core, L.glow].forEach((m) => { m.material.uniforms.uCamDir.value.copy(camDir); m.material.uniforms.uWidth.value = (m === L.glow ? L.width * 2.5 : L.width) * wScale; m.visible = fade > .002; });
     }
     const svgOn = p >= .62;
     if (svgOn) { mainLine.core.visible = mainLine.glow.visible = false; }
@@ -368,11 +374,15 @@ function init() {
       for (let i = 0; i <= N; i++) { const a = Math.min(f, i / N * f); const P = main(a).multiplyScalar(R + 12);
         if (mercK < .5 && P.clone().normalize().dot(cd) < rr) continue; toScreen(P, q); pts.push(q[0].toFixed(1) + ',' + q[1].toFixed(1)); }
       toScreen(pl, q); pts.push(q[0].toFixed(1) + ',' + q[1].toFixed(1));
-      const lw = lerp(2.6, .0127 * scr.w, span(p, .7, .78));
+      const lw = lerp(3.4, .0127 * scr.w, span(p, .7, .78));
       routeCore.setAttribute('points', pts.join(' ')); routeGlow.setAttribute('points', pts.join(' '));
-      routeCore.setAttribute('stroke-width', lw); routeGlow.setAttribute('stroke-width', lw * 3.2);
-      routeGlow.setAttribute('stroke-opacity', (.22 * (1 - span(p, .62, .7))).toFixed(3));
+      routeCore.setAttribute('stroke-width', lw); routeGlow.setAttribute('stroke-width', lw * 2.5);
+      routeGlow.setAttribute('stroke-opacity', (.55 * (1 - span(p, .62, .7))).toFixed(3));
     }
+    const stopVis = lineK * (1 - span(p, .58, .64));
+    STOPS.forEach((st) => { const vis = stopVis * span(p, st.at, st.at + .02) * (st.P.clone().normalize().dot(camDir) > R / camera.position.length() + .02 ? 1 : 0);
+      st.el.style.opacity = vis.toFixed(3); if (vis <= 0) return;
+      const v = st.P.clone().project(camera); st.el.style.transform = `translate(${((v.x * .5 + .5) * W).toFixed(1)}px, ${((-v.y * .5 + .5) * H).toFixed(1)}px)`; });
     cities.forEach((s) => { s.material.opacity = lineK * (1 - span(p, .6, .68)) * (s.position.clone().normalize().dot(camDir) > R / camera.position.length() ? 1 : 0); s.visible = s.material.opacity > 0; });
 
     if (p < .792) { renderer.setRenderTarget(worldRT); renderer.render(worldScene, orthoCam); renderer.setRenderTarget(null); renderer.render(scene, camera); }

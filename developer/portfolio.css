@@ -637,3 +637,9 @@ html.pf-menu-open { overflow: hidden; }
 .nr-hr svg { display: block; width: 100%; height: 84px; margin-top: 8px; overflow: visible; }
 .nr-hr-axis { display: flex; justify-content: space-between; margin-top: 6px !important; font-family: var(--mono); font-size: 11px; color: rgba(242, 241, 234, .5); }
 @media (max-width: 800px) { .nr-hr { bottom: 18px; padding: 10px 14px 8px; } .nr-hr svg { height: 46px; } .nr-gl .maplibregl-ctrl-bottom-left { bottom: 132px; } }
+.vs-stop { position: absolute; left: 0; top: 0; z-index: 3; opacity: 0; pointer-events: none; white-space: nowrap; font-size: 13px; font-weight: 600; letter-spacing: -.01em; color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .85), 0 0 12px rgba(0, 0, 0, .55); }
+.vs-stop::before { content: ""; position: absolute; left: 0; top: 50%; translate: 0 -50%; }
+.vs-stop { margin: -9px 0 0 10px; }
+.vs-stop-l { margin-left: 0; }
+.vs-stop-l { translate: calc(-100% - 10px) 0; }
+@media (max-width: 800px) { .vs-stop { font-size: 11px; } }

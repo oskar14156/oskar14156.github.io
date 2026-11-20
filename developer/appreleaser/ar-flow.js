@@ -52,7 +52,8 @@
     toast.classList.toggle('is-on', p > .79);
     host.style.setProperty('--store', sm(clamp((p - .82) / .12)));
   }
-  gsap.ticker.add(() => frame(progress));
+  let inView = false; new IntersectionObserver((es) => { inView = es[0].isIntersecting; }, { rootMargin: '20% 0px' }).observe(host);
+  gsap.ticker.add(() => { if (inView) frame(progress); });
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { progress = 1; return; }
   ScrollTrigger.create({ trigger: host, start: 'top top', end: 'bottom bottom', onUpdate: (st) => { progress = st.progress; } });
 })();

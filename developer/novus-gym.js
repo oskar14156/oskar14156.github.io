@@ -177,7 +177,8 @@
   }
 
   let progress = 0;
-  gsap.ticker.add((time) => frame(progress, time));
+  let inView = false; new IntersectionObserver((es) => { inView = es[0].isIntersecting; }, { rootMargin: '20% 0px' }).observe(host);
+  gsap.ticker.add((time) => { if (inView) frame(progress, time); });
   if (reduce) { progress = .4; return; }
   ScrollTrigger.create({ trigger: host, start: 'top top', end: 'bottom bottom', onUpdate: (st) => { progress = st.progress; } });
   ScrollTrigger.create({ trigger: host, start: 'top 80px', end: 'bottom top', toggleClass: { targets: document.body, className: 'ng-active' } });
