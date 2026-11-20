@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/developer/portfolio.css?v=28">
+  <link rel="stylesheet" href="/developer/portfolio.css?v=31">
   <script>
     // Theme before first paint: saved pick, else the system setting.
     (function () {
@@ -171,13 +171,14 @@
           <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-19.jpg" alt="Import bookings with any AI chat" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="980" height="2000"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-19-dark.jpg" alt="Import bookings with any AI chat" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Import bookings with any AI chat</figcaption></figure>
           <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-20.jpg" alt="Travel passport and yearly recap" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Travel passport and yearly recap</figcaption></figure>
         </div><!--/gallery-->
+        <p class="pf-credits">Scene above: Airbus A350 from the <a href="https://github.com/Flightradar24/fr24-3d-models" target="_blank" rel="noopener">Flightradar24 / FlightGear 3D models</a> (GPL-2.0), repainted. Earth: NASA Blue Marble Next Generation via NASA GIBS. Clouds of 13 March 2026 from <a href="https://github.com/matteason/live-cloud-maps" target="_blank" rel="noopener">live-cloud-maps</a> (CC0), contains modified EUMETSAT data.</p>
       </article>
       </div>
 
       <section class="ng" id="novus-gym" aria-label="Novus: a training session, animated"></section>
       <section class="nr" id="novus-run" aria-labelledby="nr-title">
         <div class="nr-stage">
-          <canvas class="nr-map" aria-hidden="true"></canvas>
+          <div class="nr-gl" aria-hidden="true"></div><div class="nr-scrim" aria-hidden="true"></div>
           <div class="nr-head">
             <p class="nr-meta">Novus · real run · April 14, 2026</p>
             <h2 id="nr-title">29.8 km, replayed from the route and heart rate.</h2>
@@ -559,13 +560,13 @@
   <script src="/developer/portfolio.js?v=18"></script>
   <script src="/developer/ink.js?v=15"></script>
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
-  <script type="module" src="/developer/voyeva-scene.js?v=9"></script>
-  <script src="/developer/kz-unscroll.js?v=3"></script>
-  <script src="/developer/novus-gym.js?v=6"></script>
+  <script type="module" src="/developer/voyeva-scene.js?v=10"></script>
+  <script src="/developer/kz-unscroll.js?v=10"></script>
+  <script src="/developer/novus-gym.js?v=7"></script>
   <script src="/developer/stub-flow.js?v=1"></script>
   <script src="/developer/rp-wake.js?v=4"></script>
   <script src="/developer/vbg-cut.js?v=1"></script>
-  <script src="/developer/novus-run.js?v=2"></script>
+  <script src="/developer/novus-run.js?v=3"></script>
   <script src="/developer/menu.js?v=1"></script>
 </body>
 </html>

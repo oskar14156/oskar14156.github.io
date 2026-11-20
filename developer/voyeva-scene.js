@@ -1,334 +1,421 @@
-/* Voyeva: an airliner over a sea of clouds pulls away until the Earth appears, the trip's
- * flights draw themselves on the globe, the camera dives onto the plane over Mongolia and
- * the view narrows into the phone, where the real recap continues from that exact moment.
- * Then the phone settles into the Voyeva fan.
- * Two WebGL scenes (sky, globe) on two canvases; one scrubbed progress value drives both. */
+/* Voyeva: one continuous world at true scale (km). A real A350 over volumetric clouds, the
+ * camera pulls away from it without a cut until the Earth is a globe and the trip draws
+ * itself, then comes back down onto the plane over Siberia exactly where the real recap is,
+ * and pulls out of the phone screen that turns out to have been showing it all along.
+ *
+ * Earth: Sentinel-2 cloudless 2016 (EOX, CC BY 4.0) with NASA Blue Marble patches.
+ * Clouds: the real cloud map of 13 March 2026, 09:00 UTC (live-cloud-maps, CC0, contains
+ * modified EUMETSAT data), turned into volumetric clouds with tileable Perlin-Worley noise.
+ * Plane: Airbus A350 from the Flightradar24/FlightGear models (GPL-2.0), repainted. */
 import * as THREE from 'three';
-import { Sky } from 'three/addons/objects/Sky.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 const sec = document.getElementById('voyeva-scene');
-if (sec) init();
 
 function init() {
   const $ = (s) => sec.querySelector(s);
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const skyCanvas = $('.vs-sky'), globeCanvas = $('.vs-globe'), haze = $('.vs-haze'), clipBox = $('.vs-clip');
-  const planeIcon = $('.vs-plane'), endCard = $('.vs-card'), endText = $('.vs-text');
+  const small = matchMedia('(max-width: 800px)').matches;
+  const canvas = $('.vs-globe'), clipBox = $('.vs-clip'), planeIcon = $('.vs-plane'), endCard = $('.vs-card'), endText = $('.vs-text');
+  $('.vs-sky').style.display = 'none'; canvas.style.opacity = 1;
   const fanL = $('.vs-fan .fan-l'), fanC = $('.vs-fan .fan-c'), fanR = $('.vs-fan .fan-r');
   const video = fanC.querySelector('video:not(.vs-hand)'), hand = fanC.querySelector('.vs-hand'), videoBox = fanC.querySelector('.device-screen');
   const caps = [...sec.querySelectorAll('.vs-cap')];
-  const T0 = 4.5; // recap: the plane over Mongolia, heading for Beijing
+  const NS = 'http://www.w3.org/2000/svg', routeSvg = document.createElementNS(NS, 'svg');
+  routeSvg.setAttribute('class', 'vs-route'); routeSvg.setAttribute('aria-hidden', 'true');
+  routeSvg.innerHTML = '<polyline class="vs-route-glow" fill="none" stroke="#2fc6f0" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".22"/><polyline class="vs-route-core" fill="none" stroke="#2fc6f0" stroke-linecap="round" stroke-linejoin="round"/>';
+  clipBox.insertBefore(routeSvg, planeIcon);
+  const routeGlow = routeSvg.firstChild, routeCore = routeSvg.lastChild;
   const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
   const span = (p, a, b) => clamp((p - a) / (b - a));
   const ease = (t) => t * t * (3 - 2 * t);
   const easeIO = (t) => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
   const lerp = (a, b, t) => a + (b - a) * t;
-  const DPR = Math.min(devicePixelRatio || 1, matchMedia('(max-width: 800px)').matches ? 1.5 : 2);
+  const DEG = Math.PI / 180, R = 6371, CRUISE = 11.3;
+  const DPR = Math.min(devicePixelRatio || 1, small ? 1.5 : 2);
   let W = 0, H = 0, progress = 0;
 
-  /* ================= SKY: airliner over clouds ================= */
-  const skyR = new THREE.WebGLRenderer({ canvas: skyCanvas, antialias: true, powerPreference: 'high-performance' });
-  skyR.setPixelRatio(DPR);
-  skyR.toneMapping = THREE.ACESFilmicToneMapping; skyR.toneMappingExposure = 0.62;
-  skyR.outputColorSpace = THREE.SRGBColorSpace;
-  const skyScene = new THREE.Scene();
-  const skyCam = new THREE.PerspectiveCamera(38, 1, 0.5, 2e6);
-
-  const sky = new Sky(); sky.scale.setScalar(1e6); skyScene.add(sky);
-  const sun = new THREE.Vector3();
-  const su = sky.material.uniforms;
-  su.turbidity.value = 3.2; su.rayleigh.value = 2.2; su.mieCoefficient.value = 0.004; su.mieDirectionalG.value = 0.86;
-  sun.setFromSphericalCoords(1, THREE.MathUtils.degToRad(90 - 16), THREE.MathUtils.degToRad(-128));
-  su.sunPosition.value.copy(sun);
-  const pmrem = new THREE.PMREMGenerator(skyR);
-  const envScene = new THREE.Scene(); const envSky = new Sky(); envSky.scale.setScalar(1e4);
-  Object.assign(envSky.material.uniforms.sunPosition.value, sun); envSky.material.uniforms.turbidity.value = 3.2;
-  envSky.material.uniforms.rayleigh.value = 1.6; envScene.add(envSky);
-  skyScene.environment = pmrem.fromScene(envScene).texture;
-
-  const sunLight = new THREE.DirectionalLight(0xfff0dc, 3.2); sunLight.position.copy(sun).multiplyScalar(100); skyScene.add(sunLight);
-  skyScene.add(new THREE.HemisphereLight(0xbfd8ff, 0xf3e6d6, 0.9));
-
-  // Sea of clouds: two shader layers (domain-warped fbm, lit from the sun, fogged to the horizon)
-  const cloudVert = `varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position,1.); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`;
-  const cloudFrag = `
-    uniform float uTime, uScale, uCover, uDark; uniform vec2 uOff; uniform vec3 uSun, uCam, uHorizon, uLit, uShade;
-    varying vec3 vW;
-    float h(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453); }
-    float n(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.-2.*f);
-      return mix(mix(h(i), h(i+vec2(1,0)), u.x), mix(h(i+vec2(0,1)), h(i+vec2(1,1)), u.x), u.y); }
-    const mat2 M = mat2(1.6,1.2,-1.2,1.6);
-    float fbm(vec2 p){ float v = 0., a = .5; for(int i=0;i<5;i++){ v += a*n(p); p = M*p; a *= .5; } return v; }
-    float billow(vec2 p){ float v = 0., a = .5; for(int i=0;i<6;i++){ v += a*(1. - abs(n(p)*2.-1.)); p = M*p; a *= .5; } return v; }
-    float H(vec2 p){
-      float cov = smoothstep(uCover, uCover + .22, fbm(p * .3 + vec2(uTime*.003, 0.)));
-      float b = billow(p * 1.15);
-      return cov * (.28 + .72 * mix(fbm(p * 1.3 + 7.1), b, .82));
-    }
-    void main(){
-      vec2 p = vW.xz * uScale + uOff;
-      float d = H(p);
-      float a = smoothstep(.05, .22, d);
-      float e = .011;
-      vec3 nrm = normalize(vec3(-(H(p + vec2(e,0.)) - d) * 26., 1., -(H(p + vec2(0.,e)) - d) * 26.));
-      vec3 L = normalize(uSun);
-      float wrap = clamp(dot(nrm, L) * .7 + .55, 0., 1.);
-      float shadow = clamp((H(p + normalize(L.xz) * .09) - d) * 2.6, 0., 1.);
-      vec3 V = normalize(uCam - vW);
-      float fwd = pow(clamp(dot(-V, L) * .5 + .5, 0., 1.), 6.);
-      vec3 col = mix(uShade, uLit, wrap * (1. - shadow * .75));
-      col *= mix(.62, 1.08, smoothstep(.12, .78, d));                 // valleys darker
-      col += vec3(1., .82, .6) * fwd * (1. - a) * .6;               // light through thin edges
-      col *= (1. - uDark);
-      float dist = length(vW - uCam);
-      float fog = 1. - exp(-pow(dist / (42000. + uCam.y * 3.5), 1.5));
-      col = mix(col, uHorizon, fog);
-      gl_FragColor = vec4(col, max(a, fog));
-      #include <colorspace_fragment>
-    }`;
-  const mkClouds = (y, scale, cover, dark) => {
-    const m = new THREE.ShaderMaterial({
-      vertexShader: cloudVert, fragmentShader: cloudFrag, transparent: true, depthWrite: false,
-      uniforms: {
-        uTime: { value: 0 }, uScale: { value: scale }, uCover: { value: cover }, uDark: { value: dark }, uOff: { value: new THREE.Vector2() },
-        uSun: { value: sun.clone() }, uCam: { value: new THREE.Vector3() }, uHorizon: { value: new THREE.Color(0xe9dccd) },
-        uLit: { value: new THREE.Color(0xfffaf3) }, uShade: { value: new THREE.Color(0xa3b4cf) },
-      },
-    });
-    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(4e5, 4e5), m);
-    mesh.rotation.x = -Math.PI / 2; mesh.position.y = y; skyScene.add(mesh);
-    return m;
+  /* ---------- geography (three.js frame: y = north pole, km) ---------- */
+  const unit = (lat, lon) => { const phi = (90 - lat) * DEG, th = (lon + 180) * DEG;
+    return new THREE.Vector3(-Math.sin(phi) * Math.cos(th), Math.cos(phi), Math.sin(phi) * Math.sin(th)); };
+  const toLL = (v) => { const r = v.length(); let lon = Math.atan2(v.z, -v.x) / DEG - 180; if (lon < -180) lon += 360; return { lat: 90 - Math.acos(v.y / r) / DEG, lon }; };
+  // Voyeva's own flight arc: great circle with a latitude lift of sin(f*pi) * 0.08 * angular distance
+  const flightArc = (a, b) => {
+    const A = unit(...a), B = unit(...b), om = Math.acos(clamp(A.dot(B), -1, 1));
+    return (f) => { const v = A.clone().multiplyScalar(Math.sin((1 - f) * om)).addScaledVector(B, Math.sin(f * om)).divideScalar(Math.sin(om));
+      const ll = toLL(v); return unit(Math.min(89.9, ll.lat + Math.sin(f * Math.PI) * 0.08 * om / DEG), ll.lon); };
   };
-  const cloudsLow = mkClouds(-1500, 0.00018, 0.3, 0.4);
-  const cloudsMid = mkClouds(-380, 0.0008, 0.22, 0.0);
+  const groundPath = (list) => (f) => { const n = list.length - 1, x = Math.min(n - 1e-9, f * n), i = Math.floor(x), t = x - i;
+    return unit(...list[i]).lerp(unit(...list[i + 1]), t).normalize(); };
+  const P = { VIE: [48.21, 16.37], BUD: [47.44, 19.26], PEK: [40.08, 116.6], XIY: [34.34, 108.94], CKG: [29.56, 106.55], KWL: [25.27, 110.29],
+    YSO: [24.78, 110.49], KIX: [34.43, 135.24], OSA: [34.69, 135.5], NGO: [35.18, 136.91], SKG: [36.26, 136.91], CTS: [42.77, 141.69], SPK: [43.06, 141.35] };
+  const main = flightArc(P.BUD, P.PEK);
+  // The recap's plane: f = .70 at 4.3 s, .35 of the flight per second of video
+  const T0 = 4.5, videoF = (t) => .70 + (t - 4.3) * .35, videoT = (p) => T0 + (p - .7) * 4.16;
+  const sunDir = unit(16, 70);
 
-  const sea = new THREE.Mesh(new THREE.PlaneGeometry(4e6, 4e6), new THREE.MeshBasicMaterial({ color: 0x24465f }));
-  sea.rotation.x = -Math.PI / 2; sea.position.y = -3000; skyScene.add(sea);
-  const plane = buildAirliner(); skyScene.add(plane);
-  const BEARING = THREE.MathUtils.degToRad(48);           // plane heading on the map
-  const NORTH = new THREE.Vector3(-Math.sin(BEARING), 0, -Math.cos(BEARING));   // forward (-Z) rotated back by the bearing
-
-  /* ================= GLOBE ================= */
-  const gR = new THREE.WebGLRenderer({ canvas: globeCanvas, antialias: true, alpha: false });
-  gR.setPixelRatio(DPR); gR.outputColorSpace = THREE.SRGBColorSpace;
-  gR.toneMapping = THREE.ACESFilmicToneMapping; gR.toneMappingExposure = 1.05;
-  const gScene = new THREE.Scene();
-  const gCam = new THREE.PerspectiveCamera(36, 1, 0.001, 100);
+  /* ---------- renderer ---------- */
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, logarithmicDepthBuffer: true, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(DPR); renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1;
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.002, 2e5);
+  let FOV = 38, D0 = 0.085;
+  const scene = new THREE.Scene();
   const loader = new THREE.TextureLoader();
   const tex = (u, srgb = true) => { const t = loader.load(u, () => schedule()); if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; };
-  const sunDir = (() => { const lat = 16 * Math.PI / 180, th = (70 + 180) * Math.PI / 180; return new THREE.Vector3(-Math.cos(lat) * Math.cos(th), Math.sin(lat), Math.cos(lat) * Math.sin(th)).normalize(); })();
-  const earthMat = new THREE.ShaderMaterial({
+
+  /* ---------- world shader: earth + volumetric clouds + atmosphere ---------- */
+  const noise3D = makeNoise3D(64);
+  const CORR = new THREE.Vector4(0, 126, 18, 72), CCORR = new THREE.Vector4(5.625, 129.375, 22.5, 67.5), PATCH = new THREE.Vector4(76.5, 112.5, 40.5, 63);
+  const worldMat = new THREE.ShaderMaterial({
+    glslVersion: THREE.GLSL3, depthTest: false, depthWrite: false,
     uniforms: {
-      day: { value: tex('/developer/media/earth/earth-blue-marble.jpg') }, night: { value: tex('/developer/media/earth/earth-night.jpg') },
-      water: { value: tex('/developer/media/earth/earth-water.png', false) }, sunDir: { value: sunDir },
+      uInvProj: { value: new THREE.Matrix4() }, uCamRot: { value: new THREE.Matrix3() }, uUp: { value: new THREE.Vector3() }, uAlt: { value: 10 },
+      uSun: { value: sunDir }, uTime: { value: 0 }, uNoise: { value: noise3D },
+      uGroundG: { value: tex('/developer/media/earth/ground-global.jpg?v=2') }, uGroundC: { value: tex('/developer/media/earth/ground-corridor.jpg?v=2') },
+      uCloudG: { value: tex('/developer/media/earth/clouds-global.jpg', false) }, uCloudC: { value: tex('/developer/media/earth/clouds-corridor.jpg', false) },
+      uStars: { value: tex('/developer/media/earth/night-sky.png') }, uCorr: { value: CORR }, uCCorr: { value: CCORR }, uPatch: { value: PATCH },
+      uGroundP: { value: tex('/developer/media/earth/ground-patch.jpg?v=1') },
+      uCloudAmt: { value: 1 }, uDetail: { value: 1 }, uSteps: { value: 64 }, uWind: { value: new THREE.Vector3() },
+      uBoost: { value: unit(52, 28) }, uBoostAmt: { value: 1 }, uExposure: { value: 1 }, uDebug: { value: 0 }, uMap: { value: 0 }, uFine: { value: 1 },
+      uMerc: { value: 0 }, uCloudVis: { value: 1 }, uPlaneLL: { value: new THREE.Vector2() }, uScr: { value: new THREE.Vector4(0, 0, 1, 1) }, uRtScale: { value: 1 }, uVpH: { value: 1 },
     },
-    vertexShader: `varying vec2 vUv; varying vec3 vN; varying vec3 vV;
-      void main(){ vUv = uv; vN = normalize(mat3(modelMatrix) * normal); vec4 w = modelMatrix * vec4(position,1.); vV = normalize(cameraPosition - w.xyz); gl_Position = projectionMatrix * viewMatrix * w; }`,
-    fragmentShader: `uniform sampler2D day, night, water; uniform vec3 sunDir; varying vec2 vUv; varying vec3 vN; varying vec3 vV;
-      void main(){
-        float l = dot(vN, sunDir); float dayMix = smoothstep(-.12, .22, l);
-        vec3 d = texture2D(day, vUv).rgb; vec3 n = texture2D(night, vUv).rgb;
-        vec3 dayCol = d * (.25 + 1.05 * clamp(l, 0., 1.));
-        float w = texture2D(water, vUv).r; vec3 hlf = normalize(sunDir + vV);
-        dayCol += w * pow(max(dot(vN, hlf), 0.), 60.) * vec3(1., .9, .75) * .9;
-        vec3 nightCol = n * vec3(1.2, 1.0, .7) * 1.6 + d * .03;
-        vec3 col = mix(nightCol, dayCol, dayMix);
-        float rim = pow(1. - max(dot(vN, vV), 0.), 3.);
-        col += vec3(.35, .6, 1.) * rim * (.12 + .45 * dayMix);
-        gl_FragColor = vec4(col, 1.);
+    vertexShader: `out vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0., 1.); }`,
+    fragmentShader: WORLD_FRAG,
+  });
+  const worldRT = new THREE.WebGLRenderTarget(4, 4, { type: THREE.HalfFloatType, depthBuffer: false });
+  const worldScene = new THREE.Scene(); const worldQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), worldMat); worldQuad.frustumCulled = false; worldScene.add(worldQuad);
+  const blitMat = new THREE.ShaderMaterial({
+    depthTest: false, depthWrite: false, uniforms: { tWorld: { value: worldRT.texture }, uMap: { value: 0 }, uTexel: { value: new THREE.Vector2(1, 1) } },
+    vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0., 1.); }`,
+    toneMapped: false,
+    fragmentShader: `uniform sampler2D tWorld; uniform float uMap; uniform vec2 uTexel; varying vec2 vUv;
+      vec3 aces(vec3 c){ c *= .6; return clamp((c * (2.51 * c + .03)) / (c * (2.43 * c + .59) + .14), 0., 1.); }
+      void main(){ vec3 c = texture2D(tWorld, vUv).rgb * .4;
+        c += (texture2D(tWorld, vUv + vec2(uTexel.x, 0.)).rgb + texture2D(tWorld, vUv - vec2(uTexel.x, 0.)).rgb + texture2D(tWorld, vUv + vec2(0., uTexel.y)).rgb + texture2D(tWorld, vUv - vec2(0., uTexel.y)).rgb) * .15;
+        gl_FragColor = vec4(mix(aces(c * 1.55), c, uMap), 1.);
+      #include <colorspace_fragment>
+    }`,
+  });
+  const blit = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), blitMat); blit.frustumCulled = false; blit.renderOrder = -10; scene.add(blit);
+  const orthoCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+  /* ---------- the plane ---------- */
+  const planeG = new THREE.Group(); scene.add(planeG);
+  const model = new THREE.Group(); model.scale.setScalar(0.001); planeG.add(model);
+  const draco = new DRACOLoader(); draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/');
+  const gl = new GLTFLoader(); gl.setDRACOLoader(draco);
+  let planeReady = false;
+  gl.load('/developer/models/a350-voyeva.glb?v=2', (g) => {
+    const m = g.scene; const box = new THREE.Box3().setFromObject(m), c = box.getCenter(new THREE.Vector3());
+    m.position.sub(c); m.position.y += 1.2;
+    m.traverse((o) => { if (!o.isMesh) return; const mt = o.material; if (!mt) return;
+      mt.envMapIntensity = .75;
+      if (mt.transparent || mt.opacity < 1) { mt.color = new THREE.Color(0x0b1016); mt.roughness = .08; mt.metalness = .6; mt.opacity = .92; }
+      else { mt.roughness = .32; mt.metalness = .05; }
+    });
+    model.add(m); planeReady = true; schedule();
+  });
+  // light that matches the world: sun through the atmosphere + bright cloud deck below
+  const sunL = new THREE.DirectionalLight(0xfff1de, 2.3); scene.add(sunL); scene.add(sunL.target);
+  const hemi = new THREE.HemisphereLight(0x9cc4ff, 0xe8edf4, .7); scene.add(hemi);
+  scene.environment = (() => {
+    const pm = new THREE.PMREMGenerator(renderer), env = new THREE.Scene();
+    env.add(new THREE.Mesh(new THREE.SphereGeometry(10, 32, 16), new THREE.ShaderMaterial({ side: THREE.BackSide,
+      vertexShader: `varying vec3 vD; void main(){ vD = normalize(position); gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
+      fragmentShader: `varying vec3 vD; void main(){ float y = vD.y; vec3 sky = mix(vec3(.55,.72,.98), vec3(.2,.38,.8), clamp(y,0.,1.));
+        vec3 deck = vec3(1.05,1.06,1.1) * (.85 + .15 * smoothstep(-.05,-.6,y)); gl_FragColor = vec4(y > -.02 ? sky : deck, 1.); }` })));
+    return pm.fromScene(env, 0.02).texture;
+  })();
+  // contrails: two soft additive cones behind the engines
+  const trailMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: { uOpacity: { value: 1 } },
+    vertexShader: `varying vec3 vN; varying vec3 vV; varying float vL; void main(){ vec4 w = modelMatrix*vec4(position,1.); vN = normalize(mat3(modelMatrix)*normal); vV = normalize(cameraPosition - w.xyz); vL = uv.y; gl_Position = projectionMatrix*viewMatrix*w;
+      #include <logdepthbuf_vertex>
+      }`,
+    fragmentShader: `uniform float uOpacity; varying vec3 vN; varying vec3 vV; varying float vL;
+      #include <logdepthbuf_pars_fragment>
+      void main(){ float edge = pow(abs(dot(normalize(vN), normalize(vV))), 1.6); float a = edge * smoothstep(0., .04, 1. - vL) * (1. - smoothstep(.55, 1., 1. - vL)) * .55 * uOpacity; gl_FragColor = vec4(vec3(1.)*a, a);
+      #include <logdepthbuf_fragment>
+      }`,
+  });
+  trailMat.vertexShader = '#include <common>\n#include <logdepthbuf_pars_vertex>\n' + trailMat.vertexShader;
+  const trailGeo = new THREE.CylinderGeometry(0.0016, 0.034, 2.6, 24, 1, true); trailGeo.rotateX(-Math.PI / 2); trailGeo.translate(0, 0, 1.3 + 0.045);
+  [-1, 1].forEach((s) => { const t = new THREE.Mesh(trailGeo, trailMat); t.position.set(s * 0.0095, -0.0009, 0); t.frustumCulled = false; planeG.add(t); });
+
+  /* ---------- routes: screen-space lines like the recap ---------- */
+  const lines = [];
+  const lineMat = (color, width) => new THREE.ShaderMaterial({ transparent: true, depthTest: false, depthWrite: false, toneMapped: false, side: THREE.DoubleSide,
+    uniforms: { uColor: { value: new THREE.Color(color) }, uRes: { value: new THREE.Vector2(1, 1) }, uWidth: { value: width }, uDraw: { value: 0 }, uHead: { value: 1 }, uOpacity: { value: 1 }, uCamDir: { value: new THREE.Vector3() } },
+    vertexShader: `uniform vec2 uRes; uniform float uWidth; uniform vec3 uCamDir; attribute vec3 prev; attribute vec3 next; attribute float side; attribute float along; varying float vAlong; varying float vSide; varying float vVis;
+      void main(){ mat4 m = projectionMatrix*modelViewMatrix; vec4 c = m*vec4(position,1.), a = m*vec4(prev,1.), b = m*vec4(next,1.);
+        vec2 d = normalize((b.xy/b.w - a.xy/a.w) * uRes + 1e-6); vec2 n = vec2(-d.y, d.x);
+        c.xy += n * side * uWidth / uRes * c.w; gl_Position = c; vAlong = along; vSide = side;
+        vVis = smoothstep(-.02, .03, dot(normalize(position), uCamDir) - 6371. / max(length(cameraPosition), 6372.)); }`,
+    fragmentShader: `uniform vec3 uColor; uniform float uDraw, uHead, uOpacity; varying float vAlong; varying float vSide; varying float vVis;
+      void main(){ if (vAlong > uDraw) discard; float e = 1. - smoothstep(.55, 1., abs(vSide)); float a = e * vVis * uOpacity * smoothstep(0., .004, uDraw - vAlong + .004);
+        gl_FragColor = vec4(uColor, a);
         #include <colorspace_fragment>
       }`,
   });
-  const earth = new THREE.Mesh(new THREE.SphereGeometry(1, 128, 128), earthMat); gScene.add(earth);
-  // Clouds on the globe: a procedural fbm texture on a slightly larger sphere
-  const cloudTex = new THREE.CanvasTexture(makeCloudCanvas(1024, 512));
-  const gClouds = new THREE.Mesh(new THREE.SphereGeometry(1.006, 96, 96),
-    new THREE.MeshLambertMaterial({ map: cloudTex, transparent: true, opacity: .55, depthWrite: false }));
-  gScene.add(gClouds);
-  const atmo = new THREE.Mesh(new THREE.SphereGeometry(1.045, 96, 96), new THREE.ShaderMaterial({
-    side: THREE.BackSide, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
-    uniforms: { sunDir: { value: sunDir } },
-    vertexShader: `varying vec3 vN; varying vec3 vP; void main(){ vN = normalize(mat3(modelMatrix)*normal); vP = (modelMatrix*vec4(position,1.)).xyz; gl_Position = projectionMatrix*viewMatrix*vec4(vP,1.); }`,
-    fragmentShader: `uniform vec3 sunDir; varying vec3 vN; varying vec3 vP;
-      void main(){ vec3 v = normalize(cameraPosition - vP); float i = pow(clamp(.62 - dot(vN, v), 0., 1.), 3.2);
-        float s = .35 + .65 * clamp(dot(normalize(vP), sunDir) + .3, 0., 1.); gl_FragColor = vec4(vec3(.36, .64, 1.) * i * 1.6 * s, i); }`,
-  }));
-  gScene.add(atmo);
-  const stars = new THREE.Mesh(new THREE.SphereGeometry(40, 32, 32), new THREE.MeshBasicMaterial({ map: tex('/developer/media/earth/night-sky.png'), side: THREE.BackSide, color: 0x8899aa }));
-  gScene.add(stars);
-  gScene.add(new THREE.AmbientLight(0xffffff, .5));
-  const gSun = new THREE.DirectionalLight(0xffffff, 2.2); gSun.position.copy(sunDir).multiplyScalar(10); gScene.add(gSun);
-
-  // Trip routes (China & Japan, 2026). Flights as glowing arcs, ground legs on the surface.
-  const ll = (lat, lon, r = 1) => { const phi = (90 - lat) * Math.PI / 180, th = (lon + 180) * Math.PI / 180;
-    return new THREE.Vector3(-r * Math.sin(phi) * Math.cos(th), r * Math.cos(phi), r * Math.sin(phi) * Math.sin(th)); };
-  const P = { VIE: [48.21, 16.37], BUD: [47.44, 19.26], PEK: [40.08, 116.6], XIY: [34.34, 108.94], CKG: [29.56, 106.55], KWL: [25.27, 110.29],
-    YSO: [24.78, 110.49], KIX: [34.43, 135.24], OSA: [34.69, 135.5], NGO: [35.18, 136.91], SKG: [36.26, 136.91], CTS: [42.77, 141.69], SPK: [43.06, 141.35] };
-  const arcCurve = (a, b, lift) => {
-    const A = ll(...a), B = ll(...b), pts = [];
-    for (let i = 0; i <= 96; i++) { const t = i / 96; const v = A.clone().lerp(B, t).normalize(); v.multiplyScalar(1 + lift * Math.sin(Math.PI * t)); pts.push(v); }
-    return new THREE.CatmullRomCurve3(pts);
+  const addLine = (fn, color, width, start, end, n = 400) => {
+    const pos = [], prv = [], nxt = [], side = [], along = [], idx = [];
+    const pts = []; for (let i = 0; i <= n; i++) pts.push(fn(i / n).multiplyScalar(R + 12));
+    pts.forEach((p, i) => { const a = pts[Math.max(0, i - 1)], b = pts[Math.min(n, i + 1)];
+      for (const s of [-1, 1]) { pos.push(p.x, p.y, p.z); prv.push(a.x, a.y, a.z); nxt.push(b.x, b.y, b.z); side.push(s); along.push(i / n); }
+      if (i < n) { const k = i * 2; idx.push(k, k + 1, k + 2, k + 1, k + 3, k + 2); } });
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('prev', new THREE.Float32BufferAttribute(prv, 3));
+    g.setAttribute('next', new THREE.Float32BufferAttribute(nxt, 3)); g.setAttribute('side', new THREE.Float32BufferAttribute(side, 1));
+    g.setAttribute('along', new THREE.Float32BufferAttribute(along, 1)); g.setIndex(idx);
+    const glow = new THREE.Mesh(g, lineMat(color, width * 3.2)); glow.material.uniforms.uOpacity.value = .22; glow.frustumCulled = false;
+    const core = new THREE.Mesh(g, lineMat(color, width)); core.frustumCulled = false;
+    scene.add(glow, core); const L = { glow, core, start, end, fn, width }; lines.push(L); return L;
   };
-  const groundCurve = (list) => { const pts = []; for (let i = 0; i < list.length - 1; i++) { const A = ll(...list[i]), B = ll(...list[i + 1]);
-    for (let k = 0; k < 24; k++) pts.push(A.clone().lerp(B, k / 24).normalize().multiplyScalar(1.004)); } pts.push(ll(...list.at(-1), 1.004)); return new THREE.CatmullRomCurve3(pts); };
-  const routes = [];
-  const addRoute = (curve, color, radius, start, end, glow) => {
-    const geo = new THREE.TubeGeometry(curve, 240, radius, 8, false);
-    const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: .95 });
-    const m = new THREE.Mesh(geo, mat); gScene.add(m);
-    let g = null;
-    if (glow) { g = new THREE.Mesh(new THREE.TubeGeometry(curve, 240, radius * 3.2, 8, false), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: .18, blending: THREE.AdditiveBlending, depthWrite: false })); gScene.add(g); }
-    routes.push({ m, g, count: geo.index.count, start, end }); return curve;
-  };
-  const mainArc = addRoute(arcCurve(P.BUD, P.PEK, .16), 0x39d0f5, .0034, .0, .55, true);
-  addRoute(groundCurve([P.VIE, P.BUD]), 0xf2b02c, .0028, .0, .08, false);
-  addRoute(groundCurve([P.PEK, P.XIY, P.CKG]), 0xef4b4b, .0028, .5, .66, false);
-  addRoute(groundCurve([P.CKG, P.KWL, P.YSO]), 0xf2b02c, .0028, .6, .72, false);
-  addRoute(arcCurve(P.KWL, P.KIX, .05), 0x39d0f5, .0034, .66, .8, true);
-  addRoute(groundCurve([P.OSA, P.NGO, P.SKG]), 0xf2b02c, .0028, .76, .86, false);
-  addRoute(arcCurve(P.NGO, P.CTS, .03), 0x39d0f5, .0034, .8, .9, true);
-  addRoute(arcCurve(P.CTS, P.VIE, .2), 0x39d0f5, .0034, .86, 1, true);
-  // Plane badges along the arcs, Voyeva style
-  const badgeTex = new THREE.CanvasTexture(makeBadge());
-  badgeTex.colorSpace = THREE.SRGBColorSpace;
-  const badges = [[arcCurve(P.KWL, P.KIX, .05), .5, .78], [arcCurve(P.NGO, P.CTS, .03), .5, .88], [arcCurve(P.CTS, P.VIE, .2), .45, .97]].map(([c, t, at]) => {
-    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: badgeTex, depthWrite: false, transparent: true, opacity: 0, sizeAttenuation: false }));
-    s.position.copy(c.getPoint(t)); s.scale.setScalar(.034); gScene.add(s); return { s, at };
-  });
-  const cityDot = new THREE.MeshBasicMaterial({ color: 0xffffff });
-  Object.entries(P).forEach(([k, v]) => { if (['VIE', 'BUD', 'PEK', 'KIX', 'CTS', 'CKG', 'NGO'].includes(k)) { const d = new THREE.Mesh(new THREE.SphereGeometry(.0045, 12, 12), cityDot); d.position.copy(ll(...v, 1.002)); gScene.add(d); } });
+  const CYAN = 0x2fc6f0, GOLD = 0xf2b02c, RED = 0xef4b4b;
+  const mainLine = addLine(main, CYAN, 2.6, 0, 0);
+  addLine(groundPath([P.VIE, P.BUD]), GOLD, 2.2, 0, .1);
+  addLine(groundPath([P.PEK, P.XIY, P.CKG]), RED, 2.2, .3, .5);
+  addLine(groundPath([P.CKG, P.KWL, P.YSO]), GOLD, 2.2, .42, .58);
+  addLine(flightArc(P.KWL, P.KIX), CYAN, 2.4, .5, .7);
+  addLine(groundPath([P.OSA, P.NGO, P.SKG]), GOLD, 2.2, .62, .76);
+  addLine(flightArc(P.NGO, P.CTS), CYAN, 2.4, .7, .84);
+  addLine(flightArc(P.CTS, P.VIE), CYAN, 2.4, .8, 1);
+  const dotTex = new THREE.CanvasTexture((() => { const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d');
+    x.fillStyle = 'rgba(255,255,255,.28)'; x.beginPath(); x.arc(32, 32, 30, 0, 7); x.fill(); x.fillStyle = '#fff'; x.beginPath(); x.arc(32, 32, 15, 0, 7); x.fill(); return c; })());
+  const cities = ['VIE', 'BUD', 'PEK', 'KIX', 'CTS', 'CKG', 'NGO'].map((k) => { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: dotTex, sizeAttenuation: false, depthTest: false, transparent: true, toneMapped: false }));
+    s.position.copy(unit(...P[k])).multiplyScalar(R + 12); s.scale.setScalar(.012); scene.add(s); return s; });
 
-  /* ================= sizing & the phone geometry ================= */
+  /* ---------- the plane's position: never stops, ties into the recap's own timing ---------- */
+  // Camera distance from the plane in act A (log-space zoom), used to set the plane's speed.
+  let Dg = R * 3.3;
+  const zoomD = (p) => { const s = span(p, .015, .3), e = s < .5 ? 2 * s * s : 1 - Math.pow(-2 * s + 2, 2) / 2;
+    return Math.exp(lerp(Math.log(D0), Math.log(Dg - R - CRUISE), e)); };
+  const VMAX = 1.456;                               // flight fraction per unit of progress in the recap
+  const fTable = new Float32Array(1001);
+  function buildF() {
+    // speed grows with altitude until it is the recap's speed; integrate backwards from the handoff
+    const sp = (p) => Math.min(VMAX, VMAX * zoomD(Math.min(p, .3)) / 900);
+    fTable[700] = videoF(videoT(.7));
+    for (let i = 700; i > 0; i--) fTable[i - 1] = fTable[i] - sp((i - .5) / 1000) / 1000;
+    for (let i = 700; i < 1000; i++) fTable[i + 1] = fTable[i] + VMAX / 1000;
+  }
+  const flightF = (p) => { const x = clamp(p) * 1000, i = Math.min(999, Math.floor(x)); return lerp(fTable[i], fTable[i + 1], x - i); };
+  const planeAt = (f, out) => out.copy(main(clamp(f, 0, 1))).multiplyScalar(R + CRUISE);
+
+  /* ---------- sizing & phone geometry ---------- */
   let fanRect = null;
   function measure() {
     W = sec.clientWidth; H = window.innerHeight;
-    skyR.setSize(W, H, false); gR.setSize(W, H, false);
-    skyCam.aspect = W / H; skyCam.updateProjectionMatrix(); gCam.aspect = W / H; gCam.updateProjectionMatrix();
-    // Where the centre phone ends up (its laid-out rect, transforms removed)
+    const tall = H / W; FOV = tall > 1 ? Math.min(54, 38 * Math.pow(tall, .45)) : 38; D0 = tall > 1 ? .085 * Math.min(1.7, Math.pow(tall, .7)) : .085;
+    renderer.setSize(W, H, false);
+    const scale = small ? .5 : .55;
+    worldRT.setSize(Math.max(2, Math.round(W * DPR * scale)), Math.max(2, Math.round(H * DPR * scale)));
+    blitMat.uniforms.uTexel.value.set(.5 / worldRT.width, .5 / worldRT.height);
+    worldMat.uniforms.uSteps.value = small ? 40 : 64;
+    lines.forEach((l) => [l.glow, l.core].forEach((m) => m.material.uniforms.uRes.value.set(W, H)));
     const prev = fanC.style.transform; fanC.style.transform = 'none';
     const r = fanC.getBoundingClientRect(), s = videoBox.getBoundingClientRect(), st = sec.querySelector('.vs-stage').getBoundingClientRect();
     fanC.style.transform = prev;
     const k = Math.min((H * 0.82) / r.height, (W * 0.9) / r.width);
     fanRect = { x: r.left - st.left, y: r.top - st.top, w: r.width, h: r.height, k,
       sx: (s.left - r.left) / r.width, sy: (s.top - r.top) / r.height, sw: s.width / r.width, sh: s.height / r.height };
+    fanRect.k0 = Math.max(W / (fanRect.sw * r.width), H / (fanRect.sh * r.height)) * 1.02;
+    Dg = R * (1 + 2.3 * Math.max(1, .9 * H / W));
+    buildF();
+    worldMat.uniforms.uBoost.value.copy(main(clamp(flightF(0)))).normalize();
   }
 
-  /* ================= frame ================= */
+  /* ---------- frame ---------- */
   const clock = new THREE.Clock();
-  const tmp = new THREE.Vector3();
+  const pl = new THREE.Vector3(), plAhead = new THREE.Vector3(), upL = new THREE.Vector3(), fwd = new THREE.Vector3(), right = new THREE.Vector3(), north = new THREE.Vector3();
+  const tmp = new THREE.Vector3(), camPos = new THREE.Vector3(), target = new THREE.Vector3();
+  const Y = new THREE.Vector3(0, 1, 0);
   let videoArmed = false, videoPrimed = false;
   const seekT0 = () => { try { video.currentTime = T0; } catch (e) {} };
   const primeVideo = () => { video.preload = 'auto'; video.pause(); if (video.readyState >= 1) seekT0(); else { video.addEventListener('loadedmetadata', seekT0, { once: true }); video.load(); } };
+  const kmAcross = 1300;                            // the recap shows about 1,300 km across the screen
+  // the recap's map: Mercator, north up, 20.15 degrees of longitude across the screen, plane fixed at 53.3% / 52.1%
+  const MERC_W = 20.15, ANCHOR = [.533, .521];
+  const merc = (lat) => Math.log(Math.tan(Math.PI / 4 + lat * DEG / 2));
+  let scr = { x: 0, y: 0, w: 1, h: 1 }, mercK = 0;
+  const pv = new THREE.Vector3();
+  function toScreen(P, out) {
+    pv.copy(P).project(camera); let x = (pv.x * .5 + .5) * W, y = (-pv.y * .5 + .5) * H;
+    if (mercK > 0) { const ll = toLL(P), pll = planeLL;
+      const mx = scr.x + (ANCHOR[0] + (ll.lon - pll.lon) / MERC_W) * scr.w;
+      const my = scr.y + (ANCHOR[1] + (merc(pll.lat) - merc(ll.lat)) / (scr.h * (MERC_W / scr.w) * DEG)) * scr.h;
+      x = lerp(x, mx, mercK); y = lerp(y, my, mercK); }
+    out[0] = x; out[1] = y; return out; }
+  let planeLL = { lat: 0, lon: 0 };
+
+  function frameCamera(p, t) {
+    const f = flightF(p);
+    planeAt(f, pl); planeAt(f + .002, plAhead);
+    upL.copy(pl).normalize(); fwd.subVectors(plAhead, pl).normalize(); right.crossVectors(fwd, upL).normalize(); fwd.crossVectors(upL, right).normalize();
+    north.copy(Y).addScaledVector(upL, -upL.y).normalize();
+    // plane orientation (nose = -Z of the model), a breath of roll
+    const roll = Math.sin(t * .5) * .018 * (1 - span(p, .02, .12));
+    const r2 = right.clone().applyAxisAngle(fwd, roll), u2 = upL.clone().applyAxisAngle(fwd, roll);
+    planeG.matrixAutoUpdate = false; planeG.matrix.makeBasis(r2, u2, fwd.clone().negate()).setPosition(pl); planeG.matrixWorldNeedsUpdate = true;
+
+    camera.clearViewOffset(); camera.fov = FOV; camera.aspect = W / H;
+    let viewOffset = null;
+    if (p < .3) {
+      // Act A: a log-space pull back from behind the plane to straight above it, then up into space
+      const d = zoomD(p), ld = Math.log(d);
+      const k = ease(clamp((ld - Math.log(0.1)) / (Math.log(45) - Math.log(0.1))));
+      const el = lerp(11, 90, k) * DEG, az = lerp(H > W ? -12 : -26, 0, k) * DEG;
+      const back = fwd.clone().negate().applyAxisAngle(upL, az);
+      camPos.copy(pl).addScaledVector(back, Math.cos(el) * d).addScaledVector(upL, Math.sin(el) * d);
+      const lift = 0.006 * (1 - k);                 // the plane sits a little below centre at first
+      target.copy(pl).addScaledVector(upL, lift).addScaledVector(fwd, 0.02 * (1 - k));
+      camera.position.copy(camPos);
+      const topK = ease(clamp((el / DEG - 55) / 35));
+      camera.up.copy(upL).lerp(north, topK).normalize();
+      camera.lookAt(target);
+    } else {
+      // Act B/C: over the globe; drift to frame the trip, then dive onto the plane in recap framing
+      const ll0 = toLL(planeAt(flightF(.3), tmp));
+      const b = easeIO(span(p, .3, .44)), b2 = easeIO(span(p, .44, .56)), cs = span(p, .555, .7), c = .5 - .5 * Math.cos(Math.PI * cs);
+      let lat = lerp(ll0.lat, 47, b), lon = lerp(ll0.lon, 76, b), dist = Dg;
+      lat = lerp(lat, 48, b2); lon = lerp(lon, 88, b2); dist = lerp(dist, Dg * .94, b2);
+      // recap framing: the plane at 55% across the screen, ~1,300 km across it
+      const k0 = fanRect ? fanRect.k0 : 1, scrW = fanRect ? fanRect.sw * fanRect.w * k0 : W;
+      const hfov = 2 * Math.atan(Math.tan(FOV * DEG / 2) * W / H);
+      const kmView = kmAcross * W / scrW, hH = kmView / (2 * Math.tan(hfov / 2));
+      const pll = toLL(pl), dLon = (.05 * kmAcross) / (111.32 * Math.cos(pll.lat * DEG));
+      const cl = .5 - .5 * Math.cos(Math.PI * Math.min(1, cs * 1.25));
+      lat = lerp(lat, pll.lat, cl); lon = lerp(lon, pll.lon - dLon, cl); dist = R + Math.exp(lerp(Math.log(dist - R), Math.log(hH), c));
+      camera.position.copy(unit(lat, lon)).multiplyScalar(dist);
+      camera.up.copy(Y); camera.lookAt(0, 0, 0);
+      // Act D: pull out of the phone. The camera keeps the recap framing; the image shrinks with the screen.
+      if (p > .7 && fanRect) {
+        const kk = revealScale(p), { sw, sh, sx, sy, w, h } = fanRect;
+        const sW = sw * w * kk, sH = sh * h * kk;
+        const cx = W / 2 + ((sx + sw / 2) - .5) * w * kk, cy = H / 2 + ((sy + sh / 2) - .5) * h * kk;
+        const f0 = (H / 2) / Math.tan(FOV * DEG / 2), fpx = f0 * kk / fanRect.k0;
+        camera.fov = 2 * Math.atan((sH / 2) / fpx) / DEG; camera.aspect = sW / sH;
+        camera.setViewOffset(sW, sH, -(cx - sW / 2), -(cy - sH / 2), W, H);
+        viewOffset = { x: cx - sW / 2, y: cy - sH / 2, w: sW, h: sH, kk };
+      }
+    }
+    const alt = camera.position.length() - R;
+    camera.near = Math.max(0.0015, Math.min(alt * .25, camera.position.distanceTo(pl) * .3));
+    camera.far = 4 * (alt + R) + 2e4;
+    camera.updateProjectionMatrix(); camera.updateMatrixWorld();
+    return { f, viewOffset, alt, d: camera.position.distanceTo(pl) };
+  }
+  const revealScale = (p) => fanRect ? lerp(fanRect.k0, fanRect.k, easeIO(span(p, .7, .785))) : 1;
+
   function render() {
     const p = progress, t = clock.getElapsedTime();
-    // --- Act 1: sky (0 .. .24): the camera pulls up and away until clouds fill the frame
-    const skyOn = p < .26;
-    if (skyOn) {
-      const s = span(p, .02, .22), e = easeIO(s);
-      const d = 50 * Math.pow(80, e) * Math.sqrt(Math.max(1, .9 * H / W));
-      const el = THREE.MathUtils.degToRad(lerp(13, 89.5, ease(span(p, .04, .2))));
-      const az = THREE.MathUtils.degToRad(lerp(-34, 0, e));
-      plane.rotation.z = Math.sin(t * .6) * .045 * (1 - e); plane.position.y = Math.sin(t * .8) * .25;
-      skyCam.position.set(Math.sin(az) * Math.cos(el) * d, Math.sin(el) * d, Math.cos(az) * Math.cos(el) * d);
-      // looking straight down at the end, screen-up = north, so the plane points the way it flies on the map
-      const topK = ease(span(p, .12, .21));
-      skyCam.up.set(lerp(0, NORTH.x, topK), lerp(1, 0, topK), lerp(0, NORTH.z, topK)).normalize();
-      skyCam.lookAt(0, -1 * (1 - e), -3 * (1 - e));
-      for (const c of [cloudsLow, cloudsMid]) { c.uniforms.uTime.value = t; c.uniforms.uOff.value.set(23.7, 41.3 - t * .045 * (c === cloudsMid ? 1 : .55)); c.uniforms.uCam.value.copy(skyCam.position); }
-      skyR.render(skyScene, skyCam);
-    }
-    // crossfade with speed blur instead of a white flash
-    const xf = span(p, .19, .245);
-    skyCanvas.style.opacity = 1 - xf; skyCanvas.style.filter = `blur(${(xf * 10).toFixed(1)}px)`;
-    globeCanvas.style.opacity = xf; globeCanvas.style.filter = `blur(${((1 - span(p, .2, .27)) * 10).toFixed(1)}px)`;
-    haze.style.opacity = 0;
+    const { f, viewOffset, alt, d } = frameCamera(p, t);
+    const u = worldMat.uniforms;
+    planeLL = toLL(pl);
+    if (fanRect) { const kk = revealScale(p), { sw, sh, sx, sy, w, h } = fanRect, sW = sw * w * kk, sH = sh * h * kk;
+      const cx = W / 2 + ((sx + sw / 2) - .5) * w * kk, cy = H / 2 + ((sy + sh / 2) - .5) * h * kk; scr = { x: cx - sW / 2, y: cy - sH / 2, w: sW, h: sH }; }
+    mercK = easeIO(span(p, .63, .7));
+    u.uMerc.value = mercK; u.uPlaneLL.value.set(planeLL.lat, planeLL.lon); u.uScr.value.set(scr.x, scr.y, scr.w, scr.h);
+    u.uRtScale.value = worldRT.width / W; u.uVpH.value = H;
+    u.uInvProj.value.copy(camera.projectionMatrixInverse); u.uCamRot.value.setFromMatrix4(camera.matrixWorld);
+    u.uUp.value.copy(camera.position).normalize(); u.uAlt.value = alt; u.uTime.value = t;
+    u.uWind.value.copy(fwd).multiplyScalar(-t * .22);           // the deck streams under the plane: ~800 km/h
+    u.uDetail.value = 1 - span(Math.log(alt), Math.log(60), Math.log(900));
+    u.uFine.value = 1 - span(Math.log(alt), Math.log(14), Math.log(60));
+    u.uCloudAmt.value = window.__noClouds ? 0 : 1;
+    u.uCloudVis.value = 1 - easeIO(span(p, .6, .67));            // the recap's map has no clouds
+    u.uBoostAmt.value = 1 - span(p, .16, .3);
+    u.uMap.value = blitMat.uniforms.uMap.value = easeIO(span(p, .62, .69));
+    // the plane: real model while it is big enough, then the recap's icon
+    const fpx = (H / 2) / Math.tan(camera.fov * DEG / 2) * (viewOffset ? 1 : 1);
+    const planePx = 0.067 * fpx / Math.max(d, 1e-4);
+    const modelK = clamp((planePx - 22) / 26);
+    planeG.visible = planeReady && modelK > 0.001;
+    if (planeG.visible) model.traverse((o) => { if (!o.isMesh) return; const m = o.material, o0 = m.userData.o ?? (m.userData.o = m.opacity);
+      m.opacity = o0 * modelK; const tr = o0 < 1 || modelK < .999; if (m.transparent !== tr) { m.transparent = tr; m.needsUpdate = true; } m.depthWrite = !tr || o0 >= 1; });
+    trailMat.uniforms.uOpacity.value = modelK * (1 - span(Math.log(d), Math.log(1.5), Math.log(6)));
+    sunL.position.copy(pl).addScaledVector(sunDir, 50); sunL.target.position.copy(pl); sunL.target.updateMatrixWorld();
 
-    // --- Act 2: globe (.19 .. .8). The plane never stops: constant speed on the leg.
-    const gOn = p > .18 && p < .86;
-    const f = lerp(.06, .82, span(p, .18, .7)) + (p > .7 ? (p - .7) * 1.46 : 0);
-    if (gOn) {
-      const a = 1 - Math.pow(1 - span(p, .19, .4), 3);       // pull back, decelerating out of the climb
-      const b = easeIO(span(p, .4, .56));                      // drift with the plane
-      const c = easeIO(span(p, .56, .7));                      // dive onto it, still moving
-      const planePos = mainArc.getPoint(Math.min(f, 1));
-      const pl = toLatLon(planePos);
-      const k0 = Math.max(1, .9 * H / W);
-      let lat = lerp(pl.lat, 44, a), lon = lerp(pl.lon, 72, a), dist = lerp(1.07, 1 + 2.3 * k0, a);
-      lat = lerp(lat, 45, b); lon = lerp(lon, 92, b); dist = lerp(dist, 1 + 2.0 * k0, b);
-      const targetDist = 1 + diveAltitude();
-      lat = lerp(lat, pl.lat, c); lon = lerp(lon, pl.lon, c); dist = lerp(dist, targetDist, c);
-      gCam.position.copy(ll(lat, lon, dist)); gCam.up.set(0, 1, 0); gCam.lookAt(0, 0, 0);
-      gClouds.rotation.y = t * .004;
-      gClouds.material.opacity = lerp(.85, .5, a);
-      routes.forEach((r) => { const k = span(p, lerp(.24, .46, r.start), lerp(.24, .46, r.end));
-        r.m.geometry.setDrawRange(0, Math.floor(r.count * k) - (Math.floor(r.count * k) % 3));
-        if (r.g) r.g.geometry.setDrawRange(0, Math.floor(r.count * k) - (Math.floor(r.count * k) % 3)); });
-      routes[0].m.geometry.setDrawRange(0, routes[0].count - (routes[0].count % 3));
-      routes[0].g.geometry.setDrawRange(0, routes[0].count - (routes[0].count % 3));
-      routes[0].m.material.opacity = .35 + .6 * span(p, .2, .26);
-      routes[0].g.material.opacity = .3 * (1 - c);
-      routes.forEach((r) => { if (r !== routes[0] && r.g) r.g.material.opacity = .18 * (1 - c); });
-      badges.forEach(({ s, at }) => { s.material.opacity = span(p, lerp(.24, .46, at) - .01, lerp(.24, .46, at) + .02) * (1 - c); });
-      gR.render(gScene, gCam);
-      tmp.copy(planePos).project(gCam);
-      const ahead = mainArc.getPoint(Math.min(1, f + .01)).project(gCam);
-      const px = (tmp.x * .5 + .5) * W, py = (-tmp.y * .5 + .5) * H;
-      const ang = Math.atan2(-(ahead.y - tmp.y), ahead.x - tmp.x) + Math.PI / 2;
-      planeIcon.style.transform = `translate(${px}px, ${py}px) translate(-50%, -50%) rotate(${ang}rad)`;
-      planeIcon.style.width = lerp(lerp(46, 24, a), recapIconW(), c) + 'px';
-      planeIcon.style.opacity = span(p, .2, .235) * (1 - span(p, .765, .775));
+    // lines: the flown part of Budapest → Beijing trails the plane; the rest of the trip draws itself
+    const camDir = tmp.copy(camera.position).normalize();
+    const lineK = span(Math.log(d), Math.log(60), Math.log(400));
+    const wScale = viewOffset ? 1 : 1;
+    mainLine.core.material.uniforms.uDraw.value = mainLine.glow.material.uniforms.uDraw.value = clamp(f);
+    for (const L of lines) {
+      const k = L === mainLine ? 1 : span(p, lerp(.3, .52, L.start), lerp(.3, .52, L.end));
+      if (L !== mainLine) { L.core.material.uniforms.uDraw.value = L.glow.material.uniforms.uDraw.value = k; }
+      const fade = L === mainLine ? lineK : lineK * (1 - easeIO(span(p, .6, .68)));
+      L.core.material.uniforms.uOpacity.value = fade; L.glow.material.uniforms.uOpacity.value = .22 * fade * (1 - span(p, .62, .7));
+      [L.core, L.glow].forEach((m) => { m.material.uniforms.uCamDir.value.copy(camDir); m.material.uniforms.uWidth.value = (m === L.glow ? L.width * 3.2 : L.width) * wScale; m.visible = fade > .002; });
     }
+    const svgOn = p >= .62;
+    if (svgOn) { mainLine.core.visible = mainLine.glow.visible = false; }
+    routeSvg.style.display = svgOn && p < .79 ? '' : 'none';
+    if (svgOn && p < .79) {
+      routeSvg.setAttribute('width', W); routeSvg.setAttribute('height', H); routeSvg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+      const pts = [], q = [0, 0], N = 240, rr = R / camera.position.length(), cd = camera.position.clone().normalize();
+      for (let i = 0; i <= N; i++) { const a = Math.min(f, i / N * f); const P = main(a).multiplyScalar(R + 12);
+        if (mercK < .5 && P.clone().normalize().dot(cd) < rr) continue; toScreen(P, q); pts.push(q[0].toFixed(1) + ',' + q[1].toFixed(1)); }
+      toScreen(pl, q); pts.push(q[0].toFixed(1) + ',' + q[1].toFixed(1));
+      const lw = lerp(2.6, .0127 * scr.w, span(p, .7, .78));
+      routeCore.setAttribute('points', pts.join(' ')); routeGlow.setAttribute('points', pts.join(' '));
+      routeCore.setAttribute('stroke-width', lw); routeGlow.setAttribute('stroke-width', lw * 3.2);
+      routeGlow.setAttribute('stroke-opacity', (.22 * (1 - span(p, .62, .7))).toFixed(3));
+    }
+    cities.forEach((s) => { s.material.opacity = lineK * (1 - span(p, .6, .68)) * (s.position.clone().normalize().dot(camDir) > R / camera.position.length() ? 1 : 0); s.visible = s.material.opacity > 0; });
 
-    // --- Act 3: into the phone (.7 .. .78) and into the fan (.8 .. .96)
-    const into = easeIO(span(p, .7, .765));
+    if (p < .792) { renderer.setRenderTarget(worldRT); renderer.render(worldScene, orthoCam); renderer.setRenderTarget(null); renderer.render(scene, camera); }
+
+    // plane icon (projected), same white plane as the recap
+    const s0 = toScreen(pl, [0, 0]), s1 = toScreen(planeAt(f + .004, plAhead), [0, 0]);
+    const px = s0[0], py = s0[1];
+    const ang = Math.atan2(s1[1] - s0[1], s1[0] - s0[0]) + Math.PI / 2;
+    planeIcon.style.transform = `translate(${px}px, ${py}px) translate(-50%, -50%) rotate(${ang}rad)`;
+    const iconW = lerp(24, .054 * scr.w, span(p, .7, .78));
+    planeIcon.style.width = iconW + 'px';
+    planeIcon.style.opacity = (1 - clamp((planePx - 22) / 26)) * span(p, .03, .05) * (1 - span(p, .775, .79));
+
+    // Act D/E: the phone, the recap video, the fan
     const settle = easeIO(span(p, .8, .95));
     if (fanRect) {
-      const { x, y, w, h, k, sx, sy, sw, sh } = fanRect;
-      const cx = W / 2, cy = H / 2;
-      const kk = lerp(k, 1, settle);
+      const { x, y, w, h, k, sx, sy, sw, sh } = fanRect, cx = W / 2, cy = H / 2;
+      const kk = p < .8 ? revealScale(p) : lerp(k, 1, settle);
       const tx = lerp(cx - (x + w / 2), 0, settle), ty = lerp(cy - (y + h / 2), 0, settle);
       const bump = Math.sin(Math.PI * settle), bob = settle >= 1 ? Math.sin(t * 1.2) * 5 : 0;
       fanC.style.transform = `translate(${tx}px, ${ty + bob}px) scale(${kk}) rotateY(${-16 * bump}deg) rotateZ(${-4 * bump}deg)`;
-      fanC.style.opacity = span(p, .745, .77);
-      const scrX = cx - (w * k) / 2 + sx * w * k, scrY = cy - (h * k) / 2 + sy * h * k, scrW = sw * w * k, scrH = sh * h * k;
-      const ins = { t: lerp(0, scrY, into), r: lerp(0, W - scrX - scrW, into), b: lerp(0, H - scrY - scrH, into), l: lerp(0, scrX, into) };
-      clipBox.style.clipPath = `inset(${ins.t}px ${ins.r}px ${ins.b}px ${ins.l}px round ${lerp(0, scrW * .13, into)}px)`;
-      clipBox.style.opacity = 1 - span(p, .765, .8);
-      video.style.opacity = span(p, .76, .79);
-      hand.style.opacity = span(p, .76, .79);
-      // side phones come out from behind the centre phone with depth
+      fanC.style.opacity = p > .7 ? 1 : 0;
+      if (viewOffset) {
+        const v = viewOffset, ins = { t: Math.max(0, v.y), l: Math.max(0, v.x), r: Math.max(0, W - v.x - v.w), b: Math.max(0, H - v.y - v.h) };
+        clipBox.style.clipPath = `inset(${ins.t}px ${ins.r}px ${ins.b}px ${ins.l}px round ${v.w * .13 * span(p, .7, .74)}px)`;
+      } else clipBox.style.clipPath = 'none';
+      clipBox.style.opacity = 1 - span(p, .776, .79);
+      // the recap's own chrome (status bar, title, distance, controls) comes in from the screen edges
+      const band = span(p, .705, .75), mid = span(p, .76, .785);
+      const mask = `linear-gradient(to bottom, #000 0, #000 12%, rgba(0,0,0,${mid}) 18%, rgba(0,0,0,${mid}) 72%, #000 79%)`;
+      hand.style.webkitMaskImage = hand.style.maskImage = mid >= 1 ? 'none' : mask;
+      hand.style.opacity = band;
       const sl = easeIO(span(p, .82, .94)), sr = easeIO(span(p, .84, .96));
       const side = (s2, dir) => `translateX(${dir * 64 * s2}%) translateY(${36 * s2 + (s2 >= 1 ? Math.sin(t * 1.2 + dir) * 4 : 0)}px) rotate(${dir * 9 * s2}deg) rotateY(${-dir * 18 * s2}deg) scale(${.8 + .2 * s2})`;
       fanL.style.transform = side(sl, -1); fanR.style.transform = side(sr, 1);
       fanL.style.opacity = span(p, .81, .86); fanR.style.opacity = span(p, .83, .88);
-      endCard.style.opacity = span(p, .72, .8);
+      endCard.style.opacity = span(p, .74, .8);
       endText.style.opacity = span(p, .86, .94); endText.style.transform = `translateY(${(1 - span(p, .86, .94)) * 40}px)`;
     }
-    // Recap: an all-keyframe clip (3.8-5.2 s) is scrubbed with the scroll through the handoff, so the
-    // plane on the globe and the plane in the recap move together; then the full recap plays on.
-    const want = T0 + (p - .7) * 4.16;
+    const want = videoT(p);
     if (hand.readyState >= 1 && p < .8) { const ht = Math.min(1.38, Math.max(0, want - 3.8)); if (Math.abs(hand.currentTime - ht) > 1 / 45) { try { hand.currentTime = ht; } catch (e) {} } }
     if (p > .55 && !videoPrimed) { videoPrimed = true; primeVideo(); }
-    if (p < .8) {
-      hand.style.opacity = video.style.opacity; video.style.visibility = 'hidden';
-      if (videoArmed) { videoArmed = false; video.pause(); }
-    } else {
-      hand.style.opacity = 0; video.style.visibility = 'visible';
-      if (!videoArmed && video.readyState >= 1) { videoArmed = true; try { video.currentTime = T0 + .1 * 4.16; } catch (e) {} video.play().catch(() => {}); }
+    if (p < .8) { video.style.visibility = 'hidden'; video.style.opacity = 0; if (videoArmed) { videoArmed = false; video.pause(); } }
+    else {
+      hand.style.opacity = 0; video.style.visibility = 'visible'; video.style.opacity = 1;
+      if (!videoArmed && video.readyState >= 1) { videoArmed = true; try { video.currentTime = videoT(.8); } catch (e) {} video.play().catch(() => {}); }
     }
     caps.forEach((el) => { const a = +el.dataset.a, b = +el.dataset.b; const o = span(p, a, a + .03) * (1 - span(p, b - .03, b)); el.style.opacity = o; el.style.transform = `translateY(${(1 - span(p, a, a + .03)) * 24}px)`; });
+    return p < .79 || p > .99;
   }
-  function diveAltitude() {
-    // Altitude at which the phone screen shows about 1,900 km across, like the recap
-    if (!fanRect) return .5;
-    const scrW = fanRect.sw * fanRect.w * fanRect.k;
-    const hf = Math.atan(Math.tan(THREE.MathUtils.degToRad(gCam.fov / 2)) * gCam.aspect);
-    return (1350 / 6371) / ((scrW / W) * 2 * Math.tan(hf));
-  }
-  function recapIconW() { return fanRect ? fanRect.sw * fanRect.w * fanRect.k * .075 : 30; }
-  function toLatLon(v) { const r = v.length(); const lat = 90 - Math.acos(v.y / r) * 180 / Math.PI; let lon = Math.atan2(v.z, -v.x) * 180 / Math.PI - 180; if (lon < -180) lon += 360; return { lat, lon }; }
+  function recapIconW() { return fanRect ? fanRect.sw * fanRect.w * fanRect.k * .066 : 24; }
 
-  /* ================= loop ================= */
+  /* ---------- loop ---------- */
   let active = false, raf = 0;
   const loop = () => { raf = 0; if (!active) return; render(); raf = requestAnimationFrame(loop); };
   const schedule = () => { if (!raf) raf = requestAnimationFrame(loop); };
@@ -339,107 +426,219 @@ function init() {
   ScrollTrigger.create({ trigger: sec, start: 'top bottom', end: 'bottom top', onToggle: (st) => { active = st.isActive; if (active) schedule(); } });
   ScrollTrigger.create({ trigger: sec, start: 'top 80px', end: 'bottom top', toggleClass: { targets: document.body, className: 'vs-active' } });
   ScrollTrigger.create({ trigger: sec, start: 'top top', end: 'bottom bottom', onUpdate: (st) => { progress = st.progress; schedule(); }, onRefresh: () => measure() });
-  window.voyevaScene = { seek: (p) => { progress = p; render(); }, measure };
+  window.voyevaScene = { seek: (p) => { progress = p; render(); }, measure, u: worldMat.uniforms, lines, camera, renderer, scene, blit, state: () => ({ p: progress, f: flightF(progress), alt: camera.position.length() - R }) };
 }
 
-/* ---------- procedural airliner (metres; nose towards -Z) ---------- */
-function buildAirliner() {
-  const g = new THREE.Group();
-  const L = 40, R = 2.0;
-  const radius = (y) => {
-    if (y < 9) return 0.32 + (R - 0.32) * Math.pow(Math.sin((y / 9) * Math.PI / 2), 0.75);
-    if (y > 34) return R * Math.sqrt(Math.max(0, 1 - Math.pow((y - 34) / 6, 2)));
-    return R;
+/* Tileable 3D noise, RGBA8: R = Perlin-Worley (cloud body), G/B/A = Worley fbm at rising frequency (erosion). */
+function makeNoise3D(N) {
+  const data = new Uint8Array(N * N * N * 4);
+  const hash = (x, y, z, s) => { let h = (x * 374761393 + y * 668265263 + z * 2147483647 + s * 1274126177) | 0; h = (h ^ (h >>> 13)) * 1274126177 | 0; return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
+  const worley = (cells, seed) => {
+    const pts = new Float32Array(cells * cells * cells * 3);
+    for (let i = 0; i < cells ** 3; i++) for (let k = 0; k < 3; k++) pts[i * 3 + k] = hash(i, k, cells, seed);
+    const out = new Float32Array(N * N * N), cs = N / cells;
+    for (let z = 0; z < N; z++) for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      const fx = x / cs, fy = y / cs, fz = z / cs, cx = Math.floor(fx), cy = Math.floor(fy), cz = Math.floor(fz); let md = 9;
+      for (let dz = -1; dz <= 1; dz++) for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const ix = cx + dx, iy = cy + dy, iz = cz + dz, w = ((ix + cells) % cells) + ((iy + cells) % cells) * cells + ((iz + cells) % cells) * cells * cells;
+        const ex = ix + pts[w * 3] - fx, ey = iy + pts[w * 3 + 1] - fy, ez = iz + pts[w * 3 + 2] - fz, dd = ex * ex + ey * ey + ez * ez; if (dd < md) md = dd; }
+      out[x + y * N + z * N * N] = 1 - Math.min(1, Math.sqrt(md));
+    }
+    return out;
   };
-  const prof = []; for (let i = 0; i <= 80; i++) { const y = (i / 80) * L; prof.push(new THREE.Vector2(Math.max(radius(y), 0.001), y)); }
-  const fus = new THREE.LatheGeometry(prof, 96); fus.rotateX(-Math.PI / 2); fus.translate(0, 0, L / 2);
-  const livery = new THREE.CanvasTexture(liveryCanvas()); livery.colorSpace = THREE.SRGBColorSpace; livery.anisotropy = 8;
-  const paint = new THREE.MeshPhysicalMaterial({ color: 0xffffff, map: livery, roughness: .32, metalness: .05, clearcoat: .7, clearcoatRoughness: .15 });
-  const alu = new THREE.MeshPhysicalMaterial({ color: 0xd3d7dd, roughness: .38, metalness: .55, clearcoat: .3 });
-  const grey = new THREE.MeshStandardMaterial({ color: 0x9aa1aa, roughness: .5, metalness: .6 });
-  const dark = new THREE.MeshStandardMaterial({ color: 0x0c0f13, roughness: .6, metalness: .2 });
-  const finMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, map: finTexture(), roughness: .3, clearcoat: .7, clearcoatRoughness: .15 });
-  g.add(new THREE.Mesh(fus, paint));
-
-  const wing = (pts, thick, mat) => { const s = new THREE.Shape(pts.map(([x, y]) => new THREE.Vector2(x, y)));
-    const geo = new THREE.ExtrudeGeometry(s, { depth: thick, bevelEnabled: true, bevelThickness: thick * .35, bevelSize: thick * .35, bevelSegments: 3, steps: 1 });
-    geo.rotateX(-Math.PI / 2); return new THREE.Mesh(geo, mat); };
-  const wingPts = [[1.4, 4.2], [17.5, -5.6], [17.6, -7.4], [1.4, -4.4]];
-  const rw = wing(wingPts, .32, alu); rw.position.set(0, -1.35, -1); rw.rotation.z = THREE.MathUtils.degToRad(5);
-  const lw = wing(wingPts.map(([x, y]) => [-x, y]).reverse(), .32, alu); lw.position.set(0, -1.35, -1); lw.rotation.z = THREE.MathUtils.degToRad(-5);
-  g.add(rw, lw);
-  // winglets
-  [1, -1].forEach((sgn) => { const wl = new THREE.Mesh(new THREE.BoxGeometry(.16, 2.1, 1.5), alu); wl.position.set(sgn * 17.5, 1.25, 5.6); wl.rotation.z = sgn * -.18; wl.rotation.x = .35; g.add(wl); });
-  // engines
-  const nacProf = []; for (let i = 0; i <= 20; i++) { const y = i / 20 * 4.6; const r = y < 3.6 ? 0.98 - 0.12 * Math.pow(y / 3.6, 2) : 0.86 - (y - 3.6) * .35; nacProf.push(new THREE.Vector2(Math.max(r, .3), y)); }
-  [6.2, -6.2].forEach((x) => {
-    const n = new THREE.LatheGeometry(nacProf, 48); n.rotateX(-Math.PI / 2); n.translate(0, 0, 2.3);
-    const eng = new THREE.Mesh(n, grey); eng.position.set(x, -2.35, -3.4); g.add(eng);
-    const intake = new THREE.Mesh(new THREE.CircleGeometry(.9, 32), dark); intake.position.set(x, -2.35, -5.69); intake.rotation.y = Math.PI; g.add(intake);
-    const pylon = new THREE.Mesh(new THREE.BoxGeometry(.3, 1.0, 3.2), alu); pylon.position.set(x, -1.65, -2.3); g.add(pylon);
-  });
-  // horizontal stabilisers
-  const hs = [[0.6, 2.0], [7.2, -2.6], [7.2, -3.8], [0.6, -2.2]];
-  const rs = wing(hs, .2, alu); rs.position.set(0, .35, 16.6); rs.rotation.z = THREE.MathUtils.degToRad(6);
-  const ls = wing(hs.map(([x, y]) => [-x, y]).reverse(), .2, alu); ls.position.set(0, .35, 16.6); ls.rotation.z = THREE.MathUtils.degToRad(-6);
-  g.add(rs, ls);
-  // vertical fin (shape in z/height, extruded sideways)
-  const fs = new THREE.Shape([[0, 0], [5.4, 0], [7.4, 7.6], [5.6, 7.6]].map(([a, b]) => new THREE.Vector2(a, b)));
-  const fin = new THREE.ExtrudeGeometry(fs, { depth: .34, bevelEnabled: true, bevelThickness: .1, bevelSize: .1, bevelSegments: 2 });
-  fin.rotateY(-Math.PI / 2); fin.translate(.17, 1.4, 13.2);
-  g.add(new THREE.Mesh(fin, finMat));
-  g.rotation.y = 0;
-  return g;
+  const value = (cells, seed) => {
+    const out = new Float32Array(N * N * N), cs = N / cells, q = (t) => t * t * t * (t * (t * 6 - 15) + 10);
+    for (let z = 0; z < N; z++) for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      const fx = x / cs, fy = y / cs, fz = z / cs, ix = Math.floor(fx), iy = Math.floor(fy), iz = Math.floor(fz), u = q(fx - ix), v = q(fy - iy), w = q(fz - iz);
+      const g = (a, b, c) => hash((a + cells) % cells, (b + cells) % cells, (c + cells) % cells, seed);
+      const l = (a, b, t) => a + (b - a) * t;
+      out[x + y * N + z * N * N] = l(l(l(g(ix, iy, iz), g(ix + 1, iy, iz), u), l(g(ix, iy + 1, iz), g(ix + 1, iy + 1, iz), u), v),
+        l(l(g(ix, iy, iz + 1), g(ix + 1, iy, iz + 1), u), l(g(ix, iy + 1, iz + 1), g(ix + 1, iy + 1, iz + 1), u), v), w);
+    }
+    return out;
+  };
+  const w4 = worley(4, 1), w8 = worley(8, 2), w16 = worley(16, 3), w32 = worley(32, 4);
+  const v4 = value(4, 5), v8 = value(8, 6), v16 = value(16, 7);
+  for (let i = 0; i < N * N * N; i++) {
+    const perlin = v4[i] * .55 + v8[i] * .3 + v16[i] * .15;
+    const wf = w4[i] * .625 + w8[i] * .25 + w16[i] * .125;
+    const pw = Math.min(1, Math.max(0, (perlin - (wf - 1)) / (1 - (wf - 1)) * .9 - .25));
+    data[i * 4] = pw * 255; data[i * 4 + 1] = (w8[i] * .625 + w16[i] * .25 + w32[i] * .125) * 255;
+    data[i * 4 + 2] = (w16[i] * .625 + w32[i] * .375) * 255; data[i * 4 + 3] = w32[i] * 255;
+  }
+  const t = new THREE.Data3DTexture(data, N, N, N);
+  t.format = THREE.RGBAFormat; t.type = THREE.UnsignedByteType; t.minFilter = t.magFilter = THREE.LinearFilter;
+  t.wrapS = t.wrapT = t.wrapR = THREE.RepeatWrapping; t.unpackAlignment = 1; t.needsUpdate = true;
+  return t;
 }
 
-function liveryCanvas() {
-  // u: around the fuselage (0 top, .25 right, .5 belly, .75 left); v: tail (0) to nose (1)
-  const c = document.createElement('canvas'); c.width = 2048; c.height = 2048; const x = c.getContext('2d');
-  x.fillStyle = '#f7f8fa'; x.fillRect(0, 0, 2048, 2048);
-  x.fillStyle = '#c8ced6'; x.fillRect(0.38 * 2048, 0, 0.24 * 2048, 2048);           // grey belly
-  const g = x.createLinearGradient(0, 2048, 0, 0); g.addColorStop(0, '#e9b949'); g.addColorStop(1, '#c98a1d');
-  for (const u of [0.288, 0.712]) {                                                  // gold cheatline each side
-    x.fillStyle = g; x.fillRect(u * 2048 - 10, 0.12 * 2048, 20, 0.74 * 2048);
+const WORLD_FRAG = /* glsl */`
+precision highp float; precision highp sampler3D;
+in vec2 vUv; out highp vec4 fragOut;
+uniform mat4 uInvProj; uniform mat3 uCamRot; uniform vec3 uUp; uniform float uAlt; uniform vec3 uSun; uniform float uTime;
+uniform highp sampler3D uNoise; uniform sampler2D uGroundG, uGroundC, uGroundP, uCloudG, uCloudC, uStars; uniform vec4 uCorr, uCCorr, uPatch;
+uniform float uCloudVis, uCloudAmt, uDetail, uSteps, uBoostAmt, uExposure, uDebug, uMap, uFine, uMerc, uRtScale, uVpH; uniform vec2 uPlaneLL; uniform vec4 uScr;
+const float MERC_W = 20.15; const vec2 ANCHOR = vec2(.533, .521); uniform vec3 uWind, uBoost;
+const float R = 6371.; const float CB = 1.4; const float CT = 7.8; const float AT = 70.;
+const float PI = 3.14159265;
+const vec3 BR = vec3(5.8e-3, 13.5e-3, 33.1e-3); const float BMIE = 2.2e-3; const float HR = 8.; const float HM = 1.2;
+const vec3 SUN = vec3(1., .96, .9) * 18.;
+
+float hash12(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * .1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
+float remap(float v, float a, float b, float c, float d){ return c + (v - a) / (b - a) * (d - c); }
+// ray from the camera (|o| = R + alt, unit up) against a sphere of radius R + hs
+vec2 sph(float alt, float mu, float hs){ float r = R + alt, b = r * mu, c = (alt - hs) * (2. * R + alt + hs), D = b * b - c; if (D < 0.) return vec2(-1.); float s = sqrt(D); return vec2(-b - s, -b + s); }
+// precise altitude of the point at distance t along the ray
+float altAt(float t, float mu){ float r = R + uAlt; float q = uAlt * (2. * R + uAlt) + t * (2. * r * mu + t); return q / (sqrt(R * R + q) + R); }
+vec3 unitLL(float lat, float lon){ float phi = (90. - lat) * PI / 180., th = (lon + 180.) * PI / 180.; return vec3(-sin(phi) * cos(th), cos(phi), sin(phi) * sin(th)); }
+vec2 latlon(vec3 n){ float lat = asin(clamp(n.y, -1., 1.)); float lon = atan(n.z, -n.x) - PI; if (lon < -PI) lon += 2. * PI; return vec2(lat, lon) * (180. / PI); }
+vec3 groundCol(vec3 n){ vec2 ll = latlon(n); vec3 g = texture(uGroundG, vec2((ll.y + 180.) / 360., (ll.x + 90.) / 180.)).rgb;
+  vec2 cu = vec2((ll.y - uCorr.x) / (uCorr.y - uCorr.x), (ll.x - uCorr.z) / (uCorr.w - uCorr.z));
+  float inC = smoothstep(0., .02, cu.x) * (1. - smoothstep(.98, 1., cu.x)) * smoothstep(0., .04, cu.y) * (1. - smoothstep(.96, 1., cu.y));
+  if (inC > 0.) g = mix(g, texture(uGroundC, cu).rgb, inC);
+  vec2 pu = vec2((ll.y - uPatch.x) / (uPatch.y - uPatch.x), (ll.x - uPatch.z) / (uPatch.w - uPatch.z));
+  float inP = smoothstep(0., .03, pu.x) * (1. - smoothstep(.97, 1., pu.x)) * smoothstep(0., .03, pu.y) * (1. - smoothstep(.97, 1., pu.y));
+  if (inP > 0.) g = mix(g, texture(uGroundP, pu).rgb, inP);
+  return g; }
+float coverRaw(vec3 n){ vec2 ll = latlon(n); float c = texture(uCloudG, vec2((ll.y + 180.) / 360., (ll.x + 90.) / 180.)).r;
+  vec2 cu = vec2((ll.y - uCCorr.x) / (uCCorr.y - uCCorr.x), (ll.x - uCCorr.z) / (uCCorr.w - uCCorr.z));
+  float inC = smoothstep(0., .02, cu.x) * (1. - smoothstep(.98, 1., cu.x)) * smoothstep(0., .04, cu.y) * (1. - smoothstep(.96, 1., cu.y));
+  if (inC > 0.) c = mix(c, texture(uCloudC, cu).r, inC);
+  return c; }
+float cover(vec3 n){ float c = smoothstep(.78, 1.06, coverRaw(n) + (texture(uNoise, n * 41.).r - .5) * .06);
+  // a broad, ragged weather system under the plane at the start (low-frequency noise, not a disc)
+  float ang = acos(clamp(dot(n, uBoost), -1., 1.));
+  vec4 wn = texture(uNoise, n * 9.); vec4 wn2 = texture(uNoise, n * 31. + .3);
+  float field = max(smoothstep(.26, .58, wn.r * .7 + wn2.g * .45), (1. - smoothstep(.002, .012, ang)) * .8) * (1. - smoothstep(.02, .085, ang + (wn.g - .5) * .05));
+  c = max(c, field * uBoostAmt * .74);
+  return c * uCloudAmt; }
+float density(vec3 p, float h, float cov, bool detail){
+  float hf = (h - CB) / (CT - CB); if (hf <= 0. || hf >= 1. || cov < .01) return 0.;
+  float top = mix(.28, 1., cov);
+  float shape = smoothstep(0., .07, hf) * (1. - smoothstep(top * .5, top, hf));
+  vec4 n = texture(uNoise, p * (1. / 22.) + uWind * (1. / 22.) * .3);
+  float wf = n.g * .625 + n.b * .25 + n.a * .125;
+  float base = mix(1., remap(n.r, wf - 1., 1., 0., 1.), uDetail * .9 + .1);
+  float d = clamp(remap(base * shape, 1. - cov, 1., 0., 1.), 0., 1.) * cov;
+  if (detail && d > 0. && uDetail > .01) {
+    vec4 m = texture(uNoise, p * (1. / 3.1) + uWind * (1. / 3.1));
+    float df = m.g * .625 + m.b * .25 + m.a * .125; df = mix(df, 1. - df, clamp(hf * 3., 0., 1.));
+    d = clamp(remap(d, df * .34 * uDetail, 1., 0., 1.), 0., 1.);
+    if (uFine > .01 && d > 0.) { vec4 f = texture(uNoise, p * (1. / .75) + uWind * (1. / .75) * 1.2); float ff = f.g * .6 + f.b * .4;
+      d = clamp(remap(d, ff * .1 * uFine, 1., 0., 1.), 0., 1.); }
   }
-  x.fillStyle = '#1d2733';                                                           // windows
-  for (const u of [0.232, 0.768]) for (let v = 0.24; v < 0.86; v += 0.0105) { x.beginPath(); x.ellipse(u * 2048, (1 - v) * 2048, 7, 10, 0, 0, Math.PI * 2); x.fill(); }
-  x.fillStyle = '#121a24';                                                           // cockpit
-  for (const [u0, u1] of [[0.17, 0.3], [0.7, 0.83]]) { x.beginPath(); x.moveTo(u0 * 2048, (1 - .918) * 2048); x.lineTo(u1 * 2048, (1 - .918) * 2048); x.lineTo((u1 - .03) * 2048, (1 - .94) * 2048); x.lineTo((u0 + .03) * 2048, (1 - .94) * 2048); x.fill(); }
-  x.save(); x.translate(0.232 * 2048, (1 - 0.72) * 2048); x.rotate(-Math.PI / 2); x.fillStyle = '#1b1f2a';
-  x.font = '700 64px Geist, Helvetica, Arial, sans-serif'; x.fillText('VOYEVA', 0, 70); x.restore();
-  x.save(); x.translate(0.768 * 2048, (1 - 0.62) * 2048); x.rotate(Math.PI / 2); x.fillStyle = '#1b1f2a';
-  x.font = '700 64px Geist, Helvetica, Arial, sans-serif'; x.fillText('VOYEVA', 0, -24); x.restore();
-  return c;
+  return d;
 }
-function finTexture() {
-  const c = document.createElement('canvas'); c.width = 1024; c.height = 1024; const x = c.getContext('2d');
-  x.fillStyle = '#121418'; x.fillRect(0, 0, 1024, 1024);
-  const g = x.createLinearGradient(0, 0, 1024, 1024); g.addColorStop(0, '#f6cf6a'); g.addColorStop(1, '#d08d1f');
-  x.strokeStyle = g; x.lineWidth = 70; x.lineCap = 'round'; x.lineJoin = 'round';
-  x.beginPath(); x.moveTo(420, 300); x.bezierCurveTo(700, 300, 720, 520, 520, 560); x.bezierCurveTo(330, 600, 380, 760, 640, 740); x.stroke();
-  x.fillStyle = g; [[400, 300], [660, 740]].forEach(([a, b]) => { x.beginPath(); x.arc(a, b, 70, 0, Math.PI * 2); x.fill(); x.fillStyle = '#121418'; x.beginPath(); x.arc(a, b, 28, 0, Math.PI * 2); x.fill(); x.fillStyle = g; });
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
-  // Extrude UVs are the shape coordinates (0..7.4 x 0..7.6)
-  t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; t.repeat.set(1 / 7.6, 1 / 7.6); return t;
-}
-function makeCloudCanvas(w, h) {
-  const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); const img = x.createImageData(w, h);
-  const hash = (i, j) => { const s = Math.sin(i * 127.1 + j * 311.7) * 43758.5453; return s - Math.floor(s); };
-  const noise = (px, py, per) => { const i = Math.floor(px), j = Math.floor(py), fx = px - i, fy = py - j; const u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy);
-    const a = hash(i % per, j), b = hash((i + 1) % per, j), c2 = hash(i % per, j + 1), d = hash((i + 1) % per, j + 1); return a + (b - a) * u + (c2 - a) * v + (a - b - c2 + d) * u * v; };
-  for (let y = 0; y < h; y++) for (let xx = 0; xx < w; xx++) {
-    let v = 0, amp = .5, f = 6; for (let o = 0; o < 6; o++) { v += amp * noise(xx / w * f, y / h * f * .5, f); f *= 2; amp *= .5; }
-    const lat = Math.abs(y / h - .5) * 2; const band = .55 + .25 * Math.cos(lat * Math.PI * 3);
-    const a = Math.max(0, Math.min(1, (v - (1 - band * .62)) * 3.2));
-    const k = (y * w + xx) * 4; img.data[k] = img.data[k + 1] = img.data[k + 2] = 255; img.data[k + 3] = a * 255;
+const float LS[51] = float[51](0.0000,0.0667,0.0784,0.0863,0.0941,0.1059,0.1216,0.1412,0.1725,0.2078,0.2549,0.3137,0.3804,0.4471,0.5098,0.5686,1.0000,0.0000,0.1216,0.1333,0.1412,0.1490,0.1569,0.1686,0.1843,0.2000,0.2235,0.2510,0.2902,0.3373,0.3882,0.4392,0.4902,1.0000,0.0000,0.0235,0.0314,0.0353,0.0431,0.0510,0.0588,0.0667,0.0824,0.1059,0.1333,0.1725,0.2157,0.2627,0.3098,0.3529,1.0000);
+const float LD[51] = float[51](0.1388,0.2314,0.2549,0.2745,0.2902,0.3059,0.3216,0.3333,0.3529,0.3686,0.3922,0.4157,0.4392,0.4667,0.4980,0.5412,0.6386,0.1882,0.3137,0.3412,0.3569,0.3686,0.3804,0.3882,0.3961,0.4078,0.4157,0.4275,0.4353,0.4471,0.4627,0.4824,0.5137,0.6062,0.1059,0.1765,0.1922,0.2039,0.2118,0.2235,0.2314,0.2392,0.2471,0.2588,0.2706,0.2824,0.2980,0.3137,0.3333,0.3686,0.4349);
+float lutc(float x, int c){ int b = c * 17; for (int i = 0; i < 16; i++) { float a = LS[b + i], z = LS[b + i + 1]; if (x <= z || i == 15) return mix(LD[b + i], LD[b + i + 1], clamp((x - a) / max(z - a, 1e-4), 0., 1.)); } return x; }
+float hg(float c, float g){ float g2 = g * g; return (1. - g2) / (4. * PI * pow(1. + g2 - 2. * g * c, 1.5)); }
+// single-scattering atmosphere between t0 and t1 along the ray; returns inscatter, writes transmittance
+vec3 atmo(vec3 o, vec3 d, float mu, float t0, float t1, out vec3 T){
+  T = vec3(1.); vec3 L = vec3(0.); if (t1 <= t0) return L;
+  float cs = dot(d, uSun), pR = 3. / (16. * PI) * (1. + cs * cs), pM = hg(cs, .76);
+  const int N = 10; float dt = (t1 - t0) / float(N); vec3 od = vec3(0.);
+  for (int i = 0; i < N; i++) {
+    float t = t0 + (float(i) + .5) * dt; float h = max(0., altAt(t, mu));
+    float rR = exp(-h / HR), rM = exp(-h / HM);
+    vec3 p = o + d * t; vec3 up = normalize(p); float muS = dot(up, uSun);
+    // optical depth to the sun (Chapman-like approximation)
+    float ch = 1. / max(muS + .15 * pow(max(0., 1.05 - muS), 2.5), .03);
+    vec3 odS = (BR * HR * rR + BMIE * 1.1 * HM * rM) * ch;
+    float lit = smoothstep(-.12, .04, muS);
+    vec3 ext = BR * rR + BMIE * 1.1 * rM; od += ext * dt;
+    vec3 tr = exp(-od - odS) * lit;
+    L += tr * (BR * rR * pR + BMIE * rM * pM) * dt;
   }
-  x.putImageData(img, 0, 0); return c;
+  T = exp(-od);
+  return L * SUN * .5;
 }
-function makeBadge() {
-  const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
-  x.fillStyle = 'rgba(57,208,245,.35)'; x.beginPath(); x.arc(64, 64, 62, 0, Math.PI * 2); x.fill();
-  x.fillStyle = '#21b9f2'; x.beginPath(); x.arc(64, 64, 48, 0, Math.PI * 2); x.fill();
-  x.fillStyle = '#fff'; x.translate(64, 64); x.rotate(Math.PI / 4); x.scale(.62, .62);
-  x.fill(new Path2D('M0-47c3.6 0 5.2 7 5.2 15v22.5L47 11.5v8.2L5.2 9.6 4.2 31 16 40.5v6.6L1.6 43.4H-1.6L-16 47.1v-6.6L-4.2 31-5.2 9.6-47 19.7v-8.2L-5.2-9.5V-32c0-8 1.6-15 5.2-15z'));
-  return c;
-}
+void main(){
+  if (uMap >= .999 && uMerc >= .999) {
+    vec2 css = vec2(gl_FragCoord.x / uRtScale, uVpH - gl_FragCoord.y / uRtScale); vec2 fu = (css - uScr.xy) / uScr.zw;
+    float lonM = uPlaneLL.y + (fu.x - ANCHOR.x) * MERC_W; float mP = log(tan(PI / 4. + uPlaneLL.x * PI / 360.));
+    float latM = (2. * atan(exp(mP - (fu.y - ANCHOR.y) * uScr.w * (MERC_W / uScr.z) * PI / 180.)) - PI / 2.) * 180. / PI;
+    vec3 g = pow(groundCol(unitLL(latM, lonM)), vec3(1. / 2.2)); vec3 gm = vec3(lutc(g.r, 0), lutc(g.g, 1), lutc(g.b, 2));
+    fragOut = vec4(pow(clamp(gm, 0., 1.), vec3(2.2)), 1.); return;
+  }
+  vec4 v = uInvProj * vec4(vUv * 2. - 1., 1., 1.); vec3 d = normalize(uCamRot * (v.xyz / v.w));
+  vec3 up = uUp; vec3 o = up * (R + uAlt); float mu = dot(up, d);
+  vec2 eH = sph(uAlt, mu, 0.); float tE = eH.x > 0. ? eH.x : -1.;
+  vec2 aH = sph(uAlt, mu, AT); float tA0 = max(0., aH.x), tA1 = tE > 0. ? tE : aH.y;
+  // --- surface or space
+  vec3 Ls;
+  if (tE > 0.) {
+    vec3 n = normalize(o + d * tE); vec3 g = groundCol(n);
+    float ndl = dot(n, uSun); float day = smoothstep(-.1, .2, ndl);
+    vec3 gs = pow(g, vec3(1. / 2.2)); float water = smoothstep(.03, .1, gs.b - gs.r) * (1. - smoothstep(.15, .35, dot(gs, vec3(.33))));
+    float sh = 1. - .7 * cover(normalize(n + uSun * .0012)) * uCloudVis;
+    vec3 col = g * 1.35;
+    Ls = col * (SUN * .1 * max(ndl, 0.) * sh + vec3(.12, .16, .24) * day * .5);
+    vec3 hv = normalize(uSun - d); Ls += water * SUN * .05 * pow(max(dot(n, hv), 0.), 220.) * sh;
+  } else {
+    float sunD = smoothstep(.99985, .99995, dot(d, uSun));
+    Ls = SUN * sunD * 2.;
+    vec2 sll = latlon(d); vec3 st = texture(uStars, vec2((sll.y + 180.) / 360., (sll.x + 90.) / 180.)).rgb;
+    Ls += st * st * .35 * smoothstep(60., 600., uAlt);
+  }
+  // --- clouds
+  vec3 Lc = vec3(0.); float Tc = 1.; float tC = 0.;
+  vec2 cTop = sph(uAlt, mu, CT), cBot = sph(uAlt, mu, CB);
+  float t0, t1;
+  if (uAlt > CT) { t0 = cTop.x; t1 = cBot.x > 0. ? cBot.x : cTop.y; } else { t0 = 0.; t1 = cBot.x > 0. ? cBot.x : cTop.y; }
+  if (cTop.x > -1. && t1 > 0. && uCloudAmt > .001 && uCloudVis > .001) {
+    t0 = max(t0, 0.); t1 = min(t1, t0 + 260.);
+    int N = int(uSteps); float far = smoothstep(80., 1500., uAlt);
+    N = int(mix(mix(float(N), 36., smoothstep(14., 70., uAlt)), 12., far));
+    float dt = (t1 - t0) / float(N);
+    float j = fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(.06711056, .00583715))));   // interleaved gradient noise, stable
+    float cs = dot(d, uSun), ph = .62 + 4. * PI * .38 * mix(hg(cs, .8), hg(cs, -.2), .25);
+    float wsum = 0.;
+    for (int i = 0; i < 96; i++) {
+      if (i >= N || Tc < .015) break;
+      float t = t0 + (float(i) + j) * dt; vec3 p = o + d * t; float h = altAt(t, mu);
+      vec3 n = normalize(p); float cov = cover(n);
+      float den = density(p, h, cov, far < .5);
+      if (den > .002) {
+        // light march toward the sun (near); far away a cheap height-based estimate is enough
+        float odl = 0.;
+        if (uAlt < 45.) { float sl = .22; vec3 q = p;
+          for (int k = 0; k < 5; k++) { q += uSun * sl; float hq = length(q) - R; odl += density(q, hq, cover(normalize(q)), false) * sl; sl *= 1.8; } }
+        else { odl = cov * (1. - clamp((h - CB) / (CT - CB), 0., 1.)) * .9 / max(dot(n, uSun), .2); }
+        float sig = mix(26., 4., far);
+        float hf = clamp((h - CB) / (CT - CB), 0., 1.);
+        vec3 sunC = SUN * .105 * smoothstep(-.05, .15, dot(n, uSun));
+        float powder = mix(1., 1. - exp(-den * sig * .6), .45);
+        vec3 S = sunC * (exp(-sig * odl) * ph + .32 * exp(-sig * .22 * odl) * (.7 + ph * .2) + .1 * exp(-sig * .05 * odl)) * powder
+               + vec3(.42, .55, .8) * .6 * mix(.3, 1., hf * hf) * smoothstep(-.1, .2, dot(n, uSun));
+        float tr = exp(-den * sig * dt);
+        Lc += Tc * S * (1. - tr); wsum += Tc * (1. - tr); tC += t * Tc * (1. - tr); Tc *= tr;
+      }
+    }
+    tC = wsum > 0. ? tC / wsum : t1;
+    Lc *= uCloudVis; Tc = mix(1., Tc, uCloudVis);
+  }
+  // --- atmosphere in front of and behind the clouds
+  vec3 Ta, Tb; vec3 L1, L2;
+  if (Tc < .999) { float tm = clamp(tC, tA0, tA1); L1 = atmo(o, d, mu, tA0, tm, Ta); L2 = atmo(o, d, mu, tm, tA1, Tb); }
+  else { L1 = atmo(o, d, mu, tA0, tA1, Ta); L2 = vec3(0.); Tb = vec3(1.); }
+  vec3 col = L1 + Ta * (Lc + Tc * (L2 + Tb * Ls));
+  if (uMap > 0. && tE > 0.) {
+    // the recap's map: flat satellite imagery, graded to Apple's look, no atmosphere
+    vec3 nS = normalize(o + d * tE);
+    // morph into the recap's flat Mercator map: same anchor, same degrees per screen width
+    vec2 css = vec2(gl_FragCoord.x / uRtScale, uVpH - gl_FragCoord.y / uRtScale);
+    vec2 fu = (css - uScr.xy) / uScr.zw;
+    float lonM = uPlaneLL.y + (fu.x - ANCHOR.x) * MERC_W;
+    float mP = log(tan(PI / 4. + uPlaneLL.x * PI / 360.));
+    float mY = mP - (fu.y - ANCHOR.y) * uScr.w * (MERC_W / uScr.z) * PI / 180.;
+    float latM = (2. * atan(exp(mY)) - PI / 2.) * 180. / PI;
+    vec3 nM = unitLL(latM, lonM);
+    vec3 g = pow(groundCol(normalize(mix(nS, nM, uMerc))), vec3(1. / 2.2));
+    vec3 gm = vec3(lutc(g.r, 0), lutc(g.g, 1), lutc(g.b, 2));
+    col = mix(col, pow(clamp(gm, 0., 1.), vec3(2.2)), uMap);
+  }
+  fragOut = vec4(col * uExposure, 1.);
+}`;
+
+if (sec) init();

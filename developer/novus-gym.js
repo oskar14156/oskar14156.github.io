@@ -38,8 +38,8 @@
     <div class="ng-head-copy"><p class="ng-meta">Novus · training log</p><h2 class="ng-title">Every set counted, every week on the map.</h2></div>
     <div class="ng-card">
       <p class="ng-meta ng-ex">Back squat · set 3 of 3</p>
-      <div class="ng-reps"><span class="ng-rep">0</span><small>/ 5 reps</small></div>
-      <dl class="ng-stats"><div><dt>Weight</dt><dd>100 kg</dd></div><div><dt>Volume today</dt><dd><span class="ng-vol">1,000</span> kg</dd></div></dl>
+      <div class="ng-reps"><span class="ng-rep">0</span><small>/ 3 reps</small></div>
+      <dl class="ng-stats"><div><dt>Weight</dt><dd>100 kg</dd></div><div><dt>Volume today</dt><dd><span class="ng-vol">2,400</span> kg</dd></div></dl>
       <p class="ng-meta ng-hm-label">15 weeks of training</p>
       <div class="ng-heat">${Array.from({ length: 105 }, () => '<i></i>').join('')}</div>
     </div>
@@ -65,11 +65,11 @@
 
   function frame(p, time) {
     const cx = 450, mid = cx + 6;                         // mid-foot
-    const runW = sm(span(p, .62, .7));
-    // Squat: five reps; hips go back and down, the bar stays over mid-foot
-    const repPhase = span(p, .1, .56) * 5;
-    const k = Math.floor(Math.min(repPhase, 4.999)), f = repPhase - k;
-    const depth = p < .1 || p > .56 ? 0 : Math.sin(Math.PI * sm(f));
+    const runW = sm(span(p, .58, .68));
+    // Squat: the last three reps; hips go back and down, the bar stays over mid-foot
+    const repPhase = span(p, .08, .5) * 3;
+    const k = Math.floor(Math.min(repPhase, 2.999)), f = repPhase - k;
+    const depth = p < .08 || p > .5 ? 0 : Math.sin(Math.PI * sm(f));
     const sqHip = [cx - 8 - depth * 66, GROUND - 176 + depth * 86];
     const sqLean = Math.asin(Math.max(-.9, Math.min(.9, (mid - sqHip[0]) / L.torso)));
     // Run cycle: stance (foot on the ground, moving back), swing (foot travels forward, heel kick)
@@ -106,19 +106,19 @@
     E.armB.setAttribute('d', `M${pt(sh)} L${pt(mix([eBl[0] - 6, eBl[1]], rEB))} L${pt(mix(hBl, rHB))}`);
     E.lanes.setAttribute('transform', `translate(${-(((ph / (2 * Math.PI)) * 240) % 70) * runW} 0)`);
     // Barbell: on the back, then racked up and away
-    const rackT = sm(span(p, .58, .64));
+    const rackT = sm(span(p, .52, .59));
     const bar = [lerp(barPos[0], 352, rackT), lerp(barPos[1], 372, rackT)];
     E.plate.setAttribute('cx', bar[0]); E.plate.setAttribute('cy', bar[1]); E.hub.setAttribute('cx', bar[0]); E.hub.setAttribute('cy', bar[1]);
     E.barLine.setAttribute('d', `M${bar[0] - 34} ${bar[1]} H${bar[0] + 34}`);
-    E.bar.style.opacity = 1 - span(p, .64, .7);
-    E.rack.style.opacity = .9 * (1 - span(p, .64, .7));
+    E.bar.style.opacity = 1 - span(p, .6, .66);
+    E.rack.style.opacity = .9 * (1 - span(p, .6, .66));
     // Track lines slide while running
     // Counters + heatmap
-    const reps = p < .1 ? 0 : Math.min(5, Math.floor(span(p, .1, .56) * 5 + .5 * (depth < .02 ? 1 : 0) + (f > .5 ? .5 : 0)));
+    const reps = p < .08 ? 0 : Math.min(3, Math.floor(span(p, .08, .5) * 3 + (f > .5 ? .5 : 0)));
     rep.textContent = reps;
-    vol.textContent = (1000 + reps * 100).toLocaleString('en-US');
-    ex.textContent = p < .6 ? 'Back squat · set 3 of 3' : 'Then the run: 29.8 km';
-    const fill = Math.floor(span(p, .05, .6) * cells.length);
+    vol.textContent = (2400 + reps * 100).toLocaleString('en-US');
+    ex.textContent = p < .56 ? 'Back squat · set 3 of 3' : 'Then the run: 29.8 km';
+    const fill = Math.floor(span(p, .05, .55) * cells.length);
     cells.forEach((c, i) => { c.dataset.l = i < fill ? levels[i] : 0; });
     host.style.setProperty('--ng-p', p);
   }
