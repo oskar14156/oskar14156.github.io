@@ -15,7 +15,7 @@ function init() {
   const skyCanvas = $('.vs-sky'), globeCanvas = $('.vs-globe'), haze = $('.vs-haze'), clipBox = $('.vs-clip');
   const planeIcon = $('.vs-plane'), endCard = $('.vs-card'), endText = $('.vs-text');
   const fanL = $('.vs-fan .fan-l'), fanC = $('.vs-fan .fan-c'), fanR = $('.vs-fan .fan-r');
-  const video = fanC.querySelector('video'), videoBox = fanC.querySelector('.device-screen');
+  const video = fanC.querySelector('video:not(.vs-hand)'), hand = fanC.querySelector('.vs-hand'), videoBox = fanC.querySelector('.device-screen');
   const caps = [...sec.querySelectorAll('.vs-cap')];
   const T0 = 4.5; // recap: the plane over Mongolia, heading for Beijing
   const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -99,10 +99,14 @@ function init() {
     mesh.rotation.x = -Math.PI / 2; mesh.position.y = y; skyScene.add(mesh);
     return m;
   };
-  const cloudsLow = mkClouds(-1500, 0.00018, 0.05, 0.22);
-  const cloudsMid = mkClouds(-380, 0.0008, 0.3, 0.0);
+  const cloudsLow = mkClouds(-1500, 0.00018, 0.3, 0.4);
+  const cloudsMid = mkClouds(-380, 0.0008, 0.22, 0.0);
 
+  const sea = new THREE.Mesh(new THREE.PlaneGeometry(4e6, 4e6), new THREE.MeshBasicMaterial({ color: 0x24465f }));
+  sea.rotation.x = -Math.PI / 2; sea.position.y = -3000; skyScene.add(sea);
   const plane = buildAirliner(); skyScene.add(plane);
+  const BEARING = THREE.MathUtils.degToRad(48);           // plane heading on the map
+  const NORTH = new THREE.Vector3(-Math.sin(BEARING), 0, -Math.cos(BEARING));   // forward (-Z) rotated back by the bearing
 
   /* ================= GLOBE ================= */
   const gR = new THREE.WebGLRenderer({ canvas: globeCanvas, antialias: true, alpha: false });
@@ -112,7 +116,7 @@ function init() {
   const gCam = new THREE.PerspectiveCamera(36, 1, 0.001, 100);
   const loader = new THREE.TextureLoader();
   const tex = (u, srgb = true) => { const t = loader.load(u, () => schedule()); if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; };
-  const sunDir = (() => { const lat = 12 * Math.PI / 180, th = (4 + 180) * Math.PI / 180; return new THREE.Vector3(-Math.cos(lat) * Math.cos(th), Math.sin(lat), Math.cos(lat) * Math.sin(th)).normalize(); })();
+  const sunDir = (() => { const lat = 16 * Math.PI / 180, th = (70 + 180) * Math.PI / 180; return new THREE.Vector3(-Math.cos(lat) * Math.cos(th), Math.sin(lat), Math.cos(lat) * Math.sin(th)).normalize(); })();
   const earthMat = new THREE.ShaderMaterial({
     uniforms: {
       day: { value: tex('/developer/media/earth/earth-blue-marble.jpg') }, night: { value: tex('/developer/media/earth/earth-night.jpg') },
@@ -217,93 +221,101 @@ function init() {
   const primeVideo = () => { video.preload = 'auto'; video.pause(); if (video.readyState >= 1) seekT0(); else { video.addEventListener('loadedmetadata', seekT0, { once: true }); video.load(); } };
   function render() {
     const p = progress, t = clock.getElapsedTime();
-    // --- Act 1: sky (0 .. .34)
-    const skyOn = p < .235;
+    // --- Act 1: sky (0 .. .24): the camera pulls up and away until clouds fill the frame
+    const skyOn = p < .26;
     if (skyOn) {
-      const s = span(p, .02, .21), e = easeIO(s);
-      const d = 50 * Math.pow(26, e) * Math.sqrt(Math.max(1, .9 * H / W));
-      const el = THREE.MathUtils.degToRad(lerp(13, 52, ease(span(p, .05, .21))));
-      const az = THREE.MathUtils.degToRad(lerp(-34, -4, e));
-      plane.rotation.z = Math.sin(t * .6) * .045; plane.position.y = Math.sin(t * .8) * .25;
+      const s = span(p, .02, .22), e = easeIO(s);
+      const d = 50 * Math.pow(80, e) * Math.sqrt(Math.max(1, .9 * H / W));
+      const el = THREE.MathUtils.degToRad(lerp(13, 89.5, ease(span(p, .04, .2))));
+      const az = THREE.MathUtils.degToRad(lerp(-34, 0, e));
+      plane.rotation.z = Math.sin(t * .6) * .045 * (1 - e); plane.position.y = Math.sin(t * .8) * .25;
       skyCam.position.set(Math.sin(az) * Math.cos(el) * d, Math.sin(el) * d, Math.cos(az) * Math.cos(el) * d);
-      skyCam.up.set(0, 1, 0); if (el > 1.5) skyCam.up.set(0, 0, -1);
+      // looking straight down at the end, screen-up = north, so the plane points the way it flies on the map
+      const topK = ease(span(p, .12, .21));
+      skyCam.up.set(lerp(0, NORTH.x, topK), lerp(1, 0, topK), lerp(0, NORTH.z, topK)).normalize();
       skyCam.lookAt(0, -1 * (1 - e), -3 * (1 - e));
-      for (const c of [cloudsLow, cloudsMid]) { c.uniforms.uTime.value = t; c.uniforms.uOff.value.y = -t * .045 * (c === cloudsMid ? 1 : .55); c.uniforms.uCam.value.copy(skyCam.position); }
+      for (const c of [cloudsLow, cloudsMid]) { c.uniforms.uTime.value = t; c.uniforms.uOff.value.set(23.7, 41.3 - t * .045 * (c === cloudsMid ? 1 : .55)); c.uniforms.uCam.value.copy(skyCam.position); }
       skyR.render(skyScene, skyCam);
     }
-    skyCanvas.style.opacity = 1 - span(p, .205, .23);
-    haze.style.opacity = span(p, .165, .205) * (1 - span(p, .225, .265)) * .97;
+    // crossfade with speed blur instead of a white flash
+    const xf = span(p, .19, .245);
+    skyCanvas.style.opacity = 1 - xf; skyCanvas.style.filter = `blur(${(xf * 10).toFixed(1)}px)`;
+    globeCanvas.style.opacity = xf; globeCanvas.style.filter = `blur(${((1 - span(p, .2, .27)) * 10).toFixed(1)}px)`;
+    haze.style.opacity = 0;
 
-    // --- Act 2: globe (.31 .. .78)
-    const gOn = p > .2 && p < .86;
+    // --- Act 2: globe (.19 .. .8). The plane never stops: constant speed on the leg.
+    const gOn = p > .18 && p < .86;
+    const f = lerp(.06, .82, span(p, .18, .7)) + (p > .7 ? (p - .7) * 1.46 : 0);
     if (gOn) {
-      const a = easeIO(span(p, .21, .4));    // pull back from Budapest to Eurasia
-      const b = easeIO(span(p, .45, .6));    // follow the plane towards Beijing
-      const c = easeIO(span(p, .6, .7));     // dive onto the plane
-      const f = lerp(0, .8, easeIO(span(p, .47, .62)));   // plane progress on the BUD-PEK arc
-      const planePos = mainArc.getPoint(f);
+      const a = 1 - Math.pow(1 - span(p, .19, .4), 3);       // pull back, decelerating out of the climb
+      const b = easeIO(span(p, .4, .56));                      // drift with the plane
+      const c = easeIO(span(p, .56, .7));                      // dive onto it, still moving
+      const planePos = mainArc.getPoint(Math.min(f, 1));
       const pl = toLatLon(planePos);
-      let lat = lerp(47.4, 40, a), lon = lerp(19.3, 64, a), dist = lerp(1.26, 3.9, a);
-      lat = lerp(lat, 45, b); lon = lerp(lon, 94, b); dist = lerp(dist, 3.0, b);
-      dist = 1 + (dist - 1) * Math.max(1, .9 * H / W);
+      const k0 = Math.max(1, .9 * H / W);
+      let lat = lerp(pl.lat, 44, a), lon = lerp(pl.lon, 72, a), dist = lerp(1.07, 1 + 2.3 * k0, a);
+      lat = lerp(lat, 45, b); lon = lerp(lon, 92, b); dist = lerp(dist, 1 + 2.0 * k0, b);
       const targetDist = 1 + diveAltitude();
       lat = lerp(lat, pl.lat, c); lon = lerp(lon, pl.lon, c); dist = lerp(dist, targetDist, c);
       gCam.position.copy(ll(lat, lon, dist)); gCam.up.set(0, 1, 0); gCam.lookAt(0, 0, 0);
-      // keep north up during the dive
       gClouds.rotation.y = t * .004;
-      routes.forEach((r) => { const k = span(p, lerp(.33, .47, r.start), lerp(.33, .47, r.end));
+      gClouds.material.opacity = lerp(.85, .5, a);
+      routes.forEach((r) => { const k = span(p, lerp(.24, .46, r.start), lerp(.24, .46, r.end));
         r.m.geometry.setDrawRange(0, Math.floor(r.count * k) - (Math.floor(r.count * k) % 3));
         if (r.g) r.g.geometry.setDrawRange(0, Math.floor(r.count * k) - (Math.floor(r.count * k) % 3)); });
-      const mainK = span(p, .33, .4);
-      routes[0].m.geometry.setDrawRange(0, Math.floor(routes[0].count * mainK / 3) * 3);
-      routes[0].g.geometry.setDrawRange(0, Math.floor(routes[0].count * mainK / 3) * 3);
-      routes[0].g.material.opacity = (.18 + .3 * span(p, .47, .5)) * (1 - c);
+      routes[0].m.geometry.setDrawRange(0, routes[0].count - (routes[0].count % 3));
+      routes[0].g.geometry.setDrawRange(0, routes[0].count - (routes[0].count % 3));
+      routes[0].m.material.opacity = .35 + .6 * span(p, .2, .26);
+      routes[0].g.material.opacity = .3 * (1 - c);
       routes.forEach((r) => { if (r !== routes[0] && r.g) r.g.material.opacity = .18 * (1 - c); });
-      badges.forEach(({ s, at }) => { s.material.opacity = span(p, lerp(.33, .47, at) - .01, lerp(.33, .47, at) + .02) * (1 - c); });
+      badges.forEach(({ s, at }) => { s.material.opacity = span(p, lerp(.24, .46, at) - .01, lerp(.24, .46, at) + .02) * (1 - c); });
       gR.render(gScene, gCam);
-      // plane icon at the projected arc point, heading along the arc
       tmp.copy(planePos).project(gCam);
       const ahead = mainArc.getPoint(Math.min(1, f + .01)).project(gCam);
       const px = (tmp.x * .5 + .5) * W, py = (-tmp.y * .5 + .5) * H;
       const ang = Math.atan2(-(ahead.y - tmp.y), ahead.x - tmp.x) + Math.PI / 2;
-      const iconW = lerp(26, recapIconW(), c);
       planeIcon.style.transform = `translate(${px}px, ${py}px) translate(-50%, -50%) rotate(${ang}rad)`;
-      planeIcon.style.width = iconW + 'px';
-      planeIcon.style.opacity = span(p, .45, .48) * (1 - span(p, .755, .765));
+      planeIcon.style.width = lerp(lerp(46, 24, a), recapIconW(), c) + 'px';
+      planeIcon.style.opacity = span(p, .2, .235) * (1 - span(p, .765, .775));
     }
-    globeCanvas.style.opacity = span(p, .2, .22);
 
-    // --- Act 3: into the phone (.68 .. .8) and into the fan (.8 .. .96)
-    const into = easeIO(span(p, .69, .76));
+    // --- Act 3: into the phone (.7 .. .78) and into the fan (.8 .. .96)
+    const into = easeIO(span(p, .7, .765));
     const settle = easeIO(span(p, .8, .95));
     if (fanRect) {
       const { x, y, w, h, k, sx, sy, sw, sh } = fanRect;
       const cx = W / 2, cy = H / 2;
-      // centre-phone transform: big and centred -> laid out in the fan
       const kk = lerp(k, 1, settle);
       const tx = lerp(cx - (x + w / 2), 0, settle), ty = lerp(cy - (y + h / 2), 0, settle);
-      fanC.style.transform = `translate(${tx}px, ${ty}px) scale(${kk})`;
-      fanC.style.opacity = span(p, .735, .765);
-      // screen rect of the centred phone, in stage px
+      const bump = Math.sin(Math.PI * settle), bob = settle >= 1 ? Math.sin(t * 1.2) * 5 : 0;
+      fanC.style.transform = `translate(${tx}px, ${ty + bob}px) scale(${kk}) rotateY(${-16 * bump}deg) rotateZ(${-4 * bump}deg)`;
+      fanC.style.opacity = span(p, .745, .77);
       const scrX = cx - (w * k) / 2 + sx * w * k, scrY = cy - (h * k) / 2 + sy * h * k, scrW = sw * w * k, scrH = sh * h * k;
       const ins = { t: lerp(0, scrY, into), r: lerp(0, W - scrX - scrW, into), b: lerp(0, H - scrY - scrH, into), l: lerp(0, scrX, into) };
       clipBox.style.clipPath = `inset(${ins.t}px ${ins.r}px ${ins.b}px ${ins.l}px round ${lerp(0, scrW * .13, into)}px)`;
-      clipBox.style.opacity = 1 - span(p, .755, .79);
-      video.style.opacity = span(p, .75, .78);
-      // fan sides
-      const fs = settle;
-      fanL.style.transform = `translateX(${-64 * fs}%) rotate(${-9 * fs}deg) translateY(${36 * fs}px)`;
-      fanR.style.transform = `translateX(${64 * fs}%) rotate(${9 * fs}deg) translateY(${36 * fs}px)`;
-      fanL.style.opacity = fanR.style.opacity = span(p, .82, .88);
+      clipBox.style.opacity = 1 - span(p, .765, .8);
+      video.style.opacity = span(p, .76, .79);
+      hand.style.opacity = span(p, .76, .79);
+      // side phones come out from behind the centre phone with depth
+      const sl = easeIO(span(p, .82, .94)), sr = easeIO(span(p, .84, .96));
+      const side = (s2, dir) => `translateX(${dir * 64 * s2}%) translateY(${36 * s2 + (s2 >= 1 ? Math.sin(t * 1.2 + dir) * 4 : 0)}px) rotate(${dir * 9 * s2}deg) rotateY(${-dir * 18 * s2}deg) scale(${.8 + .2 * s2})`;
+      fanL.style.transform = side(sl, -1); fanR.style.transform = side(sr, 1);
+      fanL.style.opacity = span(p, .81, .86); fanR.style.opacity = span(p, .83, .88);
       endCard.style.opacity = span(p, .72, .8);
       endText.style.opacity = span(p, .86, .94); endText.style.transform = `translateY(${(1 - span(p, .86, .94)) * 40}px)`;
     }
-    // recap: hold on the Mongolia frame, play from there once the screen is the phone
-    // Recap: loaded and parked on the Mongolia frame before the handoff, played from there after it
+    // Recap: an all-keyframe clip (3.8-5.2 s) is scrubbed with the scroll through the handoff, so the
+    // plane on the globe and the plane in the recap move together; then the full recap plays on.
+    const want = T0 + (p - .7) * 4.16;
+    if (hand.readyState >= 1 && p < .8) { const ht = Math.min(1.38, Math.max(0, want - 3.8)); if (Math.abs(hand.currentTime - ht) > 1 / 45) { try { hand.currentTime = ht; } catch (e) {} } }
     if (p > .55 && !videoPrimed) { videoPrimed = true; primeVideo(); }
-    if (videoPrimed && !videoArmed && video.readyState >= 1 && Math.abs(video.currentTime - T0) > .05) seekT0();
-    if (p > .755 && !videoArmed) { videoArmed = true; video.play().catch(() => {}); }
-    if (p < .745 && videoArmed) { videoArmed = false; video.pause(); seekT0(); }
+    if (p < .8) {
+      hand.style.opacity = video.style.opacity; video.style.visibility = 'hidden';
+      if (videoArmed) { videoArmed = false; video.pause(); }
+    } else {
+      hand.style.opacity = 0; video.style.visibility = 'visible';
+      if (!videoArmed && video.readyState >= 1) { videoArmed = true; try { video.currentTime = T0 + .1 * 4.16; } catch (e) {} video.play().catch(() => {}); }
+    }
     caps.forEach((el) => { const a = +el.dataset.a, b = +el.dataset.b; const o = span(p, a, a + .03) * (1 - span(p, b - .03, b)); el.style.opacity = o; el.style.transform = `translateY(${(1 - span(p, a, a + .03)) * 24}px)`; });
   }
   function diveAltitude() {

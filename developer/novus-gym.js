@@ -21,9 +21,10 @@
       <rect x="0" y="${GROUND}" width="${W}" height="${H - GROUND}" fill="url(#ngFloor)"/>
       <path d="M0 ${GROUND} H${W}" stroke="${LIME}" stroke-opacity=".5" stroke-width="2"/>
       <g class="ng-rack" stroke="${LIME}" stroke-opacity=".28" stroke-width="10" stroke-linecap="round" fill="none">
-        <path d="M250 ${GROUND} V330 M650 ${GROUND} V330 M250 380 h40 M650 380 h-40"/>
+        <path d="M318 ${GROUND} V330 M318 380 h44"/>
       </g>
       <g class="ng-body" filter="url(#ngGlow)" stroke="${LIME}" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <g class="ng-bar"><circle class="ng-plate" r="50" fill="${LIME}" fill-opacity=".12" stroke="${LIME}" stroke-width="6"/><circle class="ng-hub" r="11" fill="${LIME}" stroke="none"/><path class="ng-bar-line" stroke-width="5" stroke-opacity=".6"/></g>
         <path class="ng-leg-b" stroke-width="30" stroke="#6f8a3c"/>
         <path class="ng-arm-b" stroke-width="19" stroke="#6f8a3c"/>
         <path class="ng-torso" stroke-width="40"/>
@@ -32,7 +33,6 @@
         <path class="ng-foot-f" stroke-width="16"/>
         <path class="ng-foot-b" stroke-width="14" stroke="#6f8a3c"/>
         <path class="ng-arm-f" stroke-width="21"/>
-        <g class="ng-bar"><path class="ng-bar-line" stroke-width="7"/><rect class="ng-plate" width="26" height="118" rx="6" fill="${LIME}" stroke="none"/></g>
       </g>
     </svg>
     <div class="ng-head-copy"><p class="ng-meta">Novus · training log</p><h2 class="ng-title">Every set counted, every week on the map.</h2></div>
@@ -47,7 +47,7 @@
 
   const q = (s) => host.querySelector(s);
   const E = { legF: q('.ng-leg-f'), legB: q('.ng-leg-b'), footF: q('.ng-foot-f'), footB: q('.ng-foot-b'), armF: q('.ng-arm-f'), armB: q('.ng-arm-b'), torso: q('.ng-torso'),
-    head: q('.ng-head'), bar: q('.ng-bar'), barLine: q('.ng-bar-line'), plate: q('.ng-plate'), lanes: q('.ng-lanes'), rack: q('.ng-rack') };
+    head: q('.ng-head'), bar: q('.ng-bar'), barLine: q('.ng-bar-line'), plate: q('.ng-plate'), hub: q('.ng-hub'), lanes: q('.ng-lanes'), rack: q('.ng-rack') };
   const rep = q('.ng-rep'), vol = q('.ng-vol'), ex = q('.ng-ex'), cells = [...host.querySelectorAll('.ng-heat i')];
   // A deterministic training log: 4-5 sessions a week, heavier towards the end
   const levels = cells.map((_, i) => { const d = i % 7, w = Math.floor(i / 7); const s = Math.sin(i * 12.9898) * 43758.5453; const r = s - Math.floor(s);
@@ -64,52 +64,55 @@
   const pt = (p) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`;
 
   function frame(p, time) {
-    const cx = 450;
-    // Phase weights
-    const squatW = 1 - sm(span(p, .6, .68));            // 1 while lifting, 0 when running
+    const cx = 450, mid = cx + 6;                         // mid-foot
     const runW = sm(span(p, .62, .7));
-    // Squat depth: five reps between .1 and .56
+    // Squat: five reps; hips go back and down, the bar stays over mid-foot
     const repPhase = span(p, .1, .56) * 5;
     const k = Math.floor(Math.min(repPhase, 4.999)), f = repPhase - k;
-    const depth = p < .1 || p > .56 ? 0 : Math.sin(Math.PI * sm(f));      // 0 standing, 1 at the bottom
-    // Running: phase advances with scroll (and a little with time so it never freezes)
-    const ph = (p * 26 + time * .0) * Math.PI * 2;
-    // Hip and torso
-    let hip = [cx, GROUND - 174 + depth * 92], torsoLean = depth * .62;          // radians, forward
-    const runHip = [cx, GROUND - 178 + Math.abs(Math.sin(ph)) * -10 + 6], runLean = .22;
-    hip = [lerp(hip[0], runHip[0], runW), lerp(hip[1], runHip[1], runW)]; torsoLean = lerp(torsoLean, runLean, runW);
-    const sh = [hip[0] + Math.sin(torsoLean) * L.torso, hip[1] - Math.cos(torsoLean) * L.torso];
-    const headC = [sh[0] + Math.sin(torsoLean * .7) * 50 + 8 * squatW, sh[1] - Math.cos(torsoLean * .7) * 50];
-    // Feet: planted for the squat, cycling for the run
-    const plantF = [cx + 30, GROUND - 8], plantB = [cx - 22, GROUND - 8];
-    const runFoot = (o) => { const a = ph + o; const x = Math.cos(a) * 92; const lift = Math.max(0, Math.sin(a)); return [hip[0] + x + 14, GROUND - 8 - lift * 70 - (Math.sin(a) < 0 ? 0 : 0)]; };
-    const fF = [lerp(plantF[0], runFoot(0)[0], runW), lerp(plantF[1], runFoot(0)[1], runW)];
-    const fB = [lerp(plantB[0], runFoot(Math.PI)[0], runW), lerp(plantB[1], runFoot(Math.PI)[1], runW)];
-    const kneeF = ik(hip, fF, L.thigh, L.shin, -1), kneeB = ik(hip, fB, L.thigh, L.shin, -1);
+    const depth = p < .1 || p > .56 ? 0 : Math.sin(Math.PI * sm(f));
+    const sqHip = [cx - 8 - depth * 66, GROUND - 176 + depth * 86];
+    const sqLean = Math.asin(Math.max(-.9, Math.min(.9, (mid - sqHip[0]) / L.torso)));
+    // Run cycle: stance (foot on the ground, moving back), swing (foot travels forward, heel kick)
+    const ph = p * 30 * Math.PI * 2;
+    const runFoot = (o) => { let u = ((ph + o) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+      if (u < Math.PI) { const t = u / Math.PI; return [lerp(58, -62, t), 0]; }
+      const t = (u - Math.PI) / Math.PI; const e = t * t * (3 - 2 * t);
+      return [lerp(-62, 58, e) - Math.sin(t * Math.PI) * 18, -Math.pow(Math.sin(t * Math.PI), .8) * 78 - (t < .4 ? Math.sin(t / .4 * Math.PI) * 28 : 0)]; };
+    const runHip = [cx, GROUND - 170 - 9 * Math.cos(2 * ph)];
+    const hip = [lerp(sqHip[0], runHip[0], runW), lerp(sqHip[1], runHip[1], runW)];
+    const lean = lerp(sqLean, .2, runW);
+    const sh = [hip[0] + Math.sin(lean) * L.torso, hip[1] - Math.cos(lean) * L.torso];
+    const headC = [sh[0] + Math.sin(lean * .6) * 48 + 10, sh[1] - Math.cos(lean * .6) * 48];
+    const rf = runFoot(0), rb = runFoot(Math.PI);
+    const fF = [lerp(mid + 4, hip[0] + rf[0], runW), lerp(GROUND - 8, GROUND - 8 + rf[1], runW)];
+    const fB = [lerp(mid - 8, hip[0] + rb[0], runW), lerp(GROUND - 8, GROUND - 8 + rb[1], runW)];
+    const kneeF = ik(hip, fF, L.thigh, L.shin, -1), kneeB = ik([hip[0] - 4, hip[1]], fB, L.thigh, L.shin, -1);
     E.legF.setAttribute('d', `M${pt(hip)} L${pt(kneeF)} L${pt(fF)}`);
     E.legB.setAttribute('d', `M${pt([hip[0] - 4, hip[1]])} L${pt(kneeB)} L${pt(fB)}`);
-    E.footF.setAttribute('d', `M${pt([fF[0] - 6, fF[1] + 2])} l30 0`);
-    E.footB.setAttribute('d', `M${pt([fB[0] - 6, fB[1] + 2])} l28 0`);
+    E.footF.setAttribute('d', `M${pt([fF[0] - 8, fF[1] + 2])} l30 0`);
+    E.footB.setAttribute('d', `M${pt([fB[0] - 8, fB[1] + 2])} l28 0`);
     E.torso.setAttribute('d', `M${pt(hip)} L${pt(sh)}`);
     E.head.setAttribute('cx', headC[0].toFixed(1)); E.head.setAttribute('cy', headC[1].toFixed(1));
-    // Hands: on the bar (behind the neck) while lifting, swinging while running
-    const barPos = [sh[0] - 6, sh[1] - 6];
-    const handLift = [barPos[0] + 30, barPos[1] + 2], handLiftB = [barPos[0] - 30, barPos[1] + 2];
-    const swing = (o) => { const a = ph + o; return [sh[0] + Math.cos(a) * 46 + 16, sh[1] + 88 - Math.abs(Math.sin(a)) * 30]; };
-    const hF = [lerp(handLift[0], swing(Math.PI)[0], runW), lerp(handLift[1], swing(Math.PI)[1], runW)];
-    const hB = [lerp(handLiftB[0], swing(0)[0], runW), lerp(handLiftB[1], swing(0)[1], runW)];
-    const eF = ik(sh, hF, L.uarm, L.farm, 1), eB = ik(sh, hB, L.uarm, L.farm, 1);
-    E.armF.setAttribute('d', `M${pt(sh)} L${pt(eF)} L${pt(hF)}`);
-    E.armB.setAttribute('d', `M${pt(sh)} L${pt(eB)} L${pt(hB)}`);
+    // Arms: hands on the bar behind the neck (elbows down) / running swing with bent elbows
+    const barPos = [sh[0] - Math.cos(lean) * 26, sh[1] + Math.sin(lean) * 4 - 2];
+    const lowElbow = (S, T) => { const a = ik(S, T, L.uarm, L.farm, 1), b2 = ik(S, T, L.uarm, L.farm, -1); return a[1] > b2[1] ? a : b2; };
+    const swingArm = (o) => { const th = .75 * Math.sin(ph + o); const e = [sh[0] + Math.sin(th) * L.uarm, sh[1] + Math.cos(th) * L.uarm];
+      const fa = th + 1.45; return [e, [e[0] + Math.sin(fa) * L.farm, e[1] + Math.cos(fa) * L.farm]]; };
+    const [rEF, rHF] = swingArm(Math.PI), [rEB, rHB] = swingArm(0);
+    const hFl = [barPos[0] + 8, barPos[1] + 4], hBl = [barPos[0] - 4, barPos[1] + 4];
+    const eFl = lowElbow(sh, hFl), eBl = lowElbow(sh, hBl);
+    const mix = (a, b) => [lerp(a[0], b[0], runW), lerp(a[1], b[1], runW)];
+    E.armF.setAttribute('d', `M${pt(sh)} L${pt(mix([eFl[0] + 6, eFl[1]], rEF))} L${pt(mix(hFl, rHF))}`);
+    E.armB.setAttribute('d', `M${pt(sh)} L${pt(mix([eBl[0] - 6, eBl[1]], rEB))} L${pt(mix(hBl, rHB))}`);
+    E.lanes.setAttribute('transform', `translate(${-(((ph / (2 * Math.PI)) * 240) % 70) * runW} 0)`);
     // Barbell: on the back, then racked up and away
     const rackT = sm(span(p, .58, .64));
-    const bar = [lerp(barPos[0], cx, rackT), lerp(barPos[1], 380, rackT)];
-    E.barLine.setAttribute('d', `M${bar[0] - 210} ${bar[1]} H${bar[0] + 210}`);
-    E.plate.setAttribute('x', bar[0] - 13); E.plate.setAttribute('y', bar[1] - 59);
+    const bar = [lerp(barPos[0], 352, rackT), lerp(barPos[1], 372, rackT)];
+    E.plate.setAttribute('cx', bar[0]); E.plate.setAttribute('cy', bar[1]); E.hub.setAttribute('cx', bar[0]); E.hub.setAttribute('cy', bar[1]);
+    E.barLine.setAttribute('d', `M${bar[0] - 34} ${bar[1]} H${bar[0] + 34}`);
     E.bar.style.opacity = 1 - span(p, .64, .7);
     E.rack.style.opacity = .9 * (1 - span(p, .64, .7));
     // Track lines slide while running
-    E.lanes.setAttribute('transform', `translate(${-((p * 26 * 140) % 70) * runW} 0)`);
     // Counters + heatmap
     const reps = p < .1 ? 0 : Math.min(5, Math.floor(span(p, .1, .56) * 5 + .5 * (depth < .02 ? 1 : 0) + (f > .5 ? .5 : 0)));
     rep.textContent = reps;

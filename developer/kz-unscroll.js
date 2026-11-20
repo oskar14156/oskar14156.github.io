@@ -35,8 +35,8 @@
       <g class="kz-out">
         <rect width="1600" height="900" fill="url(#kzSky)"/>
         <g class="kz-rays" opacity=".35">${Array.from({ length: 14 }, (_, i) => `<path d="M800 470 L ${800 + Math.cos(i / 14 * 2 * Math.PI) * 1200} ${470 + Math.sin(i / 14 * 2 * Math.PI) * 1200} L ${800 + Math.cos((i + .45) / 14 * 2 * Math.PI) * 1200} ${470 + Math.sin((i + .45) / 14 * 2 * Math.PI) * 1200}Z" fill="#fff4c2"/>`).join('')}</g>
-        <circle class="kz-sun-glow" cx="800" cy="470" r="420" fill="url(#kzSunGlow)"/>
-        <circle class="kz-sun" cx="800" cy="470" r="120" fill="${C.sun}"/>
+        <circle class="kz-sun-glow" cx="1205" cy="600" r="420" fill="url(#kzSunGlow)"/>
+        <circle class="kz-sun" cx="1205" cy="600" r="110" fill="${C.sun}"/>
         <g class="kz-clouds" fill="#fff1bf">
           <g class="kz-cloud-a" transform="translate(240 300)"><rect x="-90" y="-10" width="200" height="44" rx="22"/><circle cx="-20" cy="-8" r="38"/><circle cx="40" cy="-20" r="46"/></g>
           <g class="kz-cloud-b" transform="translate(1260 360)"><rect x="-70" y="-6" width="160" height="36" rx="18"/><circle cx="-10" cy="-6" r="30"/><circle cx="36" cy="-16" r="36"/></g>
@@ -70,13 +70,14 @@
       </g>
 
       <!-- ===== ROOM (beats 1-4) ===== -->
+      <g class="kz-indoor">
       <g class="kz-room">
-        <rect width="1600" height="900" fill="url(#kzWall)"/>
+        <path d="M0 0H1600V900H0Z M1062 196V482H1348V196Z" fill="url(#kzWall)" fill-rule="evenodd"/>
         <rect x="0" y="0" width="1600" height="70" fill="${C.wallDark}"/>
         <polygon points="0,660 1600,660 1600,900 0,900" fill="${C.floor}"/>
         <!-- window -->
         <g class="kz-window">
-          <rect x="1044" y="178" width="322" height="322" rx="14" fill="#5a3fd6"/>
+          <path d="M1044 178h322v322h-322Z M1062 196V482H1348V196Z" fill="#5a3fd6" fill-rule="evenodd"/>
           <g clip-path="url(#kzWinClip)">
             <rect class="kz-win-night" x="1062" y="196" width="286" height="286" fill="url(#kzWindowNight)"/>
             <rect class="kz-win-dawn" x="1062" y="196" width="286" height="286" fill="url(#kzWindowDawn)" opacity="0"/>
@@ -147,16 +148,17 @@
           <path d="M-14 26 h26 v40 h-26z" fill="${C.skinShade}"/>
           <circle r="54" fill="${C.skin}"/>
           <circle class="kz-face-lit" r="54" fill="url(#kzFaceLight)"/>
+          <circle cx="53" cy="9" r="7.5" fill="${C.skin}"/>
           <path d="M-56 2 C -64 -62 -2 -84 38 -64 C 64 -52 70 -28 60 -12 C 48 -28 20 -34 0 -28 C -12 -14 -18 8 -26 28 C -42 30 -54 20 -56 2Z" fill="${C.hair}"/>
           <path d="M8 -62 C 40 -70 68 -48 62 -18 C 50 -38 32 -46 10 -42Z" fill="#36207d"/>
           <circle cx="-26" cy="8" r="12" fill="${C.skinShade}"/>
           <circle cx="30" cy="22" r="11" fill="${C.cheek}" opacity=".7"/>
-          <g class="kz-eyes-tired"><path d="M26 -4 q11 -1 20 1" stroke="#26145f" stroke-width="6" stroke-linecap="round" fill="none"/><path d="M28 5 q8 4 16 1" stroke="#26145f" stroke-width="3" stroke-linecap="round" fill="none" opacity=".45"/></g>
-          <g class="kz-eyes-wide" opacity="0"><circle cx="36" cy="-2" r="12" fill="#fff"/><circle class="kz-pupil" cx="40" cy="-2" r="6.5" fill="#26145f"/><path d="M22 -26 l20 -6" stroke="#26145f" stroke-width="5" stroke-linecap="round"/></g>
-          <g class="kz-eyes-happy" opacity="0"><path d="M26 -2 q10 -11 20 0" stroke="#26145f" stroke-width="6" stroke-linecap="round" fill="none"/></g>
-          <path class="kz-mouth-flat" d="M40 34 h10" stroke="#a8455a" stroke-width="4" stroke-linecap="round"/>
-          <path class="kz-mouth-o" d="M44 36 a5 6 0 1 0 0.1 0" fill="#7a2a45" opacity="0"/>
-          <path class="kz-mouth-smile" d="M38 30 q8 8 15 0" stroke="#7a2a45" stroke-width="4.5" stroke-linecap="round" fill="none" opacity="0"/>
+          <g class="kz-eyes-tired"><path d="M27 -3 q10 -7 19 0 q-9 5 -19 0Z" fill="#26145f"/><path d="M26 -6 q11 -3 21 1" stroke="#26145f" stroke-width="3.5" stroke-linecap="round" fill="none"/></g>
+          <g class="kz-eyes-wide" opacity="0"><ellipse class="kz-pupil" cx="38" cy="-2" rx="7" ry="9" fill="#26145f"/><circle cx="40" cy="-5" r="2.4" fill="#fff"/><path d="M26 -22 q10 -6 20 -2" stroke="#26145f" stroke-width="4" stroke-linecap="round" fill="none"/></g>
+          <g class="kz-eyes-happy" opacity="0"><path d="M28 0 q9 -10 18 0" stroke="#26145f" stroke-width="5" stroke-linecap="round" fill="none"/></g>
+          <path class="kz-mouth-flat" d="M41 33 q6 2 11 -1" stroke="#5b2340" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+          <ellipse class="kz-mouth-o" cx="47" cy="34" rx="4.5" ry="5.5" fill="#5b2340" opacity="0"/>
+          <path class="kz-mouth-smile" d="M39 29 q8 9 16 0 q-8 3 -16 0Z" fill="#5b2340" opacity="0"/>
         </g>
         <path class="kz-arm-f-up" stroke="${C.shirt}" stroke-width="29" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         <path class="kz-arm-f-lo" stroke="${C.skin}" stroke-width="21" stroke-linecap="round" fill="none"/>
@@ -184,6 +186,7 @@
       </g>
 
       <rect class="kz-vignette" width="1600" height="900" fill="url(#kzVignette)" pointer-events="none"/>
+      </g>
       <!-- light flood from the window (beat 4) -->
       <rect class="kz-flood" width="1600" height="900" fill="url(#kzFlood)" opacity="0"/>
     </svg>
@@ -221,19 +224,28 @@
     stand:   { t: 'B', head: [28, -232, -4], f: [[30, -160], [38, -82], [46, -8]], b: [[14, -162], [10, -84], [6, -10]], legs: 'stand', phone: 60, eyes: 'happy', mouth: 'smile' },
     raise:   { t: 'B', head: [28, -234, -14], f: [[30, -162], [76, -230], [104, -304]], b: [[14, -162], [-26, -232], [-50, -302]], legs: 'stand', phone: 60, eyes: 'happy', mouth: 'smile' },
   };
-  const KEYS = [[0, 'scroll'], [.235, 'scroll'], [.262, 'startle', 'back'], [.335, 'startle'], [.375, 'windup', 'io'], [.399, 'release', 'out'], [.43, 'follow', 'out'],
+  const KEYS = [[0, 'scroll'], [.232, 'scroll'], [.272, 'startle', 'out'], [.335, 'startle'], [.375, 'windup', 'io'], [.399, 'release', 'out'], [.43, 'follow', 'out'],
     [.5, 'look', 'io'], [.565, 'look'], [.6, 'push', 'io'], [.64, 'stand', 'io'], [.685, 'raise', 'back'], [1, 'raise']];
   const EASE = { io: (t) => (t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2), out: (t) => 1 - Math.pow(1 - t, 3),
     back: (t) => { const c = 1.9; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); }, lin: (t) => t };
   const L = (a, b, t) => a + (b - a) * t;
   const LP = (a, b, t) => [L(a[0], b[0], t), L(a[1], b[1], t)];
-  const el = {}; ['torso', 'torso-clip', 'torso-back', 'torso-lit', 'leg-f', 'leg-b', 'shoe-f', 'shoe-b', 'arm-f-up', 'arm-f-lo', 'arm-f-lit', 'arm-b-up', 'arm-b-lo', 'hand-f', 'hand-b', 'thumb', 'phone-hand', 'head', 'face-lit', 'eyes-tired', 'eyes-wide', 'eyes-happy', 'mouth-flat', 'mouth-o', 'mouth-smile', 'feed', 'pupil']
-    .forEach((k) => { el[k] = q('.kz-' + k); });
+  const KEYS_EL = ['torso', 'torso-clip', 'torso-back', 'torso-lit', 'leg-f', 'leg-b', 'shoe-f', 'shoe-b', 'arm-f-up', 'arm-f-lo', 'arm-f-lit', 'arm-b-up', 'arm-b-lo', 'hand-f', 'hand-b', 'thumb', 'phone-hand', 'head', 'face-lit', 'eyes-tired', 'eyes-wide', 'eyes-happy', 'mouth-flat', 'mouth-o', 'mouth-smile', 'feed', 'pupil'];
+  const elsOf = (root) => { const o = {}; KEYS_EL.forEach((k) => { o[k] = root.querySelector('.kz-' + k); }); return o; };
+  const el = elsOf(host);
+  // A twin of the rigged figure stands on the hill outside (own clip ids)
+  const twin = q('.kz-kid').cloneNode(true);
+  twin.setAttribute('class', 'kz-kid-out'); twin.setAttribute('transform', 'translate(770 492) scale(.62)'); twin.style.opacity = 0;
+  twin.querySelectorAll('[id]').forEach((n) => { const old = n.id; n.id = old + 'Out'; twin.querySelectorAll(`[clip-path="url(#${old})"]`).forEach((m) => m.setAttribute('clip-path', `url(#${old}Out)`)); });
+  twin.querySelector('.kz-startle')?.remove();
+  q('.kz-out').appendChild(twin);
+  const elOut = elsOf(twin);
+  elOut['phone-hand'].style.display = 'none'; elOut.thumb.style.display = 'none';
   const torsoD = (pts) => `M${pts[0]} C${pts[1]} ${pts[2]} ${pts[3]} C${pts[4]} ${pts[5]} ${pts[6]} C${pts[7]} ${pts[8]} ${pts[9]} C${pts[10]} ${pts[11]} ${pts[12]}Z`;
   const backD = (pts) => `M${pts[0]} C${pts[1]} ${pts[2]} ${pts[3]} C${pts[4]} ${pts[5]} ${pts[6]}`;
   const frontD = (pts) => `M${pts[6]} C${pts[7]} ${pts[8]} ${pts[9]} C${pts[10]} ${pts[11]} ${pts[12]}`;
   let lastP = 0;
-  function drawKid(p, time) {
+  function drawKid(p, time, el) {
     let i = 0; while (i < KEYS.length - 2 && p > KEYS[i + 1][0]) i++;
     const [p0, n0] = KEYS[i], [p1, n1, e] = KEYS[i + 1];
     const t = EASE[e || 'io'](Math.min(1, Math.max(0, (p - p0) / (p1 - p0 || 1))));
@@ -258,7 +270,9 @@
       if (side === 'f') {
         el['arm-f-lit'].setAttribute('d', `M${L(E[0], W[0], .2)} ${L(E[1], W[1], .2) - 8} L${W[0]} ${W[1] - 8}`);
         const rot = L(A.phone, B.phone, t);
-        el['phone-hand'].setAttribute('transform', `translate(${W[0] + 6} ${W[1] - 16}) rotate(${rot})`);
+        const Wb = LP(A.b[2], B.b[2], t), hold = n0 === 'scroll' || n1 === 'scroll' || n0 === 'startle' || n1 === 'startle' ? 1 : 0;
+        const px = hold ? (W[0] + Wb[0]) / 2 + 4 : W[0] + 6, py = hold ? (W[1] + Wb[1]) / 2 - 18 : W[1] - 16;
+        el['phone-hand'].setAttribute('transform', `translate(${px} ${py}) rotate(${hold ? rot * .45 : rot})`);
         const th = (n0 === 'scroll' && n1 === 'scroll') ? Math.sin(time * 5) * 5 : 0;
         el.thumb.setAttribute('cx', W[0] + 4 + th * .4); el.thumb.setAttribute('cy', W[1] - 14 + th);
       }
@@ -276,14 +290,14 @@
     const blink = (time % 4.2) < .12 ? .15 : 1;
     el['eyes-tired'].setAttribute('transform', `translate(36 0) scale(1 ${blink}) translate(-36 0)`);
     // pupils follow the scene: down at the phone, then to the window
-    el.pupil.setAttribute('cx', p > .44 ? 42 : 38);
+    el.pupil.setAttribute('cx', p > .44 ? 40 : 37);
     // phone light on face, shirt and arm; feed scrolls on the screen
     const light = (1 - Math.min(1, Math.max(0, (p - .398) / .02))) * (.85 + .15 * Math.sin(time * 7) * Math.sin(time * 2.3));
     el['face-lit'].style.opacity = light; el['torso-lit'].style.opacity = .35 * light; el['arm-f-lit'].style.opacity = .5 * light;
     el.feed.setAttribute('transform', `translate(0 ${-((time * 26) % 60)})`);
     lastP = p;
   }
-  gsap.ticker.add((time) => drawKid(tl.progress(), time));
+  gsap.ticker.add((time) => { drawKid(tl.progress(), time, el); drawKid(.97, time, elOut); });
 
   if (!reduce) {
     gsap.to(qa('.kz-note'), { y: '-=10', duration: 1.6, ease: 'sine.inOut', yoyo: true, repeat: -1, stagger: { each: .2, from: 'random' } });
@@ -302,12 +316,11 @@
     .fromTo('.kz-cap-1', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .05 }, 0.02)
     .to('.kz-cap-1', { opacity: 0, y: -30, duration: .04 }, 0.22)
   // Beat 2 (0.24-0.34): snap out of it
-    .to(q('.kz-kid'), { y: '-=26', duration: .015, yoyo: true, repeat: 1, ease: 'power2.out' }, 0.25)
     .to(q('.kz-startle'), { opacity: 1, duration: .01 }, 0.255).to(q('.kz-startle'), { opacity: 0, duration: .02 }, 0.31)
     .to(qa('.kz-note'), { scale: .2, opacity: 0, duration: .04, stagger: .004, transformOrigin: '50% 50%' }, 0.27)
     .to(q('.kz-swirl'), { opacity: 0, duration: .02 }, 0.26)
   // Beat 3 (0.34-0.52): wind up and throw
-    .set(q('.kz-phone-hand'), { opacity: 0 }, 0.402)
+    .set(el['phone-hand'], { opacity: 0 }, 0.402).set([el['thumb']], { opacity: 0 }, 0.402)
     .set(q('.kz-phone-fly'), { opacity: 1, x: 1024, y: 300, rotation: 40 }, 0.402)
     .to(q('.kz-phone-fly'), { x: 1310, rotation: 1120, duration: .08, ease: 'none' }, 0.402)
     .to(q('.kz-phone-fly'), { y: 170, duration: .03, ease: 'power1.out' }, 0.402)
@@ -316,29 +329,19 @@
     .to(q('.kz-phoneglow'), { autoAlpha: 0, duration: .02 }, 0.4)
     .fromTo('.kz-cap-2', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .04 }, 0.44)
     .to('.kz-cap-2', { opacity: 0, y: -30, duration: .04 }, 0.6)
-  // Beat 4 (0.52-0.72): morning floods in, stand up and rise
-    .to(q('.kz-win-dawn'), { opacity: 1, duration: .08 }, 0.52)
-    .to([q('.kz-moon'), q('.kz-moon-cut'), q('.kz-stars')], { opacity: 0, duration: .05 }, 0.52)
-    .to(q('.kz-dawn-sun'), { opacity: 1, attr: { cy: 360 }, duration: .1 }, 0.53)
+  // Beat 4 (0.52-0.68): the night glass fades, the real morning is outside the window
+    .to([q('.kz-win-night'), q('.kz-moon'), q('.kz-moon-cut'), q('.kz-stars')], { opacity: 0, duration: .07 }, 0.52)
+    .to([q('.kz-sun'), q('.kz-sun-glow')], { attr: { cy: 330 }, duration: .12, ease: 'power1.out' }, 0.52)
     .to(q('.kz-floorlight'), { opacity: .75, attr: { fill: '#ffd23f' }, duration: .08 }, 0.54)
     .to(q('.kz-vignette'), { opacity: 0, duration: .08 }, 0.54)
     .to(q('.kz-clock'), { opacity: 0, duration: .02 }, 0.54)
     .to(q('.kz-kid'), { x: 905, duration: .05, ease: 'power2.inOut' }, 0.6)
-    
-    .to(q('.kz-halo'), { opacity: 1, duration: .04 }, 0.62)
-    .to(q('.kz-kid'), { y: 500, duration: .06, ease: 'sine.inOut' }, 0.67)
-    .to(q('.kz-shadow'), { scale: .5, opacity: .25, transformOrigin: '50% 50%', duration: .06 }, 0.66)
-    .to(q('.kz-flood'), { opacity: 1, duration: .08, ease: 'power2.in' }, 0.66)
-  // Beat 5 (0.74-1): outside
-    .set(q('.kz-room'), { opacity: 0 }, 0.74)
-    .set([q('.kz-bed'), q('.kz-phone-fly')], { opacity: 0 }, 0.74)
-    .to(q('.kz-flood'), { opacity: 0, duration: .08 }, 0.74)
-    .to(q('.kz-kid'), { x: 760, y: 428, scale: .62, transformOrigin: '50% 100%', duration: .1, ease: 'power2.out' }, 0.74)
-    .to(q('.kz-halo'), { opacity: 0, duration: .06 }, 0.76)
-    .to(q('.kz-shadow'), { scale: 1, duration: .06 }, 0.76)
-    .to(q('.kz-shadow'), { opacity: .25, attr: { fill: '#0d7a5e' }, duration: .02 }, 0.74)
-    .fromTo(q('.kz-sun'), { attr: { cy: 620 } }, { attr: { cy: 420 }, duration: .2, ease: 'power1.out' }, 0.74)
-    .fromTo(q('.kz-sun-glow'), { attr: { cy: 620 } }, { attr: { cy: 420 }, duration: .2, ease: 'power1.out' }, 0.74)
+    .to(q('.kz-halo'), { opacity: .7, duration: .05 }, 0.63)
+  // Beat 5 (0.68-1): through the window into the morning
+    .to(q('.kz-indoor'), { scale: 7.5, svgOrigin: '1205 339', duration: .12, ease: 'power3.in' }, 0.68)
+    .to(q('.kz-indoor'), { opacity: 0, duration: .02 }, 0.79)
+    .to([q('.kz-sun'), q('.kz-sun-glow')], { attr: { cx: 800, cy: 420 }, duration: .16, ease: 'power2.inOut' }, 0.7)
+    .fromTo(q('.kz-kid-out'), { opacity: 0 }, { opacity: 1, duration: .03 }, 0.785)
     .fromTo(q('.kz-birds'), { x: -200 }, { x: 260, duration: .26 }, 0.74)
     .fromTo('.kz-cap-3', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .05 }, 0.8)
     .to(svgEl, { attr: { viewBox: narrow ? '400 0 900 900' : '0 0 1600 900' }, duration: .1 }, 0.74)
