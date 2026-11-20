@@ -47,7 +47,7 @@
       v.preload = 'auto'; v.play().catch(() => {});
     } else v.pause();
   }), { threshold: .25 });
-  document.querySelectorAll('video').forEach((v) => videoIO.observe(v));
+  document.querySelectorAll('video:not([data-manual])').forEach((v) => videoIO.observe(v));
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduce || !window.gsap || !window.ScrollTrigger) {
@@ -73,8 +73,8 @@
   }
 
   /* ---------- Header: solid after the intro, light text over dark scenes ---------- */
-  ScrollTrigger.create({ trigger: '#voyage', start: 'top 70px', end: 'max', onToggle: (s) => header.classList.toggle('is-solid', s.isActive) });
-  ['#voyage', '#flight', '.tint-ink', '.contact'].forEach((sel) => document.querySelectorAll(sel).forEach((el) => {
+  ScrollTrigger.create({ trigger: '#flight', start: 'top 70px', end: 'max', onToggle: (s) => header.classList.toggle('is-solid', s.isActive) });
+  ['#voyeva-scene', '#flight', '.tint-ink', '.contact'].forEach((sel) => document.querySelectorAll(sel).forEach((el) => {
     ScrollTrigger.create({ trigger: el, start: 'top 40px', end: 'bottom 40px', onToggle: (s) => header.classList.toggle('on-dark', s.isActive) });
   }));
 
@@ -198,7 +198,9 @@
 
   /* ---------- 5 · Chapters: titles rise, phones fan out ---------- */
   document.querySelectorAll('.chapter').forEach((ch) => {
-    gsap.from(ch.querySelectorAll('.chapter-kind, h3, .chapter-lede'), {
+    const heads = ch.querySelectorAll('.chapter-kind, h3, .chapter-lede');
+    if (!heads.length) return;
+    gsap.from(heads, {
       y: 60, opacity: 0, stagger: .08, duration: 1, ease: 'power3.out',
       scrollTrigger: { trigger: ch, start: 'top 75%' },
     });

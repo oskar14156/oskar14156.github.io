@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/developer/portfolio.css?v=21">
+  <link rel="stylesheet" href="/developer/portfolio.css?v=25">
   <script>
     // Theme before first paint: saved pick, else the system setting.
     (function () {
@@ -54,33 +54,6 @@
           <p class="intro-line">I build React Native and Swift apps, and write the Swift and Kotlin modules they need.</p>
         </div>
         <p class="intro-cue" aria-hidden="true">Scroll <span>↓</span></p>
-      </div>
-    </section>
-
-    <!-- 1b · VOYAGE: the recap plane flies a lap and dives into the phone -->
-    <section class="voyage" id="voyage" aria-labelledby="voyage-title">
-      <div class="vy-stage">
-        <canvas class="vy-map" aria-hidden="true"></canvas>
-        <div class="vy-dim" aria-hidden="true"></div>
-        <div class="vy-cap vy-cap-1">
-          <p class="vy-meta">Voyeva · real trip · March 13, 2026</p>
-          <h2 id="voyage-title">Vienna to Beijing, 7,461 km. The first of 53 stops.</h2>
-        </div>
-        <div class="vy-cap vy-cap-2">
-          <p class="vy-meta">China &amp; Japan · 21 days</p>
-          <p class="vy-big">28,278 km by plane, train and car, with every photo pinned where it was taken.</p>
-        </div>
-        <div class="vy-phone" aria-hidden="true">
-          <div class="device device-lg">
-            <div class="device-screen vy-screen"><video src="/developer/media/voyeva-recap.mp4?v=4" poster="/developer/media/voyeva-recap.jpg?v=4" muted loop playsinline preload="none"></video></div>
-            <img class="device-frame" src="/developer/shots/frame-black.png" alt="" width="980" height="2000">
-          </div>
-        </div>
-        <svg class="vy-plane" viewBox="-50 -50 100 100" aria-hidden="true"><path d="M0-47c3.6 0 5.2 7 5.2 15v22.5L47 11.5v8.2L5.2 9.6 4.2 31 16 40.5v6.6L1.6 43.4H-1.6L-16 47.1v-6.6L-4.2 31-5.2 9.6-47 19.7v-8.2L-5.2-9.5V-32c0-8 1.6-15 5.2-15z"/></svg>
-        <div class="vy-cap vy-cap-3">
-          <p class="vy-meta">Trip recap</p>
-          <p class="vy-big">The whole trip as a video, rendered on the phone: MapKit snapshots, the route, the photos, encoded with AVFoundation.</p>
-        </div>
       </div>
     </section>
 
@@ -143,9 +116,16 @@
         <ol class="site-container"><li><a href="#voyeva" data-app="voyeva"><img src="/developer/shots/icons/voyeva.png" alt="" width="22" height="22">Voyeva</a></li><li><a href="#novus" data-app="novus"><img src="/developer/shots/icons/novus.png" alt="" width="22" height="22">Novus</a></li><li><a href="#stub" data-app="stub"><img src="/developer/shots/icons/stub.png" alt="" width="22" height="22">Stub</a></li><li><a href="#unscroll" data-app="unscroll"><img src="/developer/shots/icons/unscroll.png" alt="" width="22" height="22">Unscroll</a></li><li><a href="#riseproof" data-app="riseproof"><img src="/developer/shots/icons/riseproof.png" alt="" width="22" height="22">RiseProof</a></li><li><a href="#vbg" data-app="vbg"><img src="/developer/shots/icons/vbg.png" alt="" width="22" height="22">Video BG Remover</a></li></ol>
       </nav>
 
-      <article class="chapter tint-violet" id="voyeva">
-        <div class="chapter-grid site-container">
-          <div class="chapter-text">
+      <div class="app-block" id="voyeva">
+      <section class="vs" id="voyeva-scene" aria-label="Voyeva: a trip replayed from the sky to the phone">
+        <div class="vs-stage">
+          <div class="vs-card tint-violet" aria-hidden="true"></div>
+          <div class="vs-clip" aria-hidden="true"><canvas class="vs-sky"></canvas><canvas class="vs-globe"></canvas><svg class="vs-plane" viewBox="-50 -50 100 100" aria-hidden="true"><path d="M0-47c3.6 0 5.2 7 5.2 15v22.5L47 11.5v8.2L5.2 9.6 4.2 31 16 40.5v6.6L1.6 43.4H-1.6L-16 47.1v-6.6L-4.2 31-5.2 9.6-47 19.7v-8.2L-5.2-9.5V-32c0-8 1.6-15 5.2-15z"/></svg></div>
+          <div class="vs-haze" aria-hidden="true"></div>
+          <div class="vs-cap vs-cap-1" data-a=".03" data-b=".17"><p class="vs-meta">Voyeva · a real trip · China &amp; Japan</p><p class="vs-big">28,278 km in 21 days, and the app remembers every leg.</p></div>
+          <div class="vs-cap vs-cap-2" data-a=".35" data-b=".48"><p class="vs-meta">Budapest → Beijing</p><p class="vs-big">Flights, trains and road trips, drawn on the globe the way Voyeva draws them.</p></div>
+          <div class="vs-end chapter-grid site-container">
+            <div class="chapter-text vs-text">
             <p class="chapter-kind">Travel · iOS · Native Swift</p>
             <h3>Voyeva</h3>
             <p class="chapter-lede">Plan trips together, split expenses, ask the AI what fits into a free afternoon, and get a recap of the whole journey.</p>
@@ -159,12 +139,16 @@
             <ul class="chips"><li>SwiftUI</li><li>Firebase</li><li>Gemini</li><li>MapKit</li><li>WidgetKit</li><li>RevenueCat</li></ul>
             <a class="chapter-link" href="/developer/voyeva/">See the full app <span aria-hidden="true">→</span></a>
           </div>
-          <div class="fan" aria-hidden="true">
+          <div class="vs-fan" aria-hidden="true">
             <div class="device fan-l"><div class="device-screen"><img src="/developer/shots/voyeva-1.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
-            <div class="device fan-c"><div class="device-screen"><video src="/developer/media/voyeva-recap.mp4?v=4" poster="/developer/media/voyeva-recap.jpg?v=4" muted loop playsinline preload="none"></video></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+            <div class="device fan-c"><div class="device-screen"><video data-manual src="/developer/media/voyeva-recap.mp4?v=4" poster="/developer/media/voyeva-recap.jpg?v=4" muted loop playsinline preload="none"></video></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
             <div class="device fan-r"><div class="device-screen"><img src="/developer/shots/voyeva-4.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+          
+          </div>
           </div>
         </div>
+      </section>
+      <article class="chapter tint-violet vs-after">
         <div class="pf-gallery" data-app="voyeva">
           <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/voyeva-1.jpg" alt="Every trip at a glance" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="980" height="2000"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/voyeva-1-dark.jpg" alt="Every trip at a glance" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Every trip at a glance</figcaption></figure>
           <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-2.jpg" alt="Real trips: China &amp; Japan, UAE &amp; China, Spain" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Real trips: China &amp; Japan, UAE &amp; China, Spain</figcaption></figure>
@@ -188,7 +172,9 @@
           <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/voyeva-20.jpg" alt="Travel passport and yearly recap" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>Travel passport and yearly recap</figcaption></figure>
         </div><!--/gallery-->
       </article>
+      </div>
 
+      <section class="ng" id="novus-gym" aria-label="Novus: a training session, animated"></section>
       <section class="nr" id="novus-run" aria-labelledby="nr-title">
         <div class="nr-stage">
           <canvas class="nr-map" aria-hidden="true"></canvas>
@@ -242,6 +228,8 @@
           <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/novus-11.jpg" alt="…and turns it into a plan" loading="lazy" width="900" height="1956"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="980" height="2000"></div><figcaption>…and turns it into a plan</figcaption></figure>
         </div><!--/gallery-->
       </article>
+
+      <section class="sf tint-peach" id="stub-flow" aria-label="Stub: from a receipt to a spending flow"></section>
 
       <article class="chapter tint-peach" id="stub">
         <div class="chapter-grid site-container">
@@ -324,6 +312,8 @@
         </div><!--/gallery-->
       </article>
 
+      <section class="rw" id="rp-wake" aria-label="RiseProof: an alarm that waits for ten push-ups"></section>
+
       <article class="chapter tint-ink" id="riseproof">
         <div class="chapter-grid site-container">
           <div class="chapter-text">
@@ -356,6 +346,8 @@
           <figure><img class="pf-store" src="/developer/shots/riseproof-8.jpg" alt="System-backed alarms" loading="lazy" width="900" height="1956"><figcaption>System-backed alarms</figcaption></figure>
         </div><!--/gallery-->
       </article>
+
+      <section class="vc" id="vbg-cut" aria-label="Video Background Remover: one cutout, any background"></section>
 
       <article class="chapter tint-mint" id="vbg">
         <div class="chapter-grid site-container">
@@ -564,13 +556,15 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
-  <script src="/developer/portfolio.js?v=17"></script>
+  <script src="/developer/portfolio.js?v=18"></script>
   <script src="/developer/ink.js?v=15"></script>
-  <script src="/developer/voyage.js?v=2"></script>
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+  <script type="module" src="/developer/voyeva-scene.js?v=3"></script>
   <script src="/developer/kz-unscroll.js?v=3"></script>
+  <script src="/developer/novus-gym.js?v=3"></script>
+  <script src="/developer/stub-flow.js?v=1"></script>
+  <script src="/developer/rp-wake.js?v=2"></script>
+  <script src="/developer/vbg-cut.js?v=1"></script>
   <script src="/developer/novus-run.js?v=2"></script>
   <script src="/developer/menu.js?v=1"></script>
 </body>
