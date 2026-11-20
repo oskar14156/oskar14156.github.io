@@ -369,3 +369,18 @@ body.ink-cream .pf-header .pf-theme button[aria-pressed="true"] { color: #f4f3ec
 .has-stack .win-label { display: none; }
 .has-stack .stack-stage { contain: paint; }
 @media (max-width: 640px) { .has-stack .win { top: 10vh; } }
+
+/* ---------- EDITORIAL PASS ----------
+   One grotesk for every headline, mono only for real metadata. No italic accent words,
+   no decorative dots, tech stacks as plain text rather than pills. */
+.pf em { font-family: inherit; font-style: normal; font-weight: inherit; letter-spacing: inherit; color: inherit; }
+.eyebrow-pf::before, .eyebrow-muted::before { content: none; }
+.status-tag { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.intro-line { max-width: 26ch; font-size: clamp(20px, 2.5vw, 36px); line-height: 1.18; }
+.path-no { font-family: var(--mono); font-style: normal; font-weight: 400; font-size: 13px; letter-spacing: .06em; color: var(--muted); }
+.path-head h2, .work-head h2, .practice h2, .ar-head h2, .tools-head h2, .contact h2 { max-width: 19ch; margin-top: 0 !important; }
+.chips { gap: 0; margin-top: 20px; font-family: var(--mono); }
+.chips li { padding: 0; border: 0; border-radius: 0; background: none !important; font-size: 12px; font-weight: 400; letter-spacing: .02em; color: var(--text-soft); }
+.chips li + li::before { content: "/"; margin: 0 .6em; opacity: .4; }
+.tint-ink .chips li { color: rgba(255, 254, 249, .7); }
+.browser-bar p { text-transform: none; letter-spacing: .02em; }

@@ -9,9 +9,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/developer/portfolio.css?v=11">
-  <link rel="stylesheet" href="/developer/product.css?v=11">
-  <link rel="stylesheet" href="/developer/appreleaser/ar.css?v=11">
+  <link rel="stylesheet" href="/developer/portfolio.css?v=16">
+  <link rel="stylesheet" href="/developer/product.css?v=16">
+  <link rel="stylesheet" href="/developer/appreleaser/ar.css?v=16">
   <script>(function(){var t=null;try{t=localStorage.getItem('pf-theme')}catch(e){}var q=location.search.match(/theme=(light|dark)/);if(q)t=q[1];if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;})();</script>
 </head>
 <body class="developer-page pf pp arp">
@@ -27,8 +27,9 @@
 
   <main id="main">
     <section class="arp-hero site-container">
-      <p class="eyebrow-pf">In development · Self-hosted release tooling</p>
-      <h1>AppReleaser. <em>Two stores, one dashboard.</em></h1>
+      <p class="status-tag">In development · self-hosted</p>
+      <h1>AppReleaser</h1>
+      <p class="arp-sub">App Store Connect, Google Play and RevenueCat in one release dashboard.</p>
       <p class="pp-lede">Shipping many apps means App Store Connect, Google Play Console and RevenueCat open at once, with the same listing, screenshots and prices typed three times. AppReleaser reads what each store really has, shows what is missing before review, and writes changes back through the official APIs, only after you approve them.</p>
       <dl class="pp-facts">
         <div><dd>593</dd><dt>unit tests in CI</dt></div>
@@ -123,8 +124,7 @@
     </section>
 
     <section class="pp-tech site-container" aria-labelledby="tech-title">
-      <p class="eyebrow-pf">How it's built</p>
-      <h2 id="tech-title">Under the hood.</h2>
+      <h2 id="tech-title">How it's built</h2>
       <dl class="pp-tech-grid">
         <div><dt>Next.js 16 · React 19</dt><dd>App Router, server actions and a typed API layer, in TypeScript throughout</dd></div>
         <div><dt>Store APIs</dt><dd>App Store Connect API, Google Android Publisher API, RevenueCat API v2, Huawei token exchange</dd></div>
@@ -136,16 +136,14 @@
     </section>
 
     <section class="pp-tech site-container" aria-labelledby="panels-title">
-      <p class="eyebrow-pf">Product views</p>
-      <h2 id="panels-title">Every view, in English.</h2>
-      <p class="arp-note">The product UI ships in German today; these are the same components rendered with English sample text and my own apps.</p>
+      <h2 id="panels-title">More views</h2>
+      <p class="arp-note">The product UI ships in German. For this page the interface text was swapped to English before each screenshot; the data is a local instance with my own apps.</p>
       <div class="ar-bento"><figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/release-light.jpg" alt="Release assistant" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/release-dark.jpg" alt="Release assistant" loading="lazy"><figcaption>Release assistant</figcaption></figure><figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/listing-light.jpg" alt="Store listing with an AI draft" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/listing-dark.jpg" alt="Store listing with an AI draft" loading="lazy"><figcaption>Store listing with an AI draft</figcaption></figure><figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/approval-light.jpg" alt="Every change as before and after" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/approval-dark.jpg" alt="Every change as before and after" loading="lazy"><figcaption>Every change as before and after</figcaption></figure><figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/rollout-light.jpg" alt="Staged rollout" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/rollout-dark.jpg" alt="Staged rollout" loading="lazy"><figcaption>Staged rollout</figcaption></figure><figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/pricing-light.jpg" alt="Price per country" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/pricing-dark.jpg" alt="Price per country" loading="lazy"><figcaption>Price per country</figcaption></figure><figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/revenuecat-light.jpg" alt="RevenueCat products" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/revenuecat-dark.jpg" alt="RevenueCat products" loading="lazy"><figcaption>RevenueCat products</figcaption></figure><figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/builds-light.jpg" alt="Builds from a local agent" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/builds-dark.jpg" alt="Builds from a local agent" loading="lazy"><figcaption>Builds from a local agent</figcaption></figure><figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/reviews-light.jpg" alt="Reviews with draft replies" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/reviews-dark.jpg" alt="Reviews with draft replies" loading="lazy"><figcaption>Reviews with draft replies</figcaption></figure><figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/keychain-light.jpg" alt="Keys and certificates" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/keychain-dark.jpg" alt="Keys and certificates" loading="lazy"><figcaption>Keys and certificates</figcaption></figure><figure class="ar-tile"><img class="ar-img pf-light-only" src="/developer/shots/ar/insights-light.jpg" alt="Insights per app" loading="lazy"><img class="ar-img pf-dark-only" src="/developer/shots/ar/insights-dark.jpg" alt="Insights per app" loading="lazy"><figcaption>Insights per app</figcaption></figure></div>
     </section>
 
     <section class="contact" id="contact" aria-labelledby="contact-title">
       <div class="contact-inner site-container">
-        <p class="eyebrow-pf">Get in touch</p>
-        <h2 id="contact-title">Working on <em>a mobile app?</em></h2>
+        <h2 id="contact-title">Working on a mobile app?</h2>
         <p>I'm open to freelance work in React Native and native iOS.</p>
         <a class="contact-mail" href="mailto:oskarpolster.business@gmail.com">oskarpolster.business@gmail.com <span aria-hidden="true">↗</span></a>
       </div>

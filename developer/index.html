@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/developer/portfolio.css?v=15">
+  <link rel="stylesheet" href="/developer/portfolio.css?v=16">
   <script>
     // Theme before first paint: saved pick, else the system setting.
     (function () {
@@ -51,7 +51,7 @@
           <h1 class="intro-title" id="intro-title">
             <span class="intro-word" id="intro-wordmark">Oskar<br>Polster</span>
           </h1>
-          <p class="intro-line">Mobile apps, <em>down to the native layer.</em></p>
+          <p class="intro-line">I build React Native and Swift apps, and write the Swift and Kotlin modules they need.</p>
         </div>
         <p class="intro-cue" aria-hidden="true">Scroll <span>↓</span></p>
       </div>
@@ -65,7 +65,7 @@
           <div class="fw" data-step="1"><span class="fw-tag">02 — Training</span><span class="fw-name">Novus</span></div>
           <div class="fw" data-step="2"><span class="fw-tag">03 — Focus</span><span class="fw-name">Unscroll</span></div>
           <div class="fw" data-step="3"><span class="fw-tag">04 — Money</span><span class="fw-name">Stub</span></div>
-          <div class="fw fw-serif" data-step="4"><span class="fw-tag">05 — Under the hood</span><span class="fw-name">native</span></div>
+          <div class="fw" data-step="4"><span class="fw-tag">05 — Native modules</span><span class="fw-name">Swift</span></div>
         </div>
 
         <div class="flight-chips" aria-hidden="true">
@@ -84,10 +84,10 @@
         <div class="flight-phone" id="flight-phone">
           <div class="device device-lg">
             <div class="device-screen">
-              <video class="flight-screen is-active" data-step="0" src="/developer/media/voyeva-recap.mp4" poster="/developer/media/voyeva-recap.jpg" muted loop playsinline preload="none" aria-label="Voyeva trip recap video"></video>
+              <video class="flight-screen is-active" data-step="0" src="/developer/media/voyeva-recap.mp4?v=2" poster="/developer/media/voyeva-recap.jpg?v=2" muted loop playsinline preload="none" aria-label="Voyeva trip recap video"></video>
               <img class="flight-screen" data-step="1" src="/developer/shots/novus-3.jpg" alt="Novus run through Vienna coloured by pace" loading="lazy">
               <img class="flight-screen" data-step="2" src="/developer/shots/unscroll-1.jpg" alt="Unscroll today screen" loading="lazy">
-              <img class="flight-screen" data-step="3" src="/developer/shots/stub-4.jpg" alt="Stub line items from a scanned receipt" loading="lazy">
+              <img class="flight-screen" data-step="3" src="/developer/shots/stub-1.jpg?v=3" alt="Stub Sankey diagram from income down to single products" loading="lazy">
               <img class="flight-screen" data-step="4" src="/developer/shots/voyeva-11.jpg" alt="Voyeva 3D globe" loading="lazy">
             </div>
             <img class="device-frame" src="/developer/shots/frame-black.png" alt="" width="640" height="1306">
@@ -99,7 +99,7 @@
           <li data-step="1">A real run, coloured by pace. SwiftUI, HealthKit, watchOS.</li>
           <li data-step="2">Blocks apps with Apple's Screen Time APIs, from React Native.</li>
           <li data-step="3">A real receipt, scanned: every line item, categorised.</li>
-          <li data-step="4">React Native where it helps, native code where it counts.</li>
+          <li data-step="4">18 Expo modules in Swift and Kotlin: AlarmKit, Screen Time, Vision, Core ML.</li>
         </ol>
         <div class="flight-progress" aria-hidden="true"><span></span></div>
       </div>
@@ -122,8 +122,7 @@
     <section class="stack" id="pages" aria-labelledby="stack-title">
       <div class="stack-stage">
         <div class="stack-head site-container">
-          <p class="eyebrow-pf">Open the work</p>
-          <h2 id="stack-title">Seven products. <em>Keep scrolling, each one opens.</em></h2>
+                    <h2 id="stack-title">Seven products, each with its own page.</h2>
         </div>
         <div class="stack-windows">
           <a class="win" href="/developer/voyeva/" data-i="0">
@@ -169,8 +168,7 @@
     <section class="path" id="path" aria-labelledby="path-title">
       <div class="path-stage">
         <div class="path-head site-container">
-          <p class="eyebrow-pf">How I got here</p>
-          <h2 id="path-title">Native first. <em>Then cross-platform without giving up native.</em></h2>
+                    <h2 id="path-title">Four stacks, in the order I learned them.</h2>
         </div>
         <ol class="path-track">
           <li class="path-card"><span class="path-no">01</span><h3>Flutter &amp; Firebase</h3><p>My first production apps: Firebase Auth and Firestore, cross-platform UI, store releases.</p></li>
@@ -184,8 +182,7 @@
     <!-- 5 · PRODUCT APPS -->
     <section class="work" id="work" aria-labelledby="work-title">
       <div class="work-head site-container">
-        <p class="eyebrow-pf">Featured work</p>
-        <h2 id="work-title">Product apps.</h2>
+                <h2 id="work-title">Six apps, built end to end.</h2>
         <p class="work-intro">Full products with accounts, sync, subscriptions, crash reporting and release pipelines. Screens come from the iOS Simulator with demo data, from the store listings, and, for the Voyeva photo maps, from my own trips. The Light/Dark switch changes the screenshots too.</p>
       </div>
 
@@ -207,7 +204,7 @@
           </div>
           <div class="fan" aria-hidden="true">
             <div class="device fan-l"><div class="device-screen"><img src="/developer/shots/voyeva-1.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
-            <div class="device fan-c"><div class="device-screen"><video src="/developer/media/voyeva-recap.mp4" poster="/developer/media/voyeva-recap.jpg" muted loop playsinline preload="none"></video></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+            <div class="device fan-c"><div class="device-screen"><video src="/developer/media/voyeva-recap.mp4?v=2" poster="/developer/media/voyeva-recap.jpg?v=2" muted loop playsinline preload="none"></video></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
             <div class="device fan-r"><div class="device-screen"><img src="/developer/shots/voyeva-4.jpg" alt="" loading="lazy"></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
           </div>
         </div>
@@ -302,20 +299,21 @@
               </ul>
               <p class="receipt-total"><span>TOTAL</span><span>39.99</span></p>
             </div>
-            <div class="device scan-phone"><div class="device-screen"><img src="/developer/shots/stub-4.jpg" alt="" loading="lazy"><span class="scan-beam"></span></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
+            <div class="device scan-phone"><div class="device-screen"><img src="/developer/shots/stub-5.jpg?v=3" alt="" loading="lazy"><span class="scan-beam"></span></div><img class="device-frame" src="/developer/shots/frame-black.png" alt=""></div>
           </div>
         </div>
         <div class="pf-gallery" data-app="stub">
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-1.jpg" alt="Scan one receipt or a whole stack" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Scan one receipt or a whole stack</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-2.jpg" alt="Reading runs in the background" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Reading runs in the background</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-3.jpg" alt="A real scan: merchant, date, total, currency" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>A real scan: merchant, date, total, currency</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-4.jpg" alt="Every line item, already categorised" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Every line item, already categorised</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-5.jpg" alt="The receipt stays with its photo" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>The receipt stays with its photo</figcaption></figure>
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-6.jpg" alt="Every receipt, searchable" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-6-dark.jpg" alt="Every receipt, searchable" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Every receipt, searchable</figcaption></figure>
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-7.jpg" alt="The month at a glance" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-7-dark.jpg" alt="The month at a glance" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>The month at a glance</figcaption></figure>
-          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-8.jpg" alt="Where the money comes from and goes" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-8-dark.jpg" alt="Where the money comes from and goes" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Where the money comes from and goes</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-9.jpg" alt="Spending by category" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Spending by category</figcaption></figure>
-          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-10.jpg" alt="Stub Pro" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Stub Pro</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-1.jpg" alt="A year of receipts, from income down to single products" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-1-dark.jpg" alt="A year of receipts, from income down to single products" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>A year of receipts, from income down to single products</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-2.jpg" alt="Scan one receipt or a whole stack" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Scan one receipt or a whole stack</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-3.jpg" alt="Reading runs in the background" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Reading runs in the background</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-4.jpg" alt="A real scan: merchant, date, total, currency" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>A real scan: merchant, date, total, currency</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-5.jpg" alt="Every line item, already categorised" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Every line item, already categorised</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-6.jpg" alt="The receipt stays with its photo" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>The receipt stays with its photo</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-7.jpg" alt="Every receipt, searchable" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-7-dark.jpg" alt="Every receipt, searchable" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Every receipt, searchable</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-8.jpg" alt="The month at a glance" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-8-dark.jpg" alt="The month at a glance" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>The month at a glance</figcaption></figure>
+          <figure><div class="pf-device pf-light-only"><img class="pf-screen" src="/developer/shots/stub-9.jpg" alt="Where the money comes from and goes" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-silver.png" alt="" loading="lazy" width="640" height="1306"></div><div class="pf-device pf-dark-only"><img class="pf-screen" src="/developer/shots/stub-9-dark.jpg" alt="Where the money comes from and goes" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Where the money comes from and goes</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-10.jpg" alt="Spending by category" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Spending by category</figcaption></figure>
+          <figure><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-11.jpg" alt="Stub Pro" loading="lazy" width="600" height="1304"><img class="pf-frame" src="/developer/shots/frame-black.png" alt="" loading="lazy" width="640" height="1306"></div><figcaption>Stub Pro</figcaption></figure>
         </div><!--/gallery-->
       </article>
 
@@ -416,8 +414,8 @@
     <!-- 6 · APPRELEASER -->
     <section class="ar" id="appreleaser" aria-labelledby="ar-title">
       <div class="ar-head site-container">
-        <p class="eyebrow-pf">In development · Release tooling</p>
-        <h2 id="ar-title">AppReleaser. <em>Two stores, one dashboard.</em></h2>
+        <p class="status-tag">In development</p>
+        <h2 id="ar-title">AppReleaser: both stores and RevenueCat in one dashboard.</h2>
         <p class="ar-lede">Shipping many apps means App Store Connect, Google Play Console and RevenueCat open at once, with the same listing, screenshots and prices typed three times. AppReleaser reads what each store really has, shows what is missing before review, and writes the changes back through the official APIs.</p>
       </div>
       <div class="ar-stage site-container">
@@ -460,8 +458,7 @@
 
     <!-- 7 · HOW I SHIP -->
     <section class="practice site-container" aria-labelledby="practice-title">
-      <p class="eyebrow-pf">How I ship</p>
-      <h2 id="practice-title">From the first commit <em>to the store.</em></h2>
+            <h2 id="practice-title">How I ship an app.</h2>
       <div class="practice-grid">
         <div><h3>Builds &amp; releases</h3><p>EAS Build profiles for dev client, internal QA and production, EAS Submit, signing credentials, TestFlight and Play internal testing tracks, versioning.</p></div>
         <div><h3>Native when needed</h3><p>Expo Modules API in Swift and Kotlin, custom config plugins, and the CocoaPods and Gradle debugging that comes with them.</p></div>
@@ -476,8 +473,7 @@
     <section class="tools site-container" id="tools" aria-labelledby="tools-title">
       <div class="tools-head">
         <div>
-          <p class="eyebrow-pf eyebrow-muted">Side projects</p>
-          <h2 id="tools-title">Small utilities.</h2>
+                    <h2 id="tools-title">Side projects.</h2>
         </div>
         <p>Focused one-job apps I build in a few days, mostly to try out a native API. Several of them are live on Google Play.</p>
       </div>
@@ -499,8 +495,7 @@
     <!-- 9 · CONTACT -->
     <section class="contact" id="contact" aria-labelledby="contact-title">
       <div class="contact-inner site-container">
-        <p class="eyebrow-pf">Get in touch</p>
-        <h2 id="contact-title">Working on <em>a mobile app?</em></h2>
+                <h2 id="contact-title">Working on a mobile app?</h2>
         <p>I'm open to freelance work in React Native and native iOS. For support with one of my apps, include the app name.</p>
         <a class="contact-mail" href="mailto:oskarpolster.business@gmail.com">oskarpolster.business@gmail.com <span aria-hidden="true">↗</span></a>
       </div>

@@ -63,3 +63,8 @@
   .pp-tech-grid, .pp-more-list { grid-template-columns: 1fr 1fr; }
   .pp-tech-grid { grid-template-columns: 1fr; }
 }
+
+/* Editorial pass: plain section heads, mono step numbers instead of italic serif. */
+.pp-no { font-family: var(--mono); font-style: normal; font-weight: 400; font-size: 13px; letter-spacing: .06em; color: var(--muted); }
+.pp-tech h2 { margin-top: 0; }
+.pp-more-title { font-size: clamp(28px, 3vw, 40px); font-weight: 500; letter-spacing: -.04em; margin-bottom: 24px; }
