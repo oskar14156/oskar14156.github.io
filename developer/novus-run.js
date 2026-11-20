@@ -26,8 +26,58 @@
     const u = clamp((b - BP[i]) / (BP[i + 1] - BP[i])), A = hex(RAMP[i]), B = hex(RAMP[i + 1]);
     return `rgb(${A.map((v, k) => Math.round(v + (B[k] - v) * u)).join(',')})`; };
   let data = null, map = null, ready = false, progress = 0, marker = null, overview = null;
-  const ge = sec.querySelector('.nr-ge'), geDot = sec.querySelector('.nr-ge-dot'); let geOk = !!ge;
-  if (ge) ge.addEventListener('error', () => { geOk = false; ge.remove(); geDot.remove(); });
+  const ge = sec.querySelector('.nr-ge'), geDot = sec.querySelector('.nr-ge-dot'), geCv = sec.querySelector('.nr-ge-ov'); let geOk = !!ge;
+  if (ge) ge.addEventListener('error', () => { geOk = false; ge.remove(); geDot.remove(); if (geCv) geCv.remove(); });
+  // camera of every rendered frame (local metres), so the route can be drawn into the video exactly where Google Earth put the streets
+  let flight = null, geT = 0, geCol = null, geMatch = null, onFlight = null, geRx = null;
+  // where the runner sits across the video in every frame, smoothed over ±0.5 s so the moving crop never jitters
+  function runnerTrack(foc) {
+    const F = flight.cam, R = flight.route, raw = F.map((c, f) => {
+      const m = FOLLOW_KM * 1000 * Math.min(f, flight.follow) / flight.follow; let i = 0; while (i < R.length - 1 && R[i + 1][3] <= m) i++;
+      const fw = unit(c.slice(3, 6)), rt = unit(cross3(fw, c.slice(6, 9))), d = sub(R[i], c.slice(0, 3)), z = dot3(d, fw);
+      return z > 3 ? flight.w / 2 + dot3(d, rt) / z * foc : flight.w / 2; });
+    const k = 60; return raw.map((_, f) => { let a = 0, w = 0; for (let j = -k; j <= k; j++) { const g = Math.exp(-j * j / (2 * 25 * 25)), v = raw[clamp(f + j, 0, raw.length - 1)]; a += v * g; w += g; } return a / w; });
+  }
+  const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], dot3 = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  const cross3 = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const unit = (a) => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
+  function drawGE(mRun) {
+    if (!flight || !geCv || !geOk || !data) return;
+    const dpr = Math.min(devicePixelRatio || 1, 2), W = geCv.clientWidth, H = geCv.clientHeight;
+    if (geCv.width !== Math.round(W * dpr) || geCv.height !== Math.round(H * dpr)) { geCv.width = Math.round(W * dpr); geCv.height = Math.round(H * dpr); }
+    const g = geCv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+    if (!geCol) geCol = flight.route.map((q) => hrColor(at(q[3]).hr || data.avgHR));
+    const F = flight.cam, fi = clamp(geT * flight.fps, 0, F.length - 1), a = Math.floor(fi), b = Math.min(F.length - 1, a + 1), u = fi - a;
+    const c = F[a].map((v, k) => v + (F[b][k] - v) * u), C = c.slice(0, 3), fw = unit(c.slice(3, 6)), rt = unit(cross3(fw, c.slice(6, 9))), up = cross3(rt, fw);
+    const s = Math.max(W / flight.w, H / flight.h), oy = (H - flight.h * s) / 2, foc = flight.h / 2 / Math.tan(flight.fov / 2 * Math.PI / 180);
+    // on narrow screens only a slice of the 16:9 flight is visible: slide the crop so the runner stays in it, back to centre on the climb
+    if (!geRx) geRx = runnerTrack(foc);
+    const rxF = geRx[Math.round(fi)], centre = (W - flight.w * s) / 2, fol = 1 - span(fi, flight.follow, flight.follow + 200);
+    const ox = lerp(centre, clamp(W / 2 - rxF * s, W - flight.w * s, 0), fol);
+    ge.style.objectPosition = `${ox.toFixed(1)}px 50%`;
+    const R = flight.route, Q = new Array(R.length);
+    for (let i = 0; i < R.length; i++) { const d = sub(R[i], C), z = dot3(d, fw);
+      Q[i] = z < 3 ? null : [ox + (flight.w / 2 + dot3(d, rt) / z * foc) * s, oy + (flight.h / 2 - dot3(d, up) / z * foc) * s]; }
+    g.lineCap = g.lineJoin = 'round';
+    // in the streets only the run so far (the road ahead would cut across roofs); the whole route fades in on the climb
+    const rise = span(fi, flight.follow - 30, flight.follow + 150);
+    if (rise > 0) { g.beginPath(); let pen = false;
+      for (let i = 0; i < R.length; i++) { const q = Q[i]; if (!q) { pen = false; continue; } if (pen) g.lineTo(q[0], q[1]); else { g.moveTo(q[0], q[1]); pen = true; } }
+      g.strokeStyle = `rgba(255,255,255,${.35 * rise})`; g.lineWidth = 2.5; g.stroke(); }
+    // what has been run, coloured by heart rate: a soft glow, then the line
+    let n = 0; while (n < R.length - 1 && R[n + 1][3] <= mRun) n++;
+    for (const [wid, alpha] of [[lerp(18, 10, rise), .35], [lerp(7, 4, rise), 1]]) {
+      g.lineWidth = wid; g.globalAlpha = alpha;
+      for (let i = 0; i < n; i++) { const p0 = Q[i], p1 = Q[i + 1]; if (!p0 || !p1) continue;
+        g.beginPath(); g.moveTo(p0[0], p0[1]); let j = i + 1; while (j < n && Q[j + 1] && geCol[j] === geCol[i]) { g.lineTo(Q[j][0], Q[j][1]); j++; }
+        g.lineTo(Q[j][0], Q[j][1]); g.strokeStyle = geCol[i]; g.stroke(); i = j - 1; }
+    }
+    g.globalAlpha = 1;
+    // the runner, between the last two samples
+    const A = R[n], B = R[Math.min(R.length - 1, n + 1)], k = B[3] > A[3] ? clamp((mRun - A[3]) / (B[3] - A[3])) : 0;
+    const d = sub([A[0] + (B[0] - A[0]) * k, A[1] + (B[1] - A[1]) * k, A[2] + (B[2] - A[2]) * k], C), z = dot3(d, fw);
+    if (z > 3) { geDot.style.left = (ox + (flight.w / 2 + dot3(d, rt) / z * foc) * s) + 'px'; geDot.style.top = (oy + (flight.h / 2 - dot3(d, up) / z * foc) * s) + 'px'; }
+  }
   const hr = sec.querySelector('.nr-hr svg'), hrLine = hr && hr.querySelector('.nr-hr-line'), hrArea = hr && hr.querySelector('.nr-hr-area'), hrDot = hr && hr.querySelector('.nr-hr-dot');
   let hrPts = [];
   const buildHR = () => { const P = data.pts, n = P.length - 1;
@@ -57,13 +107,22 @@
     return lerp(m1, total, Math.pow(span(p, .46, .84), 1.35));
   }
 
+  const rvfc = !!(window.HTMLVideoElement && 'requestVideoFrameCallback' in HTMLVideoElement.prototype);
+  const geRun = (p) => { const f = geT * (flight ? flight.fps : 60), fl = flight ? flight.follow : 900;
+    return f <= fl ? FOLLOW_KM * 1000 * f / fl : Math.max(FOLLOW_KM * 1000, metresAt(p)); };
+  if (ge && rvfc) { const cb = (now, md) => { geT = md.mediaTime; if (ready && geOk && +ge.style.opacity > 0) drawGE(geRun(shown)); ge.requestVideoFrameCallback(cb); }; ge.requestVideoFrameCallback(cb); }
+
   function frame() {
     if (!ready) return;
     const p = shown, m = metresAt(p), r = at(m), small = innerWidth < 800;
     // camera: follow → overview
     const hd = heading(Math.min(m, FOLLOW_KM * 1000)), ahead = at(Math.min(m, FOLLOW_KM * 1000) + 70);
     const follow = { lon: ahead.lon, lat: ahead.lat, zoom: small ? 16.4 : 16.9, pitch: 58, bearing: hd };
-    const o = overview, t = easeIO(span(p, .46, .64));
+    let o = overview, t = easeIO(span(p, .46, .64));
+    if (ge && geOk && flight && geMatch) {   // the map takes over exactly where the flight video ends, then settles into the overview
+      const k = easeIO(span(p, .66, .76)); t = p < .5 ? 0 : 1;
+      o = { lon: lerp(geMatch.lon, overview.lon, k), lat: lerp(geMatch.lat, overview.lat, k), zoom: lerp(geMatch.zoom, overview.zoom, k), pitch: 0, bearing: 0 };
+    }
     const intro = 1 - easeIO(span(p, 0, .06));       // a short swoop down onto the start
     map.jumpTo({
       center: [lerp(follow.lon, o.lon, t), lerp(follow.lat, o.lat, t)],
@@ -72,10 +131,12 @@
     marker.setLngLat([r.lon, r.lat]);
     // the Google Earth flight (pre-rendered, scrubbed): streets in real 3D for the first 3 km, then the climb
     if (ge && geOk) {
-      const vt = p < .46 ? lerp(0, 15, span(p, .03, .46)) : lerp(15, 21.97, span(p, .46, .64));
-      if (ge.readyState >= 1 && Math.abs(ge.currentTime - vt) > 1 / 50) { try { ge.currentTime = vt; } catch (e) {} }
+      const vt = p < .46 ? lerp(0, 15, span(p, .03, .46)) : lerp(15, 21.96, span(p, .46, .64));
+      if (ge.readyState >= 1 && Math.abs(ge.currentTime - vt) > 1 / 240) { try { ge.currentTime = vt; } catch (e) {} }
+      if (!rvfc) geT = vt;
       const geVis = 1 - span(p, .6, .66);
-      ge.style.opacity = geVis; geDot.style.opacity = (1 - span(p, .44, .5)) * span(p, .02, .04);
+      ge.style.opacity = geVis; geDot.style.opacity = (1 - span(p, .5, .58)) * span(p, .02, .04);
+      if (geCv) { geCv.style.opacity = geVis; if (geVis > 0) drawGE(geRun(p)); }
       marker.getElement().style.opacity = geVis > .99 ? 0 : 1 - geVis;
     }
     // the route so far, coloured by pace
@@ -129,6 +190,11 @@
       const pad = innerWidth < 800 ? { top: 150, bottom: 300, left: 30, right: 30 } : { top: 110, bottom: 230, left: 60, right: Math.min(520, innerWidth * .36) };
       const cam = map.cameraForBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]], { padding: pad });
       overview = { lon: cam.center.lng, lat: cam.center.lat, zoom: cam.zoom - .1, pitch: 0, bearing: 0 };
+      const fitGE = () => { if (!flight) return; const c = flight.cam[flight.cam.length - 1], h = c[2] - 160, W = box.clientWidth, H = box.clientHeight;
+        const s = Math.max(W / flight.w, H / flight.h), mpp = 2 * h * Math.tan(flight.fov / 2 * Math.PI / 180) / (flight.h * s);
+        const lat = (Math.min(...lats) + Math.max(...lats)) / 2, lon = (Math.min(...lons) + Math.max(...lons)) / 2;
+        geMatch = { lon, lat, zoom: Math.log2(40075016.686 * Math.cos(lat * Math.PI / 180) / (512 * mpp)) }; };
+      fitGE(); onFlight = fitGE; addEventListener('resize', () => { fitGE(); frame(); });
       buildHR(); ready = true; frame();
       box.querySelectorAll('.maplibregl-compact-show').forEach((e) => e.classList.remove('maplibregl-compact-show'));
     });
@@ -141,7 +207,8 @@
   let loading = false;
   const load = () => {
     if (loading) return; loading = true;
-    if (ge) { ge.src = ge.dataset.src.replace('{w}', innerWidth < 800 ? '960' : '1600'); ge.load(); }
+    if (ge) { ge.src = ge.dataset.src.replace('{w}', innerWidth < 800 ? '960' : '1600'); ge.load();
+      fetch('/developer/data/novus-flight.json?v=1').then((r) => r.json()).then((d) => { flight = d; if (onFlight) onFlight(); if (ready) frame(); }).catch(() => {}); }
     const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css'; document.head.appendChild(css);
     const s = document.createElement('script'); s.src = 'https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js';
     Promise.all([fetch('/developer/data/novus-run.json').then((r) => r.json()), new Promise((res, rej) => { s.onload = res; s.onerror = rej; document.head.appendChild(s); })])
