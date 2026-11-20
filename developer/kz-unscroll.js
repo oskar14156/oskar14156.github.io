@@ -61,6 +61,7 @@
         <linearGradient id="kzWall" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2b1a86"/><stop offset=".7" stop-color="#3b23a8"/><stop offset="1" stop-color="#3420a0"/></linearGradient>
         <linearGradient id="kzFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a167a"/><stop offset="1" stop-color="#1d0f5c"/></linearGradient>
         <linearGradient id="kzWinNight" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f0838"/><stop offset=".75" stop-color="#2a1a7e"/><stop offset="1" stop-color="#4a2f9e"/></linearGradient>
+        <linearGradient id="kzDusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b2a8f"/><stop offset=".55" stop-color="#b0559f"/><stop offset=".85" stop-color="#ff8f5a"/><stop offset="1" stop-color="#ffc36b"/></linearGradient>
         <radialGradient id="kzMoonGlow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#e9e2ff" stop-opacity=".6"/><stop offset="1" stop-color="#e9e2ff" stop-opacity="0"/></radialGradient>
         <linearGradient id="kzDuvet" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ef5fd8"/><stop offset="1" stop-color="#b8329f"/></linearGradient>
         <linearGradient id="kzMattress" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a5cf6"/><stop offset="1" stop-color="#5233cc"/></linearGradient>
@@ -137,12 +138,11 @@
             </g>
             <!-- him: cross-legged, waving up at the hill -->
             <g transform="translate(70 18)">
-              <path d="M-40 16 C -30 0 30 0 44 16 C 40 26 -36 26 -40 16Z" fill="#232070"/><ellipse cx="-36" cy="18" rx="10" ry="6" fill="#fff"/><ellipse cx="42" cy="18" rx="10" ry="6" fill="#fff"/>
-              <path d="M-24 10 C -30 -20 -22 -50 0 -60 C 22 -50 28 -20 22 10Z" fill="#ff7a59"/><path d="M14 -52 C 24 -30 26 -10 22 10 C 16 -10 12 -30 6 -50Z" fill="#e8603f"/>
+              <path d="M-36 12 C -28 2 -10 4 14 18 C 18 22 16 27 10 27 C -6 22 -24 20 -36 22 C -42 20 -42 15 -36 12Z" fill="#232070"/><path d="M38 12 C 30 2 12 4 -12 18 C -16 22 -14 27 -8 27 C 8 22 26 20 38 22 C 44 20 44 15 38 12Z" fill="#2c2985"/><ellipse cx="14" cy="24" rx="9" ry="5" fill="#fff"/><ellipse cx="-12" cy="24" rx="9" ry="5" fill="#f2f2f2"/><path d="M-24 10 C -30 -20 -22 -50 0 -60 C 22 -50 28 -20 22 10Z" fill="#ff7a59"/><path d="M14 -52 C 24 -30 26 -10 22 10 C 16 -10 12 -30 6 -50Z" fill="#e8603f"/>
               <path d="M-14 -36 C -20 -18 -12 -4 0 0" stroke="#ff7a59" stroke-width="14" stroke-linecap="round" fill="none"/>
               <path d="M-8 -60 h14 v10 h-14z" fill="#b8705a"/>
               <ellipse cx="0" cy="-84" rx="24" ry="25" fill="#d98a6c"/>
-              <path d="M-26 -84 C -28 -112 22 -116 26 -88 C 16 -100 -2 -102 -14 -92 C -18 -86 -22 -82 -26 -84Z" fill="#1f1a66"/>
+              <path d="M-26 -80 C -33 -118 30 -124 26 -84 C 24 -95 13 -103 0 -102 C -12 -101 -20 -93 -24 -80Z" fill="#1f1a66"/><path d="M-12 -110 C 0 -116 14 -114 20 -106" stroke="#3a3592" stroke-width="3" fill="none" stroke-linecap="round"/>
               <circle cx="-10" cy="-84" r="3" fill="#26145f"/><circle cx="8" cy="-84" r="3" fill="#26145f"/>
               <path d="M-8 -72 q8 7 16 0" stroke="#5b2340" stroke-width="2.8" fill="none" stroke-linecap="round"/><circle cx="-16" cy="-76" r="5" fill="#ff6b8f" opacity=".4"/><circle cx="16" cy="-76" r="5" fill="#ff6b8f" opacity=".4"/>
               <g class="kz-wave"><path d="M18 -46 C 30 -60 40 -80 46 -100" stroke="#ff7a59" stroke-width="14" stroke-linecap="round" fill="none"/><path d="M40 -100 C 37 -110 39 -122 46 -124 C 53 -125 57 -116 55 -106 C 54 -100 50 -97 46 -97 C 43 -97 41 -98 40 -100Z" fill="#d98a6c"/><path d="M41 -104 C 36 -106 34 -110 36 -113 C 38 -115 41 -113 43 -110" fill="#d98a6c" stroke="#c07455" stroke-width="1.2"/></g>
@@ -176,7 +176,8 @@
               <rect x="1062" y="196" width="286" height="286" fill="url(#kzWinNight)"/>
               ${stars}
               <g class="kz-moon"><circle cx="1270" cy="262" r="70" fill="url(#kzMoonGlow)"/>
-              <circle cx="1270" cy="262" r="30" fill="#f3ecff"/><circle cx="1284" cy="252" r="26" fill="#1a0e52"/></g>
+              <path d="M1297.37 274.3 A30 30 0 1 1 1267.26 232.12 A26 26 0 0 0 1297.37 274.3Z" fill="#f3ecff"/></g>
+              <g class="kz-dusk"><rect x="1062" y="196" width="286" height="286" fill="url(#kzDusk)"/></g>
               <path d="M1062 482 V430 h18 v-18 h22 v26 h14 v-40 h26 v34 h12 v-22 h20 v42 h16 v-56 h24 v36 h18 v-24 h22 v40 h16 v-30 h20 v20 h18 v-14 h20 v52Z" fill="#170d4c"/>
               ${cityWin}
             </g>
@@ -276,16 +277,17 @@
         <g class="kz-hand-f"><path d="M-4 -9 C 6 -11 16 -8 18 -1 C 19 6 13 10 4 10 C -4 10 -8 4 -7 -2Z" fill="${C.skin}"/><path d="M6 -8 C 14 -6 17 0 15 6" stroke="#e8907a" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M8 1 C 13 2 16 5 15 8 M8 5 C 12 6 14 9 13 10" stroke="#e8907a" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".8"/></g>
         <!-- the phone in his hand: palm under it, fingers round the back, thumb on the screen edge -->
         <g class="kz-phone-hand">
-          <path d="M-5 -10 C 8 -15 22 -11 24 -2 C 25 7 16 13 4 12 C -5 11 -9 4 -8 -3Z" fill="${C.skin}"/>
+          <path class="kz-palm" d="M-5 -10 C 8 -15 22 -11 24 -2 C 25 7 16 13 4 12 C -5 11 -9 4 -8 -3Z" fill="${C.skin}"/>
           <g class="kz-phone" transform="translate(16 -22)">
-            <g class="kz-thumb"><path d="M-16 24 C -25 16 -26 0 -23 -10 C -21 -17 -14 -17 -13 -10 L -11 20Z" fill="${C.skin}"/><path d="M-22 -9 q3 -4 6 -2" stroke="#e8907a" stroke-width="1.4" fill="none" stroke-linecap="round"/></g>
-            <rect x="-14" y="-30" width="26" height="60" rx="8" fill="#3a2f7a"/>
-            <rect x="-12" y="-28" width="22" height="56" rx="7" fill="#251c58"/>
-            <rect x="-7" y="-24" width="13" height="15" rx="4" fill="#130c38"/><circle cx="-3" cy="-20" r="2.6" fill="#4a3f8f"/><circle cx="2.5" cy="-14" r="2.6" fill="#4a3f8f"/>
-            <path d="M-15 -26 V26" stroke="#c9fbff" stroke-width="3.2" stroke-linecap="round"/>
-            <path class="kz-feed" d="M-16 -18 V18" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" opacity=".8"/>
-            <g fill="${C.skin}"><rect x="6" y="-4" width="12" height="8" rx="4"/><rect x="7" y="5" width="11" height="8" rx="4"/><rect x="6" y="14" width="10" height="7" rx="3.5"/></g>
-            <path d="M12 -2 h4 M12 7 h4 M11 16 h3" stroke="#e8907a" stroke-width="1.4" stroke-linecap="round"/>
+            <g class="kz-grip-s kz-thumb"><path d="M-16 24 C -25 16 -26 0 -23 -10 C -21 -17 -14 -17 -13 -10 L -11 20Z" fill="${C.skin}"/><path d="M-22 -9 q3 -4 6 -2" stroke="#e8907a" stroke-width="1.4" fill="none" stroke-linecap="round"/></g>
+            <rect x="-22" y="-34" width="14" height="68" rx="7" fill="#bff8ff" opacity=".35" filter="url(#kzBlur6)" class="kz-halo-s"/>
+            <rect x="-13" y="-31" width="24" height="62" rx="7" fill="#1d1640"/>
+            <rect x="-9" y="-27" width="16" height="54" rx="5" fill="#261d52"/>
+            <path d="M-14 -25 V25" stroke="#d8fdff" stroke-width="3.4" stroke-linecap="round"/>
+            <path class="kz-feed" d="M-15 -16 V16" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" opacity=".8"/>
+            <g class="kz-grip-s"><g fill="${C.skin}"><rect x="5" y="-4" width="12" height="8" rx="4"/><rect x="6" y="5" width="11" height="8" rx="4"/><rect x="5" y="14" width="10" height="7" rx="3.5"/></g>
+            <path d="M11 -2 h4 M11 7 h4 M10 16 h3" stroke="#e8907a" stroke-width="1.4" stroke-linecap="round"/></g>
+            <g class="kz-grip-t" opacity="0"><path d="M-16 14 C -18 26 -10 36 2 36 C 14 36 18 26 15 16 C 12 10 -12 8 -16 14Z" fill="${C.skin}"/><path d="M-9 20 q4 3 8 0 M1 21 q4 3 8 0 M-6 28 q6 3 12 0" stroke="#e8907a" stroke-width="1.5" fill="none" stroke-linecap="round"/></g>
           </g>
         </g>
         <path class="kz-beam" fill="url(#kzBeamG)" style="mix-blend-mode: screen" filter="url(#kzBlur3)"/>
@@ -332,7 +334,7 @@
       </g>
       </g>
     </svg>
-    <div class="kz-cap kz-cap-1"><p class="kz-meta">Unscroll · 2:47 a.m.</p><p class="kz-big">Four hours of scrolling, and nothing to show for it.</p></div>
+    <div class="kz-cap kz-cap-1"><p class="kz-meta">Unscroll · 2:47 a.m.</p><p class="kz-big">Hours of scrolling, and nothing to show for it.</p></div>
     <div class="kz-cap kz-cap-2"><p class="kz-meta">The lock</p><p class="kz-big">Unscroll blocks the apps you choose with Apple's Screen Time APIs. They stay locked even when Unscroll is closed.</p></div>
     <div class="kz-cap kz-cap-3"><p class="kz-meta">The math</p><p class="kz-big">Four hours a day is 1,460 hours a year. Unscroll shows you that number, then gives it back.</p></div>
   </div>`;
@@ -361,8 +363,8 @@
   const P = {
     scroll:  { t: 'A', head: [74, -204, 24], f: [[46, -148], [62, -86], [118, -74]], b: [[30, -150], [44, -86], [102, -76]], legs: 'sit', phone: 26, eyes: 'tired', mouth: 'flat' },
     startle: { t: 'B', head: [28, -232, -6], f: [[30, -160], [56, -96], [110, -110]], b: [[14, -162], [26, -96], [86, -108]], legs: 'sit', phone: 36, eyes: 'wide', mouth: 'o' },
-    windup:  { t: 'B', head: [24, -232, -10], f: [[24, -162], [-34, -196], [-72, -248]], b: [[14, -162], [54, -110], [98, -116]], legs: 'sit', phone: 80, eyes: 'wide', mouth: 'flat' },
-    release: { t: 'B', head: [32, -230, 2], f: [[34, -162], [92, -196], [150, -206]], b: [[14, -162], [20, -92], [40, -40]], legs: 'sit', phone: 40, eyes: 'wide', mouth: 'flat' },
+    windup:  { t: 'B', head: [24, -232, -10], f: [[24, -162], [-34, -196], [-72, -248]], b: [[14, -162], [54, -110], [98, -116]], legs: 'sit', phone: 90, eyes: 'wide', mouth: 'flat' },
+    release: { t: 'B', head: [32, -230, 2], f: [[34, -162], [92, -196], [150, -206]], b: [[14, -162], [20, -92], [40, -40]], legs: 'sit', phone: 90, eyes: 'wide', mouth: 'flat' },
     follow:  { t: 'A', head: [74, -206, 6], f: [[46, -148], [98, -100], [150, -70]], b: [[30, -150], [42, -82], [60, -28]], legs: 'sit', phone: 60, eyes: 'wide', mouth: 'flat' },
     look:    { t: 'B', head: [28, -232, -4], f: [[30, -160], [48, -88], [72, -22]], b: [[14, -162], [18, -90], [32, -24]], legs: 'sit', phone: 60, eyes: 'wide', mouth: 'flat' },
     push:    { t: 'A', head: [72, -208, 2], f: [[46, -148], [78, -74], [100, -8]], b: [[30, -150], [58, -80], [86, -10]], legs: 'push', phone: 60, eyes: 'happy', mouth: 'smile' },
@@ -379,6 +381,7 @@
   const KEYS_EL = ['phone', 'torso', 'torso-clip', 'torso-back', 'torso-lit', 'pocket', 'leg-f', 'leg-f-hi', 'leg-b', 'shoe-f', 'shoe-b', 'arm-f-up', 'cuff', 'arm-f-lo', 'arm-f-lit', 'arm-b-up', 'arm-b-lo', 'hand-f', 'hand-b', 'thumb', 'phone-hand', 'head', 'face-lit', 'eyes-tired', 'eyes-wide', 'eyes-happy', 'mouth-flat', 'mouth-o', 'mouth-smile', 'feed', 'pupil', 'beam'];
   const elsOf = (root) => { const o = {}; KEYS_EL.forEach((k) => { o[k] = root.querySelector('.kz-' + k); }); return o; };
   const el = elsOf(host);
+  el.gripS = [...host.querySelectorAll('.kz-kid .kz-grip-s')]; el.gripT = host.querySelector('.kz-kid .kz-grip-t'); el.palm = host.querySelector('.kz-kid .kz-palm');
   // the same boy, outside on the hill
   const twin = q('.kz-kid').cloneNode(true);
   twin.setAttribute('class', 'kz-kid-out'); twin.setAttribute('transform', 'translate(560 646) scale(.5)');
@@ -425,14 +428,17 @@
         el['arm-f-lit'].setAttribute('d', `M${L(E[0], W[0], .25)} ${L(E[1], W[1], .25) - 8} L${W[0]} ${W[1] - 8}`);
         const phi = L(A.phone, B.phone, t), grip = p < .402 && main !== undefined;
         el['phone-hand'].setAttribute('transform', `translate(${W[0]} ${W[1]}) rotate(${fa})`);
-        el.phone.setAttribute('transform', `translate(16 -22) rotate(${phi})`);
+        const throwK = Math.min(1, Math.max(0, (p - .335) / .03));
+        const gx = 16 + 12 * throwK, gy = -22 + 20 * throwK;
+        el.phone.setAttribute('transform', `translate(${gx} ${gy}) rotate(${phi})`);
+        if (el.gripS) { el.gripS.forEach((g) => { g.style.opacity = 1 - throwK; }); el.gripT.style.opacity = throwK; el.palm.style.opacity = 1 - throwK; }
         const scrolling = n0 === 'scroll' && n1 === 'scroll';
         // the thumb flicks up the screen and back, pivoting at its base
         const sw = scrolling ? Math.max(0, Math.sin(time * 4.2)) ** 1.6 : 0;
         el.thumb.setAttribute('transform', `rotate(${(-9 * sw).toFixed(2)} -15 22)`);
         el['hand-f'].style.opacity = p < .4 ? 0 : 1;
         // the screen edge, in body coordinates
-        const toBody = (v) => { const a1 = rot(v, phi), a2 = [a1[0] + 16, a1[1] - 22], a3 = rot(a2, fa); return [W[0] + a3[0], W[1] + a3[1]]; };
+        const toBody = (v) => { const a1 = rot(v, phi), a2 = [a1[0] + gx, a1[1] + gy], a3 = rot(a2, fa); return [W[0] + a3[0], W[1] + a3[1]]; };
         el._edge = [toBody([-15, -24]), toBody([-15, 24])];
         const px = W[0], py = W[1];
         el._phone = [px, py];
@@ -473,13 +479,17 @@
 
   const motesEl = [...qa('.kz-mote')].map((m) => ({ m, x: +m.getAttribute('cx'), y: +m.getAttribute('cy'), s: Math.random() * 6.28 }));
   // three hours pass while he scrolls: 11:47 p.m. -> 2:47 a.m., the moon climbs across the window
+  const dusk = q('.kz-dusk'), dark = q('.kz-dark');
   const hh = q('.kz-hh'), mh = q('.kz-mh'), shd = q('.kz-sh'), moon = q('.kz-moon'), clockTxt = q('.kz-clock'), capMeta = q('.kz-cap-1 .kz-meta');
   const pad = (n) => String(n).padStart(2, '0');
   let lastMin = -1;
   function clockAt(p, time) {
-    const k = span(p, .0, .24), m = (23 * 60 + 47 + 180 * k) % 1440;
+    const k = span(p, .0, .24), m = (20 * 60 + 47 + 360 * k) % 1440;
     hh.setAttribute('transform', `rotate(${((m / 60) % 12) * 30})`); mh.setAttribute('transform', `rotate(${(m % 60) * 6})`);
-    shd.setAttribute('transform', `rotate(${(k * 180 * 360 + time * 6) % 360})`);
+    shd.setAttribute('transform', `rotate(${(k * 360 * 360 + time * 6) % 360})`);
+    // dusk deepens into night while he scrolls
+    dusk.style.opacity = (1 - span(p, .0, .15)).toFixed(3);
+    if (p < .3) dark.style.opacity = (.22 + .4 * span(p, 0, .15)).toFixed(3);
     moon.setAttribute('transform', `translate(${L(-190, 0, k)} ${L(150, 0, Math.sqrt(k))})`);
     const mi = Math.floor(m);
     if (mi !== lastMin) { lastMin = mi; const H = Math.floor(mi / 60), M = mi % 60;
