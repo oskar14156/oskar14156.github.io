@@ -75,6 +75,7 @@
         <linearGradient id="kzShaft" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2c4" stop-opacity=".75"/><stop offset="1" stop-color="#ffd27a" stop-opacity="0"/></linearGradient>
         <linearGradient id="kzPatch" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff1c2"/><stop offset="1" stop-color="#ffc760"/></linearGradient>
         <radialGradient id="kzWarm" cx=".72" cy=".38" r=".85"><stop offset="0" stop-color="#ffd27a" stop-opacity=".55"/><stop offset="1" stop-color="#ff8a5b" stop-opacity=".18"/></radialGradient>
+        <pattern id="kzPlaid" width="28" height="28" patternUnits="userSpaceOnUse"><rect width="28" height="28" fill="#ff5d73"/><rect width="14" height="28" fill="#fff" opacity=".28"/><rect width="28" height="14" fill="#fff" opacity=".28"/></pattern>
         <filter id="kzBlur6" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="6"/></filter>
         <filter id="kzBlur18" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="18"/></filter>
         <filter id="kzBlur3"><feGaussianBlur stdDeviation="3"/></filter>
@@ -117,13 +118,42 @@
             <path d="M0 -46 L 34 0 L 0 52 L -34 0Z" fill="#e94bd6"/><path d="M0 -46 L 34 0 L 0 0Z" fill="#ff7ad9"/><path d="M0 -46 L -34 0 L 0 0Z" fill="#36e0c8"/>
             <path d="M0 52 C 20 90 -20 120 10 160 C 30 190 -10 220 20 260" stroke="#7a3fd1" stroke-width="3" fill="none"/>
           </g>
-          <g class="kz-picnic" transform="translate(1180 800) scale(.85)">
-            <ellipse cx="0" cy="40" rx="160" ry="22" fill="#0e7d5c" opacity=".3"/>
-            <ellipse cx="0" cy="34" rx="150" ry="22" fill="#ff5d73"/><path d="M-120 26 h240 M-90 42 h180" stroke="#fff" stroke-width="5" opacity=".55"/>
-            <g transform="translate(-60 0)"><path d="M-22 30 C -26 -10 -20 -50 0 -64 L 20 -64 C 34 -40 34 0 26 30Z" fill="#ffd23f"/><circle cx="8" cy="-92" r="30" fill="#ffab8e"/><path d="M-22 -96 C -24 -130 30 -134 40 -104 C 20 -112 0 -108 -10 -92Z" fill="#e94bd6"/><path d="M-22 -96 C -34 -60 -30 -40 -16 -30 C -24 -60 -12 -80 -10 -92Z" fill="#e94bd6"/><circle cx="24" cy="-84" r="7" fill="#ff6b8f" opacity=".7"/><path d="M14 -98 q6 -6 12 0" stroke="#26145f" stroke-width="4" fill="none" stroke-linecap="round"/></g>
-            <g transform="translate(56 4)"><path d="M-24 26 C -28 -12 -22 -50 -2 -62 L 18 -62 C 32 -40 32 -2 24 26Z" fill="#ff7a59"/><circle cx="4" cy="-90" r="29" fill="#d98a6c"/><path d="M-24 -96 C -20 -128 30 -128 32 -96 C 18 -106 -4 -106 -24 -96Z" fill="#1f1a66"/><circle cx="-12" cy="-82" r="7" fill="#ff6b8f" opacity=".6"/><path d="M-20 -96 q-6 -6 -12 0" stroke="#26145f" stroke-width="4" fill="none" stroke-linecap="round"/>
-              <g class="kz-wave"><path d="M18 -40 L 50 -96" stroke="#ff7a59" stroke-width="20" stroke-linecap="round"/><circle cx="52" cy="-104" r="11" fill="#d98a6c"/></g></g>
-            <g transform="translate(-4 22)"><rect x="-18" y="-20" width="36" height="26" rx="6" fill="#b5651d"/><path d="M-14 -20 q14 -22 28 0" stroke="#7a3f12" stroke-width="5" fill="none"/></g>
+          <g class="kz-picnic" transform="translate(1190 806) scale(.9)">
+            <ellipse cx="6" cy="40" rx="176" ry="26" fill="#0e7d5c" opacity=".3"/>
+            <ellipse cx="0" cy="32" rx="166" ry="27" fill="url(#kzPlaid)"/>
+            <path d="M-166 32 C -150 50 150 52 166 32" stroke="#c2304a" stroke-width="4" fill="none"/>
+            <!-- her: sitting with her legs to the side, reaching into the basket -->
+            <g transform="translate(-66 16)">
+              <path d="M-14 12 C 10 2 44 2 58 14 C 62 22 54 26 40 24 C 20 22 2 24 -12 22Z" fill="#3949ab"/><path d="M40 22 C 50 22 60 22 64 18" stroke="#2b388f" stroke-width="3" fill="none"/>
+              <ellipse cx="63" cy="19" rx="10" ry="6" fill="#fff"/>
+              <path d="M-26 14 C -32 -18 -24 -48 -4 -58 C 14 -58 22 -36 20 14Z" fill="#ffd23f"/><path d="M-26 14 C -30 -10 -28 -30 -20 -44 C -14 -20 -12 0 -10 14Z" fill="#f2b82b"/>
+              <path d="M8 -46 C 22 -34 34 -18 50 -8" stroke="#ffd23f" stroke-width="15" stroke-linecap="round" fill="none"/><path d="M44 -10 L 54 -4" stroke="#ffb196" stroke-width="12" stroke-linecap="round"/>
+              <path d="M-8 -60 h12 v10 h-12z" fill="#ec8b77"/>
+              <ellipse cx="0" cy="-84" rx="25" ry="26" fill="#ffb196"/>
+              <path d="M-26 -88 C -30 -116 6 -124 24 -104 C 26 -96 22 -92 18 -96 C 8 -104 -10 -104 -16 -88 C -18 -80 -22 -76 -26 -78Z" fill="#e94bd6"/>
+              <path d="M-24 -96 C -48 -96 -54 -70 -40 -54 C -36 -70 -32 -80 -22 -86Z" fill="#e94bd6"/><circle cx="-26" cy="-96" r="5" fill="#ffd23f"/>
+              <circle cx="12" cy="-84" r="3" fill="#26145f"/><path d="M8 -93 q5 -3 10 0" stroke="#26145f" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+              <path d="M10 -72 q6 5 12 -1" stroke="#6b2a45" stroke-width="2.8" fill="none" stroke-linecap="round"/><circle cx="16" cy="-76" r="6" fill="#ff6b8f" opacity=".45"/>
+            </g>
+            <!-- him: cross-legged, waving up at the hill -->
+            <g transform="translate(70 18)">
+              <path d="M-40 16 C -30 0 30 0 44 16 C 40 26 -36 26 -40 16Z" fill="#232070"/><ellipse cx="-36" cy="18" rx="10" ry="6" fill="#fff"/><ellipse cx="42" cy="18" rx="10" ry="6" fill="#fff"/>
+              <path d="M-24 10 C -30 -20 -22 -50 0 -60 C 22 -50 28 -20 22 10Z" fill="#ff7a59"/><path d="M14 -52 C 24 -30 26 -10 22 10 C 16 -10 12 -30 6 -50Z" fill="#e8603f"/>
+              <path d="M-14 -36 C -20 -18 -12 -4 0 0" stroke="#ff7a59" stroke-width="14" stroke-linecap="round" fill="none"/>
+              <path d="M-8 -60 h14 v10 h-14z" fill="#b8705a"/>
+              <ellipse cx="0" cy="-84" rx="24" ry="25" fill="#d98a6c"/>
+              <path d="M-26 -84 C -28 -112 22 -116 26 -88 C 16 -100 -2 -102 -14 -92 C -18 -86 -22 -82 -26 -84Z" fill="#1f1a66"/>
+              <circle cx="-10" cy="-84" r="3" fill="#26145f"/><circle cx="8" cy="-84" r="3" fill="#26145f"/>
+              <path d="M-8 -72 q8 7 16 0" stroke="#5b2340" stroke-width="2.8" fill="none" stroke-linecap="round"/><circle cx="-16" cy="-76" r="5" fill="#ff6b8f" opacity=".4"/><circle cx="16" cy="-76" r="5" fill="#ff6b8f" opacity=".4"/>
+              <g class="kz-wave"><path d="M18 -46 C 30 -60 40 -80 46 -100" stroke="#ff7a59" stroke-width="14" stroke-linecap="round" fill="none"/><ellipse cx="47" cy="-108" rx="8" ry="10" fill="#d98a6c"/><path d="M41 -114 l-3 -8 M46 -117 l0 -9 M51 -115 l3 -8" stroke="#d98a6c" stroke-width="4" stroke-linecap="round"/></g>
+            </g>
+            <!-- basket, apples, a flask -->
+            <g transform="translate(-4 28)">
+              <path d="M-26 -22 h52 l-6 26 h-40z" fill="#c97a2b"/><path d="M-26 -22 h52 v6 h-52z" fill="#a8611c"/><path d="M-20 -14 l40 0 M-22 -6 l44 0" stroke="#8a4d14" stroke-width="2"/>
+              <path d="M-18 -22 C -14 -46 14 -46 18 -22" stroke="#8a4d14" stroke-width="4" fill="none"/>
+              <circle cx="-8" cy="-26" r="7" fill="#ff4f6d"/><circle cx="6" cy="-27" r="6" fill="#7bd36a"/>
+              <rect x="34" y="-28" width="12" height="30" rx="4" fill="#36e0c8"/><rect x="34" y="-32" width="12" height="6" rx="2" fill="#1f9b8a"/>
+            </g>
           </g>
         </g>
       </g>
@@ -197,7 +227,6 @@
           <rect x="16" y="-46" width="76" height="44" rx="10" fill="#140a3e"/>
           <text class="kz-clock" x="54" y="-15" text-anchor="middle" font-family="'Geist Mono', ui-monospace, monospace" font-size="22" font-weight="500" fill="#ff5d73">02:47</text>
           <path d="M104 -2 l4 -34 h18 l4 34z" fill="#bfe9ff" opacity=".55"/><path d="M106 -16 h22" stroke="#7fd0ff" stroke-width="2" opacity=".7"/>
-          <path d="M60 -2 C 40 30 20 60 -40 70" stroke="#0e0730" stroke-width="3" fill="none"/>
         </g>
       </g>
 
@@ -212,7 +241,7 @@
         <ellipse class="kz-shadow" cx="60" cy="172" rx="110" ry="13" fill="#170b4f" opacity=".55"/>
         <path class="kz-arm-b-up" stroke="${C.shirtShade}" stroke-width="27" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         <path class="kz-arm-b-lo" stroke="${C.skinShade}" stroke-width="19" stroke-linecap="round" fill="none"/>
-        <circle class="kz-hand-b" r="12" fill="${C.skinShade}"/>
+        <g class="kz-hand-b"><path d="M-4 -9 C 6 -11 16 -8 18 -1 C 19 6 13 10 4 10 C -4 10 -8 4 -7 -2Z" fill="${C.skinShade}"/></g>
         <path class="kz-leg-b" stroke="${C.pantsShade}" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         <path class="kz-shoe-b" d="M-14 -6 h42 a17 17 0 0 1 17 17 v3 h-59z" fill="#e8b92c"/>
         <path class="kz-leg-f" stroke="${C.pants}" stroke-width="45" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
@@ -226,9 +255,8 @@
         <g class="kz-head">
           <path d="M-14 24 h28 v44 h-28z" fill="${C.skinShade}"/>
           <path d="M-46 22 C -66 58 -28 86 16 78 C 2 64 -16 52 -24 30Z" fill="${C.shirtShade}"/>
-          <path class="kz-face" d="M-50 -6 C -54 -50 -14 -66 18 -62 C 44 -58 56 -36 52 -16 C 51 -10 53 -6 56 0 L 62 10 C 60 14 55 15 52 15 C 53 20 52 24 50 27 C 51 31 50 34 47 37 C 46 44 40 50 30 51 C 16 53 4 48 -6 40 C -24 40 -46 26 -50 -6Z" fill="url(#kzSkinG)"/>
-          <path d="M-6 40 C 4 48 16 53 30 51 C 40 50 46 44 47 37" stroke="${C.skinShade}" stroke-width="3" fill="none" opacity=".6"/>
-          <path class="kz-face-lit" d="M-50 -6 C -54 -50 -14 -66 18 -62 C 44 -58 56 -36 52 -16 C 51 -10 53 -6 56 0 L 62 10 C 60 14 55 15 52 15 C 53 20 52 24 50 27 C 51 31 50 34 47 37 C 46 44 40 50 30 51 C 16 53 4 48 -6 40 C -24 40 -46 26 -50 -6Z" fill="url(#kzFaceLit)"/>
+          <path class="kz-face" d="M-50 -6 C -54 -50 -14 -66 18 -62 C 44 -58 56 -36 52 -16 C 51 -10 53 -6 56 0 L 61 9 C 60 13 56 14 52 14 C 52 18 51 21 49 24 C 50 28 49 31 47 33 C 46 39 42 43 35 45 C 26 47 14 47 4 42 C -20 40 -46 26 -50 -6Z" fill="url(#kzSkinG)"/>
+          <path class="kz-face-lit" d="M-50 -6 C -54 -50 -14 -66 18 -62 C 44 -58 56 -36 52 -16 C 51 -10 53 -6 56 0 L 61 9 C 60 13 56 14 52 14 C 52 18 51 21 49 24 C 50 28 49 31 47 33 C 46 39 42 43 35 45 C 26 47 14 47 4 42 C -20 40 -46 26 -50 -6Z" fill="url(#kzFaceLit)"/>
           <ellipse cx="-6" cy="6" rx="10" ry="13" fill="${C.skinShade}"/><path d="M-9 0 q6 2 4 10" stroke="#d2725f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
           <path d="M53 9 q-2 4 -6 3" stroke="#d2725f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
           <circle cx="28" cy="22" r="9" fill="${C.cheek}" opacity=".45"/>
@@ -237,24 +265,23 @@
           <g class="kz-eyes-tired"><path d="M24 -6 q8 -4 15 0 q-7 5 -15 0Z" fill="#fff"/><circle cx="33" cy="-3" r="3.4" fill="#26145f"/><circle class="kz-glint" cx="34.5" cy="-3.5" r="1.3" fill="#9ff6ff"/><path d="M22 -8 q9 -4 19 1" stroke="#26145f" stroke-width="3.5" stroke-linecap="round" fill="none"/><path d="M22 -17 q9 -2 18 0" stroke="#26145f" stroke-width="3.2" stroke-linecap="round" fill="none"/></g>
           <g class="kz-eyes-wide" opacity="0"><ellipse cx="32" cy="-5" rx="7.5" ry="9" fill="#fff"/><ellipse class="kz-pupil" cx="35" cy="-5" rx="4.6" ry="5.8" fill="#26145f"/><circle cx="36.5" cy="-7.5" r="1.8" fill="#fff"/><path d="M22 -24 q10 -6 20 -2" stroke="#26145f" stroke-width="3.6" stroke-linecap="round" fill="none"/></g>
           <g class="kz-eyes-happy" opacity="0"><path d="M24 -2 q8 -10 17 0" stroke="#26145f" stroke-width="4.5" stroke-linecap="round" fill="none"/><path d="M22 -20 q10 -6 20 -1" stroke="#26145f" stroke-width="3.4" stroke-linecap="round" fill="none"/></g>
-          <path class="kz-mouth-flat" d="M33 31 q5 1.5 10 -.5" stroke="#6b2a45" stroke-width="3" stroke-linecap="round" fill="none"/>
-          <ellipse class="kz-mouth-o" cx="40" cy="32" rx="4" ry="5" fill="#6b2a45" opacity="0"/>
-          <path class="kz-mouth-smile" d="M30 27 q8 10 17 0 q-8 3 -17 0Z" fill="#6b2a45" opacity="0"/>
+          <path class="kz-mouth-flat" d="M34 29 q5 1.5 10 -.5" stroke="#6b2a45" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <ellipse class="kz-mouth-o" cx="41" cy="30" rx="4" ry="5" fill="#6b2a45" opacity="0"/>
+          <path class="kz-mouth-smile" d="M31 25 q8 10 16 0 q-8 3 -16 0Z" fill="#6b2a45" opacity="0"/>
         </g>
         <path class="kz-arm-f-up" stroke="url(#kzShirtG)" stroke-width="29" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         <path class="kz-cuff" stroke="${C.shirtShade}" stroke-width="22" stroke-linecap="butt" fill="none"/>
         <path class="kz-arm-f-lo" stroke="${C.skin}" stroke-width="20" stroke-linecap="round" fill="none"/>
         <path class="kz-arm-f-lit" stroke="${C.glow}" stroke-width="7" stroke-linecap="round" fill="none" opacity="0"/>
         <g class="kz-phone-hand">
-          <rect x="-17" y="-31" width="34" height="58" rx="8" fill="${C.phone}"/>
-          <clipPath id="kzScreenClip"><rect x="-13" y="-26" width="26" height="48" rx="5"/></clipPath>
-          <g clip-path="url(#kzScreenClip)">
-            <rect x="-13" y="-26" width="26" height="48" fill="#e2fcff"/>
-            <g class="kz-feed">${Array.from({ length: 8 }, (_, i) => `<rect x="-10" y="${-24 + i * 15}" width="20" height="11" rx="2" fill="${['#ff6b8f', '#7c5cff', '#36e0c8', '#ffd23f'][i % 4]}"/>`).join('')}</g>
-          </g>
+          <rect x="-14" y="-30" width="26" height="60" rx="8" fill="#3a2f7a"/>
+          <rect x="-12" y="-28" width="22" height="56" rx="7" fill="#251c58"/>
+          <rect x="-7" y="-24" width="13" height="15" rx="4" fill="#130c38"/><circle cx="-3" cy="-20" r="2.6" fill="#4a3f8f"/><circle cx="2.5" cy="-14" r="2.6" fill="#4a3f8f"/>
+          <path d="M-15 -26 V26" stroke="#c9fbff" stroke-width="3.2" stroke-linecap="round"/>
+          <path class="kz-feed" d="M-16 -18 V18" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" opacity=".8"/>
         </g>
-        <circle class="kz-hand-f" r="13" fill="${C.skin}"/>
-        <circle class="kz-thumb" r="6.5" fill="${C.skin}"/>
+        <g class="kz-hand-f"><path d="M-4 -9 C 6 -11 16 -8 18 -1 C 19 6 13 10 4 10 C -4 10 -8 4 -7 -2Z" fill="${C.skin}"/><path d="M6 -8 C 14 -6 17 0 15 6" stroke="#e8907a" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M8 1 C 13 2 16 5 15 8 M8 5 C 12 6 14 9 13 10" stroke="#e8907a" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".8"/></g>
+        <ellipse class="kz-thumb" rx="7.5" ry="4.8" fill="${C.skin}"/>
         <path class="kz-beam" fill="url(#kzBeamG)" style="mix-blend-mode: screen" filter="url(#kzBlur3)"/>
         <g class="kz-startle" opacity="0" stroke="#ffd23f" stroke-width="7" stroke-linecap="round">
           <path d="M84 -300 l22 -30"/><path d="M114 -270 l34 -14"/><path d="M52 -310 l2 -36"/>
@@ -311,8 +338,8 @@
   };
   // the phone is held low, at the chest, both hands; the head bows down to it
   const P = {
-    scroll:  { t: 'A', head: [74, -204, 24], f: [[46, -148], [62, -86], [118, -74]], b: [[30, -150], [44, -86], [102, -76]], legs: 'sit', phone: -34, eyes: 'tired', mouth: 'flat' },
-    startle: { t: 'B', head: [28, -232, -6], f: [[30, -160], [56, -96], [110, -110]], b: [[14, -162], [26, -96], [86, -108]], legs: 'sit', phone: -18, eyes: 'wide', mouth: 'o' },
+    scroll:  { t: 'A', head: [74, -204, 24], f: [[46, -148], [62, -86], [118, -74]], b: [[30, -150], [44, -86], [102, -76]], legs: 'sit', phone: 38, eyes: 'tired', mouth: 'flat' },
+    startle: { t: 'B', head: [28, -232, -6], f: [[30, -160], [56, -96], [110, -110]], b: [[14, -162], [26, -96], [86, -108]], legs: 'sit', phone: 22, eyes: 'wide', mouth: 'o' },
     windup:  { t: 'B', head: [24, -232, -10], f: [[24, -162], [-20, -182], [-48, -236]], b: [[14, -162], [54, -110], [98, -116]], legs: 'sit', phone: -150, eyes: 'wide', mouth: 'flat' },
     release: { t: 'B', head: [32, -230, 2], f: [[34, -162], [88, -204], [148, -224]], b: [[14, -162], [20, -92], [40, -40]], legs: 'sit', phone: 40, eyes: 'wide', mouth: 'flat' },
     follow:  { t: 'A', head: [74, -206, 6], f: [[46, -148], [98, -100], [150, -70]], b: [[30, -150], [42, -82], [60, -28]], legs: 'sit', phone: 60, eyes: 'wide', mouth: 'flat' },
@@ -369,7 +396,8 @@
       if (side === 'f' && n0 === 'scroll' && n1 === 'scroll') W[1] += Math.sin(time * 5) * 1.2;
       el['arm-' + side + '-up'].setAttribute('d', `M${S} L${E}`);
       el['arm-' + side + '-lo'].setAttribute('d', `M${E} L${W}`);
-      el['hand-' + side].setAttribute('cx', W[0]); el['hand-' + side].setAttribute('cy', W[1]);
+      const fa = Math.atan2(W[1] - E[1], W[0] - E[0]) * 180 / Math.PI;
+      el['hand-' + side].setAttribute('transform', `translate(${W[0]} ${W[1]}) rotate(${fa})`);
       if (side === 'f') {
         const cf = LP(E, W, .08), cf2 = LP(E, W, .2);
         el.cuff.setAttribute('d', `M${cf} L${cf2}`);
@@ -377,15 +405,19 @@
         const r0 = L(A.phone, B.phone, t);
         const Wb = LP(A.b[2], B.b[2], t), hold = n0 === 'scroll' || n1 === 'scroll' || n0 === 'startle' || n1 === 'startle' ? 1 : 0;
         const px = hold ? (W[0] + Wb[0]) / 2 + 4 : W[0] + 6, py = hold ? (W[1] + Wb[1]) / 2 - 20 : W[1] - 16;
-        el['phone-hand'].setAttribute('transform', `translate(${px} ${py}) rotate(${hold ? r0 * .8 : r0})`);
-        const th = (n0 === 'scroll' && n1 === 'scroll') ? Math.sin(time * 5) * 4 : 0;
-        el.thumb.setAttribute('cx', W[0] + 2 + th * .4); el.thumb.setAttribute('cy', W[1] - 14 + th);
+        const pr = hold ? r0 : r0 - 70;
+        el['phone-hand'].setAttribute('transform', `translate(${px} ${py}) rotate(${pr})`);
+        const th = (n0 === 'scroll' && n1 === 'scroll') ? Math.sin(time * 5) * 3 : 0;
+        const tp = rot([-15, 6 + th], pr);
+        el.thumb.setAttribute('transform', `translate(${px + tp[0]} ${py + tp[1]}) rotate(${pr + 70})`);
+        el._pr = pr;
         el._phone = [px, py];
       }
     }
     const hd = [L(A.head[0], B.head[0], t), L(A.head[1], B.head[1], t) + br * .8, L(A.head[2], B.head[2], t)];
     el.head.setAttribute('transform', `translate(${hd[0]} ${hd[1]}) rotate(${hd[2]})`);
     const pick = t < .5 ? A : B;
+    el._pr = el._pr || 0;
     el['eyes-tired'].style.opacity = pick.eyes === 'tired' ? 1 : 0;
     el['eyes-wide'].style.opacity = pick.eyes === 'wide' ? 1 : 0;
     el['eyes-happy'].style.opacity = pick.eyes === 'happy' ? 1 : 0;
@@ -397,10 +429,10 @@
     el.pupil.setAttribute('cx', p > .44 ? 36 : 34);
     const light = main ? (1 - span(p, .398, .418)) * (.88 + .12 * Math.sin(time * 7) * Math.sin(time * 2.3)) : 0;
     el['face-lit'].style.opacity = light * .82; el['torso-lit'].style.opacity = .4 * light; el['arm-f-lit'].style.opacity = .55 * light;
-    el.feed.setAttribute('transform', `translate(0 ${-((time * 26) % 60)})`);
+    if (el.feed) el.feed.style.opacity = .55 + .45 * Math.sin(time * 9) * Math.sin(time * 3.1);
     if (main) {
       // the phone is a lamp: a soft cone from the screen up onto the face, and the room's dark opens around it
-      const [px, py] = el._phone, face = rot([30, 8], hd[2]); const fx = hd[0] + face[0], fy = hd[1] + face[1];
+      const so = rot([-16, -2], el._pr || 0), px = el._phone[0] + so[0], py = el._phone[1] + so[1] + 8, face = rot([30, 8], hd[2]); const fx = hd[0] + face[0], fy = hd[1] + face[1];
       const dx = fx - px, dy = fy - py, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len, w0 = 10, w1 = 78, ext = 1.35;
       const ex = px + dx * ext, ey = py + dy * ext;
       el.beam.setAttribute('d', `M${px + nx * w0} ${py - 8 + ny * w0} L${ex + nx * w1} ${ey + ny * w1} Q${ex + dx / len * 30} ${ey + dy / len * 30} ${ex - nx * w1} ${ey - ny * w1} L${px - nx * w0} ${py - 8 - ny * w0}Z`);
@@ -425,7 +457,7 @@
     gsap.to(qa('.kz-note'), { y: '-=10', duration: 1.6, ease: 'sine.inOut', yoyo: true, repeat: -1, stagger: { each: .2, from: 'random' } });
     gsap.to(q('.kz-rays'), { rotation: 360, svgOrigin: '1205 400', duration: 120, ease: 'none', repeat: -1 });
     gsap.to(q('.kz-kite'), { rotation: 22, y: '+=14', duration: 2.4, ease: 'sine.inOut', yoyo: true, repeat: -1 });
-    gsap.to(q('.kz-wave'), { rotation: -18, svgOrigin: '18 -40', duration: .5, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+    gsap.to(q('.kz-wave'), { rotation: -14, transformOrigin: '0% 100%', duration: .5, ease: 'sine.inOut', yoyo: true, repeat: -1 });
     gsap.to(q('.kz-cloud-a'), { x: '-=70', duration: 11, ease: 'sine.inOut', yoyo: true, repeat: -1 });
     gsap.to(q('.kz-cloud-b'), { x: '+=50', duration: 13, ease: 'sine.inOut', yoyo: true, repeat: -1 });
   }

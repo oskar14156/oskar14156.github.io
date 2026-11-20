@@ -25,7 +25,10 @@
     return `rgb(${c[0]},${c[1]},${c[2]})`;
   };
   let data = null, map = null, ready = false, progress = 0, marker = null, overview = null;
-  const FOLLOW_KM = 4.2;                               // the camera rides along for the first kilometres
+  const hr = sec.querySelector('.nr-hr svg'), hrLine = hr && hr.querySelector('.nr-hr-line'), hrArea = hr && hr.querySelector('.nr-hr-area'), hrDot = hr && hr.querySelector('.nr-hr-dot');
+  let hrPts = [];
+  const buildHR = () => { const P = data.pts, n = P.length - 1; hrPts = P.map((q, k) => `${(k / n * 600).toFixed(1)} ${(110 - clamp(((q[4] || data.avgHR) - 120) / 80) * 100).toFixed(1)}`); };
+  const FOLLOW_KM = 3;                                 // the camera rides along for the first kilometres
 
   // position along the run by distance, smoothly interpolated
   const at = (m) => {
@@ -40,19 +43,20 @@
   const heading = (m) => { let sx = 0, sy = 0; for (let k = 1; k <= 6; k++) { const a = at(m + (k - 1) * 45), b = at(m + k * 45 + 30);
     const r = bearing(a, b) * Math.PI / 180, w = 1 / k; sx += Math.sin(r) * w; sy += Math.cos(r) * w; } return Math.atan2(sx, sy) * 180 / Math.PI; };
 
+  // slow through the streets for the first 3 km, then the rest of the run from above
   function metresAt(p) {
     const total = data.pts[data.pts.length - 1][2], m1 = FOLLOW_KM * 1000;
-    if (p < .5) return lerp(0, m1, span(p, .03, .5));
-    return lerp(m1, total, Math.pow(span(p, .5, .76), 1.6));
+    if (p < .46) return lerp(0, m1, span(p, .03, .46));
+    return lerp(m1, total, Math.pow(span(p, .46, .84), 1.35));
   }
 
   function frame() {
     if (!ready) return;
-    const p = progress, m = metresAt(p), r = at(m), small = innerWidth < 800;
+    const p = shown, m = metresAt(p), r = at(m), small = innerWidth < 800;
     // camera: follow → overview
     const hd = heading(Math.min(m, FOLLOW_KM * 1000)), ahead = at(Math.min(m, FOLLOW_KM * 1000) + 70);
     const follow = { lon: ahead.lon, lat: ahead.lat, zoom: small ? 16.4 : 16.9, pitch: 58, bearing: hd };
-    const o = overview, t = easeIO(span(p, .5, .74));
+    const o = overview, t = easeIO(span(p, .46, .64));
     const intro = 1 - easeIO(span(p, 0, .06));       // a short swoop down onto the start
     map.jumpTo({
       center: [lerp(follow.lon, o.lon, t), lerp(follow.lat, o.lat, t)],
@@ -66,8 +70,12 @@
     map.getSource('done').setData({ type: 'FeatureCollection', features: feats });
     out.km.textContent = (m / 1000).toFixed(2); out.time.textContent = hms(r.secs);
     out.pace.textContent = r.pace ? mmss(r.pace) : '–'; out.hr.textContent = r.hr || '–';
-    sec.style.setProperty('--done', span(p, .82, .9));
-    sec.style.setProperty('--ov', span(p, .66, .76));
+    sec.style.setProperty('--done', span(p, .86, .93));
+    sec.style.setProperty('--ov', span(p, .58, .66));
+    // heart rate trace, drawn as the run goes
+    if (hr) { const n = Math.max(1, Math.round(r.i)), D = hrPts.slice(0, n + 1).join(' L');
+      hrLine.setAttribute('d', 'M' + D); hrArea.setAttribute('d', `M${hrPts[0]} L${D} L${hrPts[n].split(' ')[0]} 120 L0 120Z`);
+      hrDot.setAttribute('cx', hrPts[n].split(' ')[0]); hrDot.setAttribute('cy', hrPts[n].split(' ')[1]); }
   }
 
   function start() {
@@ -103,16 +111,18 @@
     marker = new maplibregl.Marker({ element: el }).setLngLat([P[0][0], P[0][1]]).addTo(map);
     map.on('load', () => {
       const lons = P.map((q) => q[0]), lats = P.map((q) => q[1]);
-      const pad = innerWidth < 800 ? { top: 150, bottom: 220, left: 30, right: 30 } : { top: 110, bottom: 110, left: 60, right: Math.min(520, innerWidth * .36) };
-      const cam = map.cameraForBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]], { padding: pad, bearing: -14 });
-      overview = { lon: cam.center.lng, lat: cam.center.lat, zoom: cam.zoom - .1, pitch: 38, bearing: -14 };
-      ready = true; frame();
+      const pad = innerWidth < 800 ? { top: 150, bottom: 300, left: 30, right: 30 } : { top: 110, bottom: 230, left: 60, right: Math.min(520, innerWidth * .36) };
+      const cam = map.cameraForBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]], { padding: pad });
+      overview = { lon: cam.center.lng, lat: cam.center.lat, zoom: cam.zoom - .1, pitch: 0, bearing: 0 };
+      buildHR(); ready = true; frame();
       box.querySelectorAll('.maplibregl-compact-show').forEach((e) => e.classList.remove('maplibregl-compact-show'));
     });
   }
 
-  let queued = false;
-  const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(() => { queued = false; frame(); }); } };
+  // the scroll position is followed with a little inertia, so fast scrolling still reads as a flight
+  let shown = 0, queued = false;
+  const tick = () => { queued = false; const dlt = progress - shown; shown = Math.abs(dlt) < 1e-4 ? progress : shown + dlt * .085; frame(); if (shown !== progress) schedule(); };
+  const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(tick); } };
   let loading = false;
   const load = () => {
     if (loading) return; loading = true;

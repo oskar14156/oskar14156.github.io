@@ -79,7 +79,7 @@ function init() {
       uGroundP: { value: tex('/developer/media/earth/ground-patch.jpg?v=1') },
       uCloudAmt: { value: 1 }, uDetail: { value: 1 }, uSteps: { value: 64 }, uWind: { value: new THREE.Vector3() },
       uBoost: { value: unit(52, 28) }, uBoostAmt: { value: 1 }, uExposure: { value: 1 }, uDebug: { value: 0 }, uMap: { value: 0 }, uFine: { value: 1 },
-      uMerc: { value: 0 }, uCloudVis: { value: 1 }, uPlaneLL: { value: new THREE.Vector2() }, uScr: { value: new THREE.Vector4(0, 0, 1, 1) }, uRtScale: { value: 1 }, uVpH: { value: 1 },
+      uMerc: { value: 0 }, uCloudVis: { value: 1 }, uFar: { value: 0 }, uPlaneLL: { value: new THREE.Vector2() }, uScr: { value: new THREE.Vector4(0, 0, 1, 1) }, uRtScale: { value: 1 }, uVpH: { value: 1 },
     },
     vertexShader: `out vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0., 1.); }`,
     fragmentShader: WORLD_FRAG,
@@ -204,12 +204,19 @@ function init() {
   const planeAt = (f, out) => out.copy(main(clamp(f, 0, 1))).multiplyScalar(R + CRUISE);
 
   /* ---------- sizing & phone geometry ---------- */
-  let fanRect = null;
+  let fanRect = null, rtScale = small ? .5 : .55, rtMax = rtScale, ftAvg = 16, lastT = 0, adaptAt = 0;
+  function adapt() {
+    const now = performance.now(), dt = lastT ? now - lastT : 16; lastT = now; if (dt > 200) return;
+    ftAvg = ftAvg * .92 + dt * .08;
+    if (now < adaptAt) return;
+    const next = ftAvg > 24 ? Math.max(.34, rtScale - .05) : ftAvg < 15.5 ? Math.min(rtMax, rtScale + .05) : rtScale;
+    if (next !== rtScale) { rtScale = next; measure(); adaptAt = now + 900; }
+  }
   function measure() {
     W = sec.clientWidth; H = window.innerHeight;
     const tall = H / W; FOV = tall > 1 ? Math.min(54, 38 * Math.pow(tall, .45)) : 38; D0 = tall > 1 ? .085 * Math.min(1.7, Math.pow(tall, .7)) : .085;
     renderer.setSize(W, H, false);
-    const scale = small ? .5 : .55;
+    const scale = rtScale;
     worldRT.setSize(Math.max(2, Math.round(W * DPR * scale)), Math.max(2, Math.round(H * DPR * scale)));
     blitMat.uniforms.uTexel.value.set(.5 / worldRT.width, .5 / worldRT.height);
     worldMat.uniforms.uSteps.value = small ? 40 : 64;
@@ -323,6 +330,7 @@ function init() {
     u.uWind.value.copy(fwd).multiplyScalar(-t * .22);           // the deck streams under the plane: ~800 km/h
     u.uDetail.value = 1 - span(Math.log(alt), Math.log(60), Math.log(900));
     u.uFine.value = 1 - span(Math.log(alt), Math.log(14), Math.log(60));
+    u.uFar.value = span(Math.log(alt), Math.log(300), Math.log(4000));
     u.uCloudAmt.value = window.__noClouds ? 0 : 1;
     u.uCloudVis.value = 1 - easeIO(span(p, .6, .67));            // the recap's map has no clouds
     u.uBoostAmt.value = 1 - span(p, .16, .3);
@@ -377,10 +385,10 @@ function init() {
     planeIcon.style.opacity = (1 - clamp((planePx - 22) / 26)) * span(p, .03, .05) * (1 - span(p, .775, .79));
 
     // Act D/E: the phone, the recap video, the fan
-    const settle = easeIO(span(p, .8, .95));
+    const settle = easeIO(span(p, .783, .88));
     if (fanRect) {
       const { x, y, w, h, k, sx, sy, sw, sh } = fanRect, cx = W / 2, cy = H / 2;
-      const kk = p < .8 ? revealScale(p) : lerp(k, 1, settle);
+      const kk = settle > 0 ? lerp(k, 1, settle) : revealScale(p);
       const tx = lerp(cx - (x + w / 2), 0, settle), ty = lerp(cy - (y + h / 2), 0, settle);
       const bump = Math.sin(Math.PI * settle), bob = settle >= 1 ? Math.sin(t * 1.2) * 5 : 0;
       fanC.style.transform = `translate(${tx}px, ${ty + bob}px) scale(${kk}) rotateY(${-16 * bump}deg) rotateZ(${-4 * bump}deg)`;
@@ -389,18 +397,18 @@ function init() {
         const v = viewOffset, ins = { t: Math.max(0, v.y), l: Math.max(0, v.x), r: Math.max(0, W - v.x - v.w), b: Math.max(0, H - v.y - v.h) };
         clipBox.style.clipPath = `inset(${ins.t}px ${ins.r}px ${ins.b}px ${ins.l}px round ${v.w * .13 * span(p, .7, .74)}px)`;
       } else clipBox.style.clipPath = 'none';
-      clipBox.style.opacity = 1 - span(p, .776, .79);
+      clipBox.style.opacity = 1 - span(p, .772, .783);
       // the recap's own chrome (status bar, title, distance, controls) comes in from the screen edges
-      const band = span(p, .705, .75), mid = span(p, .76, .785);
+      const band = span(p, .705, .75), mid = span(p, .755, .779);
       const mask = `linear-gradient(to bottom, #000 0, #000 12%, rgba(0,0,0,${mid}) 18%, rgba(0,0,0,${mid}) 72%, #000 79%)`;
       hand.style.webkitMaskImage = hand.style.maskImage = mid >= 1 ? 'none' : mask;
       hand.style.opacity = band;
-      const sl = easeIO(span(p, .82, .94)), sr = easeIO(span(p, .84, .96));
+      const sl = easeIO(span(p, .79, .87)), sr = easeIO(span(p, .8, .88));
       const side = (s2, dir) => `translateX(${dir * 64 * s2}%) translateY(${36 * s2 + (s2 >= 1 ? Math.sin(t * 1.2 + dir) * 4 : 0)}px) rotate(${dir * 9 * s2}deg) rotateY(${-dir * 18 * s2}deg) scale(${.8 + .2 * s2})`;
       fanL.style.transform = side(sl, -1); fanR.style.transform = side(sr, 1);
-      fanL.style.opacity = span(p, .81, .86); fanR.style.opacity = span(p, .83, .88);
-      endCard.style.opacity = span(p, .74, .8);
-      endText.style.opacity = span(p, .86, .94); endText.style.transform = `translateY(${(1 - span(p, .86, .94)) * 40}px)`;
+      fanL.style.opacity = span(p, .788, .82); fanR.style.opacity = span(p, .796, .83);
+      endCard.style.opacity = span(p, .74, .79);
+      endText.style.opacity = span(p, .79, .85); endText.style.transform = `translateY(${(1 - span(p, .79, .85)) * 40}px)`;
     }
     const want = videoT(p);
     if (hand.readyState >= 1 && p < .8) { const ht = Math.min(1.38, Math.max(0, want - 3.8)); if (Math.abs(hand.currentTime - ht) > 1 / 45) { try { hand.currentTime = ht; } catch (e) {} } }
@@ -417,7 +425,7 @@ function init() {
 
   /* ---------- loop ---------- */
   let active = false, raf = 0;
-  const loop = () => { raf = 0; if (!active) return; render(); raf = requestAnimationFrame(loop); };
+  const loop = () => { raf = 0; if (!active) return; render(); if (progress < .79) adapt(); else lastT = 0; raf = requestAnimationFrame(loop); };
   const schedule = () => { if (!raf) raf = requestAnimationFrame(loop); };
   measure();
   addEventListener('resize', () => { measure(); schedule(); });
@@ -477,7 +485,7 @@ precision highp float; precision highp sampler3D;
 in vec2 vUv; out highp vec4 fragOut;
 uniform mat4 uInvProj; uniform mat3 uCamRot; uniform vec3 uUp; uniform float uAlt; uniform vec3 uSun; uniform float uTime;
 uniform highp sampler3D uNoise; uniform sampler2D uGroundG, uGroundC, uGroundP, uCloudG, uCloudC, uStars; uniform vec4 uCorr, uCCorr, uPatch;
-uniform float uCloudVis, uCloudAmt, uDetail, uSteps, uBoostAmt, uExposure, uDebug, uMap, uFine, uMerc, uRtScale, uVpH; uniform vec2 uPlaneLL; uniform vec4 uScr;
+uniform float uFar, uCloudVis, uCloudAmt, uDetail, uSteps, uBoostAmt, uExposure, uDebug, uMap, uFine, uMerc, uRtScale, uVpH; uniform vec2 uPlaneLL; uniform vec4 uScr;
 const float MERC_W = 20.15; const vec2 ANCHOR = vec2(.533, .521); uniform vec3 uWind, uBoost;
 const float R = 6371.; const float CB = 1.4; const float CT = 7.8; const float AT = 70.;
 const float PI = 3.14159265;
@@ -505,7 +513,9 @@ float coverRaw(vec3 n){ vec2 ll = latlon(n); float c = texture(uCloudG, vec2((ll
   float inC = smoothstep(0., .02, cu.x) * (1. - smoothstep(.98, 1., cu.x)) * smoothstep(0., .04, cu.y) * (1. - smoothstep(.96, 1., cu.y));
   if (inC > 0.) c = mix(c, texture(uCloudC, cu).r, inC);
   return c; }
-float cover(vec3 n){ float c = smoothstep(.78, 1.06, coverRaw(n) + (texture(uNoise, n * 41.).r - .5) * .06);
+float cover(vec3 n){ float raw = coverRaw(n);
+  if (uFar > .3) { vec3 t1 = normalize(cross(n, vec3(0., 1., 0.)) + 1e-4), t2 = cross(n, t1); float e = .0016; raw = mix(raw, (raw + coverRaw(normalize(n + t1 * e)) + coverRaw(normalize(n - t1 * e)) + coverRaw(normalize(n + t2 * e)) + coverRaw(normalize(n - t2 * e))) / 5., uFar); }
+  float c = smoothstep(mix(.78, .74, uFar), mix(1.06, 1.16, uFar), raw + (texture(uNoise, n * 41.).r - .5) * .06 * (1. - uFar));
   // a broad, ragged weather system under the plane at the start (low-frequency noise, not a disc)
   float ang = acos(clamp(dot(n, uBoost), -1., 1.));
   vec4 wn = texture(uNoise, n * 9.); vec4 wn2 = texture(uNoise, n * 31. + .3);
