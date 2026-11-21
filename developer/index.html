@@ -10,17 +10,62 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/developer/portfolio.css?v=45">
+  <link rel="stylesheet" href="/developer/portfolio.css?v=46">
   <script>
     // Theme before first paint: saved pick, else the system setting.
     (function () {
       var t = null;
       try { t = localStorage.getItem('pf-theme'); } catch (e) {}
       if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      // hold the page behind a short loader until it and the 3D scene are in, so nothing pops in mid-scroll
+      document.documentElement.classList.add('pf-loading');
     })();
   </script>
 </head>
 <body class="developer-page pf">
+  <div class="pf-loader" id="pf-loader" role="status" aria-live="polite">
+    <p class="pf-loader-name">Oskar Polster</p>
+    <div class="pf-loader-bar" aria-hidden="true"><i id="pf-loader-fill"></i></div>
+    <p class="pf-loader-pct"><span id="pf-loader-pct">0</span>% <span class="pf-loader-note">loading the scenes</span></p>
+  </div>
+  <script>
+    // Loader: releases the scroll once the page (images, fonts, globe textures) has loaded, at most after 8 s.
+    // Then the big videos load in the background, in page order, ahead of the reader.
+    (function () {
+      var root = document.documentElement, t0 = Date.now(), done = false, shown = 0, target = 0;
+      var fill = document.getElementById('pf-loader-fill'), pct = document.getElementById('pf-loader-pct');
+      function tick() {
+        if (!done) {
+          var all = performance.getEntriesByType ? performance.getEntriesByType('resource').length : 0;
+          target = Math.max(target, Math.min(.92, 1 - Math.exp(-(Date.now() - t0) / 1800)), Math.min(.92, all / 60));
+        }
+        shown += ((done ? 1 : target) - shown) * .18;
+        fill.style.transform = 'scaleX(' + shown.toFixed(3) + ')'; pct.textContent = Math.round(shown * 100);
+        if (done && shown > .995) return finish();
+        requestAnimationFrame(tick);
+      }
+      function finish() {
+        root.classList.remove('pf-loading'); root.classList.add('pf-entered');
+        document.getElementById('pf-loader').setAttribute('aria-hidden', 'true');
+        window.pfLoaded = true; document.dispatchEvent(new Event('pf-loaded'));
+        // warm the big videos one after another in page order; skipped on data saver or a slow connection
+        var c = navigator.connection || {};
+        if (c.saveData || /(^|-)2g|3g/.test(c.effectiveType || '')) return;
+        setTimeout(function () {
+          var rec = document.querySelector('#voyeva-scene video[data-manual]'), next = function () { if (window.novusRun) window.novusRun.preload(); };
+          if (!rec) return next();
+          var once = false, go = function () { if (!once) { once = true; next(); } };
+          rec.addEventListener('canplaythrough', go, { once: true }); setTimeout(go, 15000);
+          if (rec.preload !== 'auto') { rec.preload = 'auto'; if (rec.readyState < 1) rec.load(); }
+        }, 600);
+      }
+      function ready() { if (done) return; done = true; }
+      var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+      addEventListener('load', function () { fonts.then(function () { setTimeout(ready, Math.max(0, 700 - (Date.now() - t0))); }); });
+      setTimeout(ready, 8000);
+      requestAnimationFrame(tick);
+    })();
+  </script>
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="pf-header" id="pf-header">
@@ -329,7 +374,7 @@
               <li>Config plugins for privacy manifest, localized permission strings and Android signing</li>
             </ul>
             <ul class="chips"><li>Expo</li><li>AlarmKit</li><li>Kotlin</li><li>Vision</li><li>Sentry</li><li>Jest</li></ul>
-            <a class="chapter-link" href="/developer/riseproof/">See the full app <span aria-hidden="true">→</span></a>
+            <p class="chapter-links"><a class="chapter-link" href="/developer/riseproof/">See the full app <span aria-hidden="true">→</span></a><a class="chapter-store" href="https://play.google.com/store/apps/details?id=com.oskarpolster.riseproof" target="_blank" rel="noopener">Get it on Google Play <span aria-hidden="true">↗</span></a></p>
           </div>
           <div class="fan fan-store" aria-hidden="true">
             <img class="fan-l" src="/developer/shots/riseproof-3.jpg" alt="" loading="lazy">
@@ -363,7 +408,7 @@
               <li>Sentry crash reports; a separate EAS profile for Android test builds</li>
             </ul>
             <ul class="chips"><li>Expo</li><li>Core ML</li><li>Vision</li><li>Kotlin</li><li>Sentry</li><li>expo-sqlite</li></ul>
-            <a class="chapter-link" href="/developer/vbg/">See the full app <span aria-hidden="true">→</span></a>
+            <p class="chapter-links"><a class="chapter-link" href="/developer/vbg/">See the full app <span aria-hidden="true">→</span></a><a class="chapter-store" href="https://play.google.com/store/apps/details?id=com.oskarpolster.aivideobgremove" target="_blank" rel="noopener">Get it on Google Play <span aria-hidden="true">↗</span></a></p>
           </div>
           <div class="fan fan-store" aria-hidden="true">
             <img class="fan-l" src="/developer/shots/vbg-2.jpg" alt="" loading="lazy">
@@ -542,6 +587,11 @@
       <div class="contact-inner site-container">
                 <h2 id="contact-title">Working on a mobile app?</h2>
         <p>I'm open to freelance work in React Native and native iOS. For support with one of my apps, include the app name.</p>
+        <ul class="contact-offers">
+          <li>A React Native or SwiftUI app, from first screen to both stores</li>
+          <li>A Swift or Kotlin native module for an existing Expo app</li>
+          <li>Builds, signing and releases with EAS, TestFlight and Play tracks</li>
+        </ul>
         <a class="contact-mail" href="mailto:oskarpolster.business@gmail.com">oskarpolster.business@gmail.com <span aria-hidden="true">↗</span></a>
       </div>
     </section>
@@ -558,7 +608,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-  <script src="/developer/portfolio.js?v=20"></script>
+  <script src="/developer/portfolio.js?v=21"></script>
   <script src="/developer/ink.js?v=15"></script>
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
   <script type="module" src="/developer/voyeva-scene.js?v=22"></script>
@@ -567,7 +617,7 @@
   <script src="/developer/stub-flow.js?v=2"></script>
   <script src="/developer/rp-wake.js?v=5"></script>
   <script src="/developer/vbg-cut.js?v=1"></script>
-  <script src="/developer/novus-run.js?v=19"></script>
+  <script src="/developer/novus-run.js?v=20"></script>
   <script src="/developer/menu.js?v=1"></script>
 </body>
 </html>

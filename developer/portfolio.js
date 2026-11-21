@@ -83,6 +83,8 @@
   /* ---------- Smooth scroll ---------- */
   if (window.Lenis) {
     const lenis = new Lenis({ lerp: .11, wheelMultiplier: 1 });
+    window.pfLenis = lenis;
+    if (root.classList.contains('pf-loading')) { lenis.stop(); document.addEventListener('pf-loaded', () => { lenis.start(); ScrollTrigger.refresh(); }, { once: true }); }
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add((t) => lenis.raf(t * 1000));
     gsap.ticker.lagSmoothing(0);
@@ -196,7 +198,8 @@
 
   /* ---------- 3b · Open the work: each window rises over the previous one ---------- */
   const wins = gsap.utils.toArray('.win');
-  if (wins.length) {
+  // phones get a compact list instead (seven full-screen windows were about seven screens of scrolling)
+  if (wins.length && !matchMedia('(max-width: 640px)').matches) {
     root.classList.add('has-stack');
     document.querySelector('.stack').style.setProperty('--wins', wins.length);
     wins.forEach((w, i) => { if (i) gsap.set(w, { y: () => window.innerHeight, rotateX: 18, scale: .94 }); w.style.zIndex = i + 1; });

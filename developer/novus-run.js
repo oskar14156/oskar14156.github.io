@@ -30,6 +30,8 @@
     return `rgb(${A.map((v, k) => Math.round(v + (B[k] - v) * u)).join(',')})`; };
 
   // one flight per screen shape: a landscape render for wide screens, a portrait render for phones (no cropping, small files)
+  // data saver or a slow connection: a lighter encode (about a third of the size), same frames
+  const NC = navigator.connection || {}, LITE = NC.saveData || /(^|-)2g|3g/.test(NC.effectiveType || '') ? '-lite' : '';
   const VAR = 'h', ORI = () => (innerWidth / innerHeight < 1 ? 'port' : 'land');
   let ori = ORI(), videoReady = false;
   const stage = sec.querySelector('.nr-stage'), geo = sec.querySelector('.nr-geo'), still = sec.querySelector('.nr-end');
@@ -39,7 +41,7 @@
   // a decode error (the phone freed the decoder) reloads the same file once, then streams it from the network, and only then gives up
   let errs = 0;
   if (ge) ge.addEventListener('error', () => { if (!ge.getAttribute('src') && !ge.src) return; errs++;
-    if (errs <= 2 && loaded) { const s = errs === 1 ? ge.src : `/developer/media/novus-flight-${VAR}-${loaded}.mp4?v=3`; setTimeout(() => { ge.src = s; ge.load(); }, 300); return; }
+    if (errs <= 2 && loaded) { const s = errs === 1 ? ge.src : `/developer/media/novus-flight-${VAR}-${loaded}${LITE}.mp4?v=3`; setTimeout(() => { ge.src = s; ge.load(); }, 300); return; }
     videoOk = false; ge.style.display = 'none'; });
 
   let data = null, flight = null, ready = false, progress = 0, shown = 0, geT = 0;
@@ -234,7 +236,7 @@
     videoReady = false; loadPct = 0; ready = false;
     if (ge) {
       ge.poster = `/developer/media/novus-flight-${VAR}-${o}-poster.jpg?v=3`;
-      fetchVideo(`/developer/media/novus-flight-${VAR}-${o}.mp4?v=3`, g).then((src) => {
+      fetchVideo(`/developer/media/novus-flight-${VAR}-${o}${LITE}.mp4?v=3`, g).then((src) => {
         if (g !== gen || !src) return;
         const prev = ge.src; ge.src = src; ge.load(); if (prev && prev.startsWith('blob:')) URL.revokeObjectURL(prev);
         ge.addEventListener('loadeddata', () => { if (g === gen) { videoReady = true; if (ready) frame(); } }, { once: true });
@@ -257,5 +259,5 @@
     ScrollTrigger.create({ trigger: sec, start: 'top top', end: 'bottom bottom', onUpdate: (st) => { progress = st.progress; schedule(); } });
   }
   ScrollTrigger.create({ trigger: sec, start: 'top 80px', end: 'bottom top', toggleClass: { targets: document.body, className: 'nr-active' } });
-  window.novusRun = { state: () => ({ ready, videoReady, loadPct, ori, p: progress, shown, variant: VAR, geT, target: ready && shown < PR1 ? (Math.floor(frameAt(shown)) + .5) / flight.fps : -1, ct: ge ? ge.currentTime : 0, seeking: ge ? ge.seeking : false, rs: ge ? ge.readyState : 0 }) };
+  window.novusRun = { preload: () => load(), state: () => ({ ready, videoReady, loadPct, ori, p: progress, shown, variant: VAR, geT, target: ready && shown < PR1 ? (Math.floor(frameAt(shown)) + .5) / flight.fps : -1, ct: ge ? ge.currentTime : 0, seeking: ge ? ge.seeking : false, rs: ge ? ge.readyState : 0 }) };
 })();
