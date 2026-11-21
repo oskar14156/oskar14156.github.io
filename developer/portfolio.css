@@ -41,6 +41,7 @@
 }
 
 .pf { background: var(--bg); color: var(--text); font-family: var(--sans); overflow-x: clip; }
+html:has(> body.pf) { overflow-x: clip; }   /* nothing may widen the page: a phone could pan sideways onto a white edge */
 .pf :where(h1, h2, h3, p) { margin: 0; }
 .pf em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -0.01em; }
 .pf img, .pf video { display: block; }
@@ -291,7 +292,7 @@ html:not(.has-ink) .intro-content { mix-blend-mode: normal; }
   .flight-captions { right: 16px; max-width: none; }
   .flight-progress { display: none; }
   .ar-card-texts { width: 56%; top: 70%; }
-  .ar-card-connections { width: 50%; top: 78%; }
+  .ar-card-connections { width: 50%; top: 78%; right: 0; }
   .ar-card-prices { width: 32%; }
   .ar-card-compliance { width: 30%; }
   .ar-stage { margin-bottom: 120px; }
