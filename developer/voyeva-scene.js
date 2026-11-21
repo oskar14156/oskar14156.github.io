@@ -65,7 +65,18 @@ function init() {
   const recF = (t) => { const x = t - 4.4; return .739852 + x * (.35642 + x * (-.049207 + x * .008457)); };
   const recA = (t) => { const x = t - 4.4; return [.546226 + x * (-.022689 + x * .009478), .514316 + x * (.02365 - x * .022089)]; };
   // While the recording is on screen the flight follows the frame it is actually showing (30 fps), so both line up exactly.
+  // The recording's first 42 frames (3.8 s on) are still images drawn on a canvas: iOS never paints the seeks of a paused video,
+  // so a scrubbed clip there froze on one frame and the globe cross-faded into the wrong picture.
   let handShown = null;
+  const HN = 42, handImgs = [], handCtx = hand.getContext('2d');
+  let handDrawn = -1, handLoading = false;
+  const loadHand = () => { if (handLoading) return; handLoading = true;
+    for (let k = 0; k < HN; k++) { const im = new Image(); im.decoding = 'async'; im.src = `/developer/media/voyeva-hand/h${String(k).padStart(2, '0')}.webp`;
+      const done = () => { im.ok = true; schedule(); }; (im.decode ? im.decode() : Promise.reject()).then(done, () => { if (im.complete && im.naturalWidth) done(); else im.onload = done; }); handImgs.push(im); } };
+  const drawHand = (k) => { let j = k; while (j >= 0 && !(handImgs[j] && handImgs[j].ok)) j--;
+    if (j < 0) { j = k; while (j < HN && !(handImgs[j] && handImgs[j].ok)) j++; }
+    if (j < 0 || j >= HN) return;
+    if (j !== handDrawn) { if (hand.width !== 552) { hand.width = 552; hand.height = 1200; } handCtx.drawImage(handImgs[j], 0, 0, 552, 1200); handDrawn = j; handShown = j / 30; } };
   const recTime = (p) => { const want = videoT(p); if (p < .7 || p >= .8) return want;
     if (handShown !== null) return 3.8 + handShown;
     return 3.8 + clamp(Math.round((want - 3.8) * 30), 0, 41) / 30; };
@@ -297,7 +308,7 @@ function init() {
   const pl = new THREE.Vector3(), plAhead = new THREE.Vector3(), upL = new THREE.Vector3(), fwd = new THREE.Vector3(), right = new THREE.Vector3(), north = new THREE.Vector3();
   const tmp = new THREE.Vector3(), camPos = new THREE.Vector3(), target = new THREE.Vector3();
   const Y = new THREE.Vector3(0, 1, 0);
-  let videoArmed = false, videoPrimed = false, handPrimed = false;
+  let videoArmed = false, videoPrimed = false, recPainted = false, armT = 0;
   const seekT0 = () => { try { video.currentTime = T0; } catch (e) {} };
   const primeVideo = () => { video.preload = 'auto'; video.pause(); if (video.readyState >= 1) seekT0(); else { video.addEventListener('loadedmetadata', seekT0, { once: true }); video.load(); } };
   const kmAcross = 1300;                            // the recap shows about 1,300 km across the screen
@@ -377,6 +388,7 @@ function init() {
 
   function render() {
     const p = progress, t = clock.getElapsedTime();
+    if (p >= .6) drawHand(clamp(Math.round((videoT(p) - 3.8) * 30), 0, HN - 1));   // before the camera: the flight follows the frame on screen
     const { f, viewOffset, alt, d } = frameCamera(p, t);
     const u = worldMat.uniforms;
     planeLL = toLL(pl);
@@ -440,7 +452,7 @@ function init() {
     cities.forEach((s) => { s.material.opacity = lineK * (1 - span(p, .6, .68)) * (s.position.clone().normalize().dot(camDir) > R / camera.position.length() ? 1 : 0); s.visible = s.material.opacity > 0; });
 
     // keep the globe until the recording clip really has a frame on screen (iOS decodes late): never a see-through phone
-    const handOk = hand.readyState >= 2 && !hand.seeking, recOk = video.readyState >= 2 && !video.seeking && videoArmed;
+    const handOk = handDrawn >= 0, recOk = videoArmed && video.readyState >= 2 && !video.seeking && (recPainted || video.currentTime > armT + .1);
     if (p < .792 || (p < .8 && !handOk)) { renderer.setRenderTarget(worldRT); renderer.render(worldScene, orthoCam); renderer.setRenderTarget(null); renderer.render(scene, camera); }
 
     // plane icon (projected), same white plane as the recap
@@ -478,14 +490,12 @@ function init() {
       endCard.style.opacity = span(p, .74, .79);
       endText.style.opacity = span(p, .79, .85); endText.style.transform = `translateY(${(1 - span(p, .79, .85)) * 40}px)`;
     }
-    const want = videoT(p);
-    if (hand.readyState >= 1 && p < .8) { const ht = (clamp(Math.round((want - 3.8) * 30), 0, 41) + .5) / 30; if (!hand.seeking && Math.abs(hand.currentTime - ht) > 1 / 120) { try { hand.currentTime = ht; } catch (e) {} } }
     if (p > .55 && !videoPrimed) { videoPrimed = true; primeVideo(); }
-    if (p > .3 && !handPrimed) { handPrimed = true; hand.preload = 'auto'; const pp = hand.play(); if (pp && pp.then) pp.then(() => hand.pause()).catch(() => {}); else hand.pause(); }   // iOS only decodes after a play
+    if (p > .3) loadHand();
     if (p < .8) { video.style.visibility = 'hidden'; video.style.opacity = 0; if (videoArmed) { videoArmed = false; video.pause(); } }
     else {
-      video.style.visibility = 'visible'; video.style.opacity = recOk ? 1 : 0; hand.style.opacity = recOk ? 0 : 1;   // the clip stays until the recording has its frame
-      if (!videoArmed && video.readyState >= 1) { videoArmed = true; try { video.currentTime = videoT(.8); } catch (e) {} video.play().catch(() => {}); }
+      video.style.visibility = 'visible'; video.style.opacity = recOk ? 1 : 0; hand.style.opacity = recOk ? 0 : 1;   // the last still stays until the recording is really playing
+      if (!videoArmed && video.readyState >= 1) { videoArmed = true; recPainted = false; armT = videoT(.8); try { video.currentTime = armT; } catch (e) {} video.play().catch(() => {}); }
     }
     caps.forEach((el) => { const a = +el.dataset.a, b = +el.dataset.b; const o = span(p, a, a + .03) * (1 - span(p, b - .03, b)); el.style.opacity = o; el.style.transform = `translateY(${(1 - span(p, a, a + .03)) * 24}px)`; });
     return p < .79 || p > .99;
@@ -499,11 +509,16 @@ function init() {
   measure();
   addEventListener('resize', () => { measure(); schedule(); });
   // the frame the recording clip is actually showing drives the flight while both are on screen
-  if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) { const cb = (now, md) => { const t = Math.round(md.mediaTime * 30) / 30; if (t !== handShown) { handShown = t; schedule(); } hand.requestVideoFrameCallback(cb); }; hand.requestVideoFrameCallback(cb); }
-  ['loadeddata', 'seeked', 'playing'].forEach((ev) => { hand.addEventListener(ev, () => schedule()); video.addEventListener(ev, () => schedule()); });   // a clip becoming ready repaints at once
+  // the recording counts as on screen once it has presented a frame after the seek, or its clock is visibly running
+  if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) { const vcb = (now, md) => { if (videoArmed && !recPainted && md.mediaTime >= armT - .02) { recPainted = true; schedule(); } video.requestVideoFrameCallback(vcb); }; video.requestVideoFrameCallback(vcb); }
+  ['loadeddata', 'seeked', 'playing', 'timeupdate'].forEach((ev) => video.addEventListener(ev, () => schedule()));   // the recording becoming ready repaints at once
+  // back from the background: the browser may have paused the recording or dropped the GL context; pick both up again
+  const wake = () => { if (document.hidden) return; if (videoArmed && video.paused) video.play().catch(() => {}); if (active) { lastT = 0; schedule(); } };
+  document.addEventListener('visibilitychange', wake); addEventListener('pageshow', wake);
+  canvas.addEventListener('webglcontextrestored', () => schedule());
   video.dataset.manual = '1';
   if (reduce) { progress = 1; active = true; render(); active = false; return; }
-  ScrollTrigger.create({ trigger: sec, start: 'top bottom', end: 'bottom top', onToggle: (st) => { active = st.isActive; if (active) { warmUntil = performance.now() + 2500; lastT = 0; schedule(); } } });
+  ScrollTrigger.create({ trigger: sec, start: 'top bottom', end: 'bottom top', onToggle: (st) => { active = st.isActive; if (active) { loadHand(); warmUntil = performance.now() + 2500; lastT = 0; schedule(); } } });
   ScrollTrigger.create({ trigger: sec, start: 'top 80px', end: 'bottom top', toggleClass: { targets: document.body, className: 'vs-active' } });
   ScrollTrigger.create({ trigger: sec, start: 'top top', end: 'bottom bottom', onUpdate: (st) => { progress = st.progress; schedule(); }, onRefresh: () => measure() });
   window.voyevaScene = { seek: (p) => { progress = p; render(); }, measure, u: worldMat.uniforms, lines, camera, renderer, scene, blit, state: () => ({ p: progress, f: flightF(progress), alt: camera.position.length() - R }) };

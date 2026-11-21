@@ -36,7 +36,11 @@
   let ends = null;
   const attr = sec.querySelector('.nr-ge-attr') || document.createElement('span'), ge = sec.querySelector('.nr-ge'), cv = sec.querySelector('.nr-ge-ov'), dotEl = sec.querySelector('.nr-ge-dot');
   let videoOk = !!ge;
-  if (ge) ge.addEventListener('error', () => { videoOk = false; ge.style.display = 'none'; });
+  // a decode error (the phone freed the decoder) reloads the same file once, then streams it from the network, and only then gives up
+  let errs = 0;
+  if (ge) ge.addEventListener('error', () => { if (!ge.getAttribute('src') && !ge.src) return; errs++;
+    if (errs <= 2 && loaded) { const s = errs === 1 ? ge.src : `/developer/media/novus-flight-${VAR}-${loaded}.mp4?v=3`; setTimeout(() => { ge.src = s; ge.load(); }, 300); return; }
+    videoOk = false; ge.style.display = 'none'; });
 
   let data = null, flight = null, ready = false, progress = 0, shown = 0, geT = 0;
   let cols = null, rx = null, total = 0;
@@ -169,9 +173,17 @@
 
   // seeking: never queue a new seek while one is running (that is what made the video freeze when scrolling back);
   // remember the latest target and jump there as soon as the current seek lands
-  let seekTo = null;
-  const seek = (t) => { if (ge.seeking) { seekTo = t; return; } if (Math.abs(ge.currentTime - t) > 1 / 240) { try { ge.currentTime = t; } catch (e) {} } };
+  // a seek that never lands (the phone parked the decoder while the page sat idle) is retried after 700 ms instead of blocking forever
+  let seekTo = null, seekAt = 0, retry = 0;
+  const seek = (t) => { const now = performance.now();
+    if (ge.seeking && now - seekAt < 700) { seekTo = t; if (!retry) retry = setTimeout(() => { retry = 0; if (seekTo !== null) { const q = seekTo; seekTo = null; seek(q); } }, 720); return; }
+    if (ge.seeking || Math.abs(ge.currentTime - t) > 1 / 240) { seekAt = now; seekTo = null; try { ge.currentTime = t; } catch (e) {} } };
   if (ge) ge.addEventListener('seeked', () => { if (seekTo !== null) { const t = seekTo; seekTo = null; seek(t); } });
+  // back from the background or the app switcher: reload a video the browser dropped, then show the current frame again
+  const wake = () => { if (document.hidden || !ge || !videoOk) return; seekTo = null; seekAt = 0;
+    if (ge.error || (ge.src && ge.readyState === 0)) { const s = ge.src; ge.src = s; ge.load(); }
+    if (ready) frame(); };
+  document.addEventListener('visibilitychange', wake); addEventListener('pageshow', wake);
 
   function frame() {
     if (!ready) return;

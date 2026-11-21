@@ -627,7 +627,7 @@ html.pf-menu-open { overflow: hidden; }
 .vc-foot span { padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; }
 @media (max-width: 900px) { .vc-copy { right: 16px; max-width: none; top: 76px; } .vc-title { font-size: 28px; } .vc-card { height: 54vh; margin-top: 10vh; } .vc-chips { top: auto; bottom: 20px; left: 16px; right: 16px; transform: none; display: flex; flex-wrap: wrap; gap: 6px; } .vc-chips li { padding: 6px 10px; font-size: 12px; } .vc-foot { display: none; } }
 .vc-man, .vc-orig img { transform: scale(1.1); transform-origin: 50% 38%; }
-.vs-fan .fan-c .device-screen video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.vs-fan .fan-c .device-screen video, .vs-fan .fan-c .device-screen canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .vs-fan .fan-c .vs-hand { opacity: 0; }
 
 .pf-credits { margin: 28px auto 0; max-width: 980px; padding: 0 16px; font-family: var(--mono); font-size: 11px; line-height: 1.6; letter-spacing: .02em; color: var(--muted, rgba(127, 127, 127, .9)); text-align: center; }
