@@ -23,7 +23,7 @@
     .fromTo(q('.vc-copy'), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .06 }, .02)
     // the cut: original frame wiped away by a glowing scan line
     .fromTo(q('.vc-orig'), { clipPath: 'inset(0 0 0 0%)' }, { clipPath: 'inset(0 0 0 100%)', duration: .2, ease: 'power1.inOut' }, .1)
-    .fromTo(q('.vc-scan'), { left: '0%', opacity: 1 }, { left: '100%', duration: .2, ease: 'power1.inOut' }, .1)
+    .fromTo(q('.vc-scan'), { x: 0, opacity: 1 }, { x: () => q('.vc-scan').parentElement.clientWidth, duration: .2, ease: 'power1.inOut' }, .1)   // a transform, not left: no layout per frame
     .to(q('.vc-scan'), { opacity: 0, duration: .02 }, .3);
   // backgrounds swap behind the same cutout
   for (let i = 1; i < BGS.length; i++) {
@@ -34,6 +34,6 @@
   tl.eventCallback('onUpdate', () => { const p = tl.progress(); const idx = p < .3 ? -1 : Math.min(BGS.length - 1, Math.floor((p - .34 + .09) / .13) + (p >= .3 && p < .38 ? 0 : 0));
     chips.forEach((c, i) => c.classList.toggle('is-on', i === Math.max(idx, p >= .3 ? 0 : -1))); });
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { tl.progress(1); return; }
-  ScrollTrigger.create({ trigger: host, start: 'top top', end: 'bottom bottom', scrub: .5, animation: tl });
+  ScrollTrigger.create({ trigger: host, start: 'top top', end: 'bottom bottom', scrub: .5, animation: tl, invalidateOnRefresh: true });
   ScrollTrigger.create({ trigger: host, start: 'top 80px', end: 'bottom top', toggleClass: { targets: document.body, className: 'vc-active' } });
 })();

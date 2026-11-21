@@ -591,7 +591,8 @@ html.pf-menu-open { overflow: hidden; }
 .rw-stage { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; background: #0b1020; }
 .rw-sky { position: absolute; inset: 0; background: linear-gradient(180deg, #ff9a52 0%, #ffcf6b 45%, #ffe9b8 100%); opacity: var(--dawn, 0); }
 .rw-sun { position: absolute; left: 50%; bottom: 10%; width: 46vh; height: 46vh; margin-left: -23vh; border-radius: 50%; background: radial-gradient(circle, #fff7da 0 40%, rgba(255, 240, 190, .6) 55%, rgba(255, 220, 140, 0) 70%); opacity: var(--dawn, 0); transform: translateY(calc((1 - var(--dawn, 0)) * 30vh)); }
-.rw-svg { position: absolute; left: 1%; bottom: 6%; width: 64%; height: 62%; }
+.rw-svg, .rw-cv { position: absolute; left: 1%; bottom: 6%; width: 64%; height: 62%; }
+.rw-cv { pointer-events: none; filter: drop-shadow(0 0 5px rgba(238, 241, 255, .35)); will-change: transform; }
 .rw .rw-body { transition: stroke .4s; }
 .rw.is-done .rw-pose { opacity: 0; transition: opacity .4s; }
 .rw-copy { position: absolute; left: clamp(16px, 5vw, 72px); top: clamp(90px, 14vh, 140px); max-width: min(560px, 54vw); }
@@ -616,7 +617,7 @@ html.pf-menu-open { overflow: hidden; }
 .rw.is-done .rw-copy { color: #1b1d2b; } .rw.is-done .rw-meta { color: #8a3d12; }
 .rw.is-done .rw-body { stroke: #1b1d2b; } .rw.is-done .rw-head { fill: #1b1d2b; }
 .rw-active .work-index, .vc-active .work-index { opacity: 0; visibility: hidden; pointer-events: none; }
-@media (max-width: 900px) { .rw-svg { width: 100%; height: 56%; } .rw-copy { right: 16px; max-width: none; top: 76px; } .rw-title { font-size: 28px; } .rw-card { left: 16px; right: 16px; width: auto; top: 190px; transform: none; padding: 16px; } .rw-time { font-size: 44px; } .rw-n { font-size: 40px; } }
+@media (max-width: 900px) { .rw-svg, .rw-cv { width: 100%; height: 56%; } .rw-copy { right: 16px; max-width: none; top: 76px; } .rw-title { font-size: 28px; } .rw-card { left: 16px; right: 16px; width: auto; top: 190px; transform: none; padding: 16px; } .rw-time { font-size: 44px; } .rw-n { font-size: 40px; } }
 
 /* ---------- Video BG Remover: one cutout, any background ---------- */
 .vc { position: relative; height: 400vh; color: var(--text); }
@@ -750,3 +751,6 @@ body.pf { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-
 .nr-hr-in { will-change: transform; transform: translate3d(100%, 0, 0); }
 .nr-hr-pin { position: absolute; left: 0; top: 0; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; border-radius: 50%; background: #fff; will-change: transform; }
 .nr-stats dd { contain: layout paint; }
+
+/* images carry their intrinsic size (space is reserved before they load, nothing jumps); zero specificity, so every sizing rule still wins */
+:where(.pf img[width][height]) { height: auto; }

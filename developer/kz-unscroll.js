@@ -357,7 +357,7 @@
   const setText = (el, v) => { v = String(v); if (el._t !== v) { el._t = v; el.textContent = v; } };   // replacing an unchanged text node still costs a style + layout pass
   const idle = [], idleIn = [];
   const idleSync = (p) => idle.forEach((tw, i) => { const on = inView && p >= idleIn[i][0] && p <= idleIn[i][1]; if (on === tw.paused()) on ? tw.play() : tw.pause(); });   // the endless idle loops (kite, clouds, notes) run only while the scene is on screen
-  let inView = false; new IntersectionObserver((es) => { inView = es[0].isIntersecting; idleSync(tl ? tl.progress() : 0); }, { rootMargin: '20% 0px' }).observe(host);
+  let inView = false; new IntersectionObserver((es) => { inView = es[0].isIntersecting; idleSync(tl ? tl.progress() : 0); }, { rootMargin: '0px' }).observe(host);   // draws only while really on screen
   const narrow = host.clientWidth / window.innerHeight < 0.8;
   if (narrow) svgs.forEach((sv) => sv.setAttribute('viewBox', '520 0 860 900'));
   // phones: the big blurs are the expensive part, drop them

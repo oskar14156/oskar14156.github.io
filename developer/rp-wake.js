@@ -10,33 +10,14 @@
   <div class="rw-stage">
     <div class="rw-sky"></div><div class="rw-sun"></div>
     <svg class="rw-svg" viewBox="80 130 900 360" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-      <defs><filter id="rwGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        <radialGradient id="rwPhoneGlow"><stop offset="0" stop-color="${CYAN}" stop-opacity=".6"/><stop offset="1" stop-color="${CYAN}" stop-opacity="0"/></radialGradient></defs>
-      <path d="M80 ${G + 8} H980" stroke="${INK}" stroke-opacity=".25" stroke-width="2"/>
+            <path d="M80 ${G + 8} H980" stroke="${INK}" stroke-opacity=".25" stroke-width="2"/>
       <g class="rw-room" stroke="${DIM}" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <path d="M122 ${G + 6} V290 M122 352 H470 V${G + 6} M122 400 H470"/>
         <rect x="134" y="330" width="74" height="22" rx="11" fill="#0b1020"/>
         <path d="M512 ${G + 6} V384 H592 V${G + 6} M512 420 H592"/>
       </g>
-      <circle class="rw-pglow" cx="552" cy="374" r="60" fill="url(#rwPhoneGlow)"/>
-      <g class="rw-rings" stroke="${CYAN}" stroke-width="3" fill="none" stroke-linecap="round"><path d="M530 350 a30 30 0 0 1 44 0"/><path d="M520 336 a46 46 0 0 1 64 0"/></g>
-      <rect class="rw-phone" x="540" y="370" width="24" height="12" rx="3" fill="${CYAN}"/>
-      <ellipse class="rw-shadow" cx="700" cy="${G + 10}" rx="200" ry="9" fill="#000" opacity="0"/>
-      <g class="rw-body" filter="url(#rwGlow)" stroke="${INK}" stroke-linecap="round" stroke-linejoin="round" fill="none">
-        <path class="rw-leg-b" stroke="${DIM}" stroke-width="24"/>
-        <path class="rw-arm-b" stroke="${DIM}" stroke-width="16"/>
-        <path class="rw-trunk" stroke-width="38"/>
-        <path class="rw-leg-f" stroke-width="27"/>
-        <circle class="rw-head" r="21" fill="${INK}" stroke="none"/>
-        <path class="rw-arm-f" stroke-width="18"/>
-      </g>
-      <path class="rw-blanket" d="M258 340 C 300 326 420 326 470 340 L470 356 L258 356 Z" fill="#3b4270"/>
-      <g class="rw-pose" stroke="${CYAN}" stroke-width="2.5" fill="none" opacity="0">
-        <path class="rw-bones"/>
-        <g class="rw-dots" fill="${CYAN}" stroke="#0b1020" stroke-width="2">${Array.from({ length: 7 }, () => '<circle r="5.5"/>').join('')}</g>
-        <path class="rw-box" stroke-width="3"/>
-      </g>
     </svg>
+    <canvas class="rw-cv" aria-hidden="true"></canvas>
     <div class="rw-copy"><p class="rw-meta">RiseProof · the alarm</p><h2 class="rw-title">It stops ringing when you're actually up.</h2></div>
     <div class="rw-card">
       <div class="rw-row"><span class="rw-bell">⏰</span><span class="rw-time">06:30</span></div>
@@ -48,9 +29,39 @@
     </div>
   </div>`;
   const q = (s) => host.querySelector(s);
-  const E = { trunk: q('.rw-trunk'), legF: q('.rw-leg-f'), legB: q('.rw-leg-b'), head: q('.rw-head'), armF: q('.rw-arm-f'), armB: q('.rw-arm-b'), bones: q('.rw-bones'),
-    box: q('.rw-box'), pose: q('.rw-pose'), dots: [...host.querySelectorAll('.rw-dots circle')], n: q('.rw-n'), bar: q('.rw-bar span'), blanket: q('.rw-blanket'),
-    rings: q('.rw-rings'), phone: q('.rw-phone'), pglow: q('.rw-pglow'), shadow: q('.rw-shadow') };
+  // The sleeper, the phone and the pose overlay are drawn on a canvas: as SVG every frame cost a style, layout and repaint
+  // pass of the scene (about 45 fps on a Pixel 7). The frame code still writes attributes; they are captured here and painted.
+  const part = () => ({ a: {}, style: {}, setAttribute(k, v) { this.a[k] = v; } });
+  const E = { trunk: part(), legF: part(), legB: part(), head: part(), armF: part(), armB: part(), bones: part(), box: part(), pose: part(),
+    dots: Array.from({ length: 7 }, part), n: q('.rw-n'), bar: q('.rw-bar span'), blanket: part(), rings: part(), phone: part(), pglow: part(), shadow: part() };
+  const cv = q('.rw-cv'), g2 = cv.getContext('2d'); let cvK = null;
+  const sizeCv = () => { const r = cv.getBoundingClientRect(); if (!r.width) return; const dpr = Math.min(devicePixelRatio || 1, 2);
+    cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr); const k = Math.min(r.width / 900, r.height / 360);
+    cvK = [dpr * k, dpr * ((r.width - 900 * k) / 2 - 80 * k), dpr * (r.height - 360 * k - 130 * k)]; };   // viewBox 80 130 900 360, xMidYMax meet, as the SVG
+  addEventListener('resize', () => { cvK = null; }, { passive: true });
+  const op = (el, d = 1) => (el.style.opacity === undefined || el.style.opacity === '' ? d : +el.style.opacity);
+  const paint = () => {
+    if (!cvK) sizeCv(); if (!cvK) return; const g = g2;
+    g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, cv.width, cv.height); g.setTransform(cvK[0], 0, 0, cvK[0], cvK[1], cvK[2]);
+    g.lineCap = 'round'; g.lineJoin = 'round';
+    // phone glow, rings, the phone (shaking while it rings)
+    g.globalAlpha = op(E.pglow, .15); const rg = g.createRadialGradient(552, 374, 0, 552, 374, 60); rg.addColorStop(0, 'rgba(110,231,255,.6)'); rg.addColorStop(1, 'rgba(110,231,255,0)'); g.fillStyle = rg; g.beginPath(); g.arc(552, 374, 60, 0, 7); g.fill();
+    g.globalAlpha = op(E.rings, 0); if (g.globalAlpha > 0) { g.strokeStyle = CYAN; g.lineWidth = 3; g.stroke(new Path2D('M530 350 a30 30 0 0 1 44 0')); g.stroke(new Path2D('M520 336 a46 46 0 0 1 64 0')); }
+    const sh = /translate\(([-\d.]+)/.exec(E.phone.a.transform || ''); g.globalAlpha = 1; g.fillStyle = CYAN; g.beginPath(); g.roundRect(540 + (sh ? +sh[1] : 0), 370, 24, 12, 3); g.fill();
+    g.globalAlpha = op(E.shadow, 0); if (g.globalAlpha > 0) { g.fillStyle = '#000'; g.beginPath(); g.ellipse(+E.shadow.a.cx || 700, G + 10, 200, 9, 0, 0, 7); g.fill(); }
+    // the sleeper
+    g.globalAlpha = 1; const st = (d, c, w) => { if (d) { g.strokeStyle = c; g.lineWidth = w; g.stroke(new Path2D(d)); } };
+    const ink = host.classList.contains('is-done') ? '#1b1d2b' : INK;   // dark against the sunrise
+    st(E.legB.a.d, DIM, 24); st(E.armB.a.d, DIM, 16); st(E.trunk.a.d, ink, 38); st(E.legF.a.d, ink, 27);
+    if (E.head.a.cx !== undefined) { g.fillStyle = ink; g.beginPath(); g.arc(+E.head.a.cx, +E.head.a.cy, 21, 0, 7); g.fill(); }
+    st(E.armF.a.d, ink, 18);
+    g.globalAlpha = op(E.blanket, 1); if (g.globalAlpha > 0) { g.fillStyle = '#3b4270'; g.fill(new Path2D('M258 340 C 300 326 420 326 470 340 L470 356 L258 356 Z')); }
+    // the on-device pose overlay
+    g.globalAlpha = op(E.pose, 0);
+    if (g.globalAlpha > 0) { st(E.bones.a.d, CYAN, 2.5); st(E.box.a.d, CYAN, 3);
+      g.fillStyle = CYAN; g.strokeStyle = '#0b1020'; g.lineWidth = 2; for (const d of E.dots) if (d.a.cx !== undefined) { g.beginPath(); g.arc(+d.a.cx, +d.a.cy, 5.5, 0, 7); g.fill(); g.stroke(); } }
+    g.globalAlpha = 1;
+  };
   const ik = (R, T, a, b, bend) => { const dx = T[0] - R[0], dy = T[1] - R[1]; const d = Math.min(Math.hypot(dx, dy), a + b - .01);
     const base = Math.atan2(dy, dx), ang = Math.acos(Math.max(-1, Math.min(1, (a * a + d * d - b * b) / (2 * a * d)))); const t = base + bend * ang; return [R[0] + a * Math.cos(t), R[1] + a * Math.sin(t)]; };
   const clamp = (v) => Math.min(1, Math.max(0, v)), span = (p, a, b) => clamp((p - a) / (b - a)), sm = (t) => t * t * (3 - 2 * t);
@@ -119,7 +130,7 @@
     host.style.setProperty('--dawn', sm(span(p, .84, .95)));
   }
   let inView = false; new IntersectionObserver((es) => { inView = es[0].isIntersecting; }, { rootMargin: '20% 0px' }).observe(host);
-  gsap.ticker.add((t) => { if (inView) frame(progress, t); });
+  gsap.ticker.add((t) => { if (inView) { frame(progress, t); paint(); } });
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { progress = 1; return; }
   ScrollTrigger.create({ trigger: host, start: 'top top', end: 'bottom bottom', onUpdate: (st) => { progress = st.progress; } });
   ScrollTrigger.create({ trigger: host, start: 'top 80px', end: 'bottom top', toggleClass: { targets: document.body, className: 'rw-active' } });

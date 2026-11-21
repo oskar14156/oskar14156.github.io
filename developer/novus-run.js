@@ -34,7 +34,7 @@
   const NC = navigator.connection || {}, LITE = NC.saveData || /(^|-)2g|3g/.test(NC.effectiveType || '') ? '-lite' : '';
   // the flight video carries the route and the runner baked into every frame (tools/bake/bake.mjs on the build volume):
   // map and route are one picture, so they cannot drift apart; the canvas only draws the route over the overview still
-  const VID = 'i', BAKED = true;
+  const VID = 'k', BAKED = true;
   const VAR = 'h', ORI = () => (innerWidth / innerHeight < 1 ? 'port' : 'land');
   let ori = ORI(), videoReady = false;
   const stage = sec.querySelector('.nr-stage'), geo = sec.querySelector('.nr-geo'), still = sec.querySelector('.nr-end');
@@ -267,7 +267,7 @@
     const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
     gl.bindTexture(gl.TEXTURE_2D, gl.createTexture()); [gl.TEXTURE_MIN_FILTER, gl.TEXTURE_MAG_FILTER].forEach((k) => gl.texParameteri(gl.TEXTURE_2D, k, gl.LINEAR));
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    geo.appendChild(c); glm = { c, gl, put(vf) { if (c.width !== vf.displayWidth) { c.width = vf.displayWidth; c.height = vf.displayHeight; gl.viewport(0, 0, c.width, c.height); }
+    geo.appendChild(c); glm = { c, gl, put(vf) { const w = vf.displayWidth || vf.width, h = vf.displayHeight || vf.height; if (c.width !== w) { c.width = w; c.height = h; gl.viewport(0, 0, w, h); }
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, vf); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); } };
   } catch (e) { glm = false; } return glm; };
   if (fc) { fc.className = 'nr-map'; fc.setAttribute('aria-hidden', 'true'); geo.appendChild(fc); }
@@ -314,51 +314,55 @@
     return { n, fps: tsc / d, desc, size, off, key, frameOf, sampleOf, codec: 'avc1.' + [desc[1], desc[2], desc[3]].map((x) => x.toString(16).padStart(2, '0')).join('') };
   }
   function makeWC(buf, onFrame, onFail, avail = () => buf.length) {
-    const ix = mp4Index(buf), N = ix.n, US = 1e6 / ix.fps;   // the file's own frame rate: the player may start before the flight data
-    // the last frame whose bytes (and all before it, the file is in decode order) have arrived, minus the reorder depth
-    const loadedTo = () => { const a = avail(); if (a >= buf.length) return N - 1; let lo = -1, hi = N - 1;
-      while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (ix.off[mid] + ix.size[mid] <= a) lo = mid; else hi = mid - 1; } return lo < 0 ? -1 : Math.max(-1, ix.frameOf[lo] - 3); };
+    // Frames are decoded a keyframe group at a time (the flight is encoded with a keyframe every 12 frames and no B-frames)
+    // into a small cache of GPU bitmaps: the group under the scroll position and the next one in the scroll direction.
+    // Scrolling up is then as cheap as scrolling down: no decoder restarts, no decoding of frames nobody will see.
+    const ix = mp4Index(buf), N = ix.n, US = 1e6 / ix.fps;
     const cfg = { codec: ix.codec, description: ix.desc, hardwareAcceleration: 'prefer-hardware', optimizeForLatency: true };
-    let dec = null, fed = -1, runTo = -1, runStart = 0, outK = -1, backRun = false, want = 0, latest = null, latestK = -1, shownK = -1, dead = false, resetAt = 0, flushed = false;
-    // decoded frames wait in a small buffer (a phone decoder has only a handful of output buffers); the one nearest the
-    // target is shown, so slow scrolling either way is served from here without restarting the decoder
-    const pool = [];
-    const promote = () => { let best = -1, bd = latestK >= 0 ? Math.abs(latestK - want) : Infinity;
-      for (let i = 0; i < pool.length; i++) { const d = Math.abs(pool[i].k - want); if (d < bd) { bd = d; best = i; } }
-      if (best < 0) return; const b = pool.splice(best, 1)[0]; if (latest) latest.close(); latest = b.f; latestK = b.k; onFrame(); };
-    const output = (f) => { const k = Math.round(f.timestamp / US); outK = Math.max(outK, k);
-      if (dead) { f.close(); return; }
-      pool.push({ k, f });
-      while (pool.length > 6) { let far = 0; for (let i = 1; i < pool.length; i++) if (Math.abs(pool[i].k - want) > Math.abs(pool[far].k - want)) far = i; pool.splice(far, 1)[0].f.close(); }
-      promote(); };
-    let fails = 0;   // a decoder that keeps failing hands over to the <video> path instead of being rebuilt forever
-    const make = () => { dec = new VideoDecoder({ output, error: (er) => { window.__nrDecErr = String(er && er.message || er); if (dead) return; try { dec.close(); } catch (e) {} if (++fails > 2) { dead = true; onFail(); return; } make(); fed = -1; runTo = -1; } }); dec.configure(cfg); };
-    const restart = (k) => { backRun = latestK >= 0 && k < latestK; pool.splice(0).forEach((b) => b.f.close()); try { dec.reset(); dec.configure(cfg); } catch (e) { make(); } let s = ix.sampleOf[k]; while (s > 0 && !ix.key[s]) s--; fed = s - 1; runStart = ix.frameOf[s]; runTo = k; outK = -1; resetAt = performance.now(); if (!backRun) latestK = -1; flushed = false; };
-    const chunk = (i) => new EncodedVideoChunk({ type: ix.key[i] ? 'key' : 'delta', timestamp: ix.frameOf[i] * US, data: buf.subarray(ix.off[i], ix.off[i] + ix.size[i]) });
+    const keys = []; for (let i = 0; i < N; i++) if (ix.key[i]) keys.push(ix.frameOf[i]); keys.sort((a, b) => a - b);
+    const gopOf = (k) => { let lo = 0, hi = keys.length - 1; while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (keys[mid] <= k) lo = mid; else hi = mid - 1; } return lo; };
+    const gopRange = (g) => [keys[g], g + 1 < keys.length ? keys[g + 1] - 1 : N - 1];
+    // groups: g -> { frames: Map(k -> VideoFrame), left: frames still to come }; whole groups are kept or dropped
+    const groups = new Map(), MAXG = 3;
+    let dec = null, dead = false, want = 0, dir = 1, lastWant = 0, shownK = -1, latest = null, latestK = -1, fails = 0;
+    const loadedTo = () => { const a = avail(); if (a >= buf.length) return N - 1; let lo = -1, hi = N - 1;
+      while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (ix.off[mid] + ix.size[mid] <= a) lo = mid; else hi = mid - 1; } return lo < 0 ? -1 : ix.frameOf[lo]; };
+    const make = () => { dec = new VideoDecoder({
+      output: (f) => { const k = Math.round(f.timestamp / US), gr = groups.get(gopOf(k)); if (dead || !gr) { f.close(); return; }
+        const old = gr.frames.get(k); if (old && old !== latest) old.close(); gr.frames.set(k, f); gr.left--; onFrame(); },
+      error: (er) => { window.__nrDecErr = String(er && er.message || er); if (dead) return; try { dec.close(); } catch (e) {} if (++fails > 2) { dead = true; onFail(); return; }
+        groups.forEach((gr) => gr.frames.forEach((f) => { if (f !== latest) f.close(); })); groups.clear(); make(); } });
+      dec.configure(cfg); };
     make();
+    const dropGroup = (g) => { const gr = groups.get(g); if (!gr) return; gr.frames.forEach((f) => { if (f !== latest) f.close(); }); groups.delete(g); };
+    const decodeGop = (g) => { if (g < 0 || g >= keys.length || groups.has(g)) return; const [a, b] = gopRange(g);
+      if (ix.off[ix.sampleOf[b]] + ix.size[ix.sampleOf[b]] > avail()) return;   // not fully downloaded yet
+      // room first: drop finished groups farthest from the target (a group still decoding is never dropped)
+      while (groups.size >= MAXG) { let far = -1, fd = -1; groups.forEach((gr, gg) => { const d = Math.abs(gg - gopOf(want)); if (gr.left <= 0 && d > fd && gg !== g) { fd = d; far = gg; } });
+        if (far < 0) return; dropGroup(far); }
+      groups.set(g, { frames: new Map(), left: b - a + 1 });
+      for (let k = a; k <= b; k++) { const i = ix.sampleOf[k];
+        try { dec.decode(new EncodedVideoChunk({ type: ix.key[i] ? 'key' : 'delta', timestamp: k * US, data: buf.subarray(ix.off[i], ix.off[i] + ix.size[i]) })); } catch (e) { groups.delete(g); return; } } };
     return {
-      // ask for frame k: keep decoding forward towards it, or restart at the keyframe before it (backwards, or a long jump)
-      want(k) { if (dead) return; const lt = loadedTo(); if (lt < 0) return; want = k = Math.max(0, Math.min(lt, k)); promote(); if (latestK === k) return;
-        const ahead = fed >= 0 ? ix.frameOf[fed] : -1;
-        const busy = performance.now() - resetAt < 160 && outK < runTo;   // a restart still on its way to its frame
-        // restart only when nothing within two frames of the target is on hand and this run cannot bring it (a decoder only goes forward)
-        let near = latestK >= 0 ? Math.abs(latestK - k) : Infinity; for (const b of pool) near = Math.min(near, Math.abs(b.k - k));
-        const reach = k >= runStart && k > outK;
-        if (fed < 0 || k > ahead + 36 || (!reach && near > 2 && !busy)) restart(k);
-        else if (reach) runTo = Math.max(runTo, k);
-        const s = ix.sampleOf[Math.max(k, runTo)];
-        let budget = 2;   // at most two new frames per refresh: the decoder never floods the GPU while the page scrolls
-        while (budget-- > 0 && fed < Math.min(N - 1, s + 4) && dec.decodeQueueSize < 6 && ix.off[fed + 1] + ix.size[fed + 1] <= avail()) { fed++; try { dec.decode(chunk(fed)); } catch (e) { restart(k); break; } }
-        if (fed >= N - 1 && !flushed) { flushed = true; dec.flush().catch(() => {}); }
+      want(k) { if (dead) return; const lt = loadedTo(); if (lt < 0) return;
+        k = Math.max(0, Math.min(lt, k)); if (k !== lastWant) { dir = k > lastWant ? 1 : -1; lastWant = k; } want = k;
+        const g = gopOf(k);
+        decodeGop(g);                                   // the group under the scroll position first
+        if (dec.decodeQueueSize < 16) decodeGop(g + dir);   // then the next one in the scroll direction
+        // show the decoded frame nearest to the target
+        let best = -1, bd = Infinity;
+        groups.forEach((gr) => gr.frames.forEach((f, kk) => { const d = Math.abs(kk - k); if (d < bd) { bd = d; best = kk; } }));
+        if (best >= 0 && best !== latestK) { const gr = groups.get(gopOf(best)); const f = gr && gr.frames.get(best);
+          if (f) { const prev = latest; latest = f; latestK = best; if (prev && ![...groups.values()].some((x) => [...x.frames.values()].includes(prev))) prev.close(); } }
       },
-      // the newest decoded frame, drawn by the caller (it then owns nothing: the frame stays here until replaced)
       take() { if (!latest || latestK === shownK) return -1; shownK = latestK; return latestK; },
       frame: () => latest,
       loadedTo,
-      dbg: () => ({ fed, fedFrame: fed >= 0 ? ix.frameOf[fed] : -1, runStart, runTo, outK, backRun, want, latestK, shownK, dead, q: dec.decodeQueueSize, st: dec.state, fails }),
-      close() { dead = true; if (latest) latest.close(); latest = null; pool.splice(0).forEach((b) => b.f.close()); try { dec.close(); } catch (e) {} },
+      dbg: () => ({ want, dir, shownK, groups: [...groups.entries()].map(([g, gr]) => [g, gr.frames.size, gr.left]), q: dec.decodeQueueSize, st: dec.state, fails }),
+      close() { dead = true; groups.forEach((gr) => gr.frames.forEach((f) => f.close())); groups.clear(); if (latest) { try { latest.close(); } catch (e) {} } latest = null; try { dec.close(); } catch (e) {} },
     };
   }
+
 
   // Chrome/Android: the download feeds the player directly. The frame table sits at the front of the file, so the flight
   // plays from the first megabytes on and follows the download; only the not-yet-arrived part waits (with the progress pill)
