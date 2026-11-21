@@ -643,6 +643,8 @@ html.pf-menu-open { overflow: hidden; }
 .vs-stop-l { margin-left: 0; }
 .vs-stop-l { translate: calc(-100% - 10px) 0; }
 @media (max-width: 800px) { .vs-stop { font-size: 11px; } }
+.nr-ge-attr { position: absolute; z-index: 3; left: clamp(16px, 5vw, 72px); bottom: clamp(26px, 5vh, 56px); font: 500 13px/1 Geist, system-ui, sans-serif; letter-spacing: .01em; color: rgba(255, 255, 255, .92); text-shadow: 0 1px 3px rgba(0, 0, 0, .7); pointer-events: none; opacity: 0; }
+@media (max-width: 800px) { .nr-ge-attr { left: 18px; bottom: 142px; font-size: 12px; } }
 .nr-credit { position: absolute; right: 14px; bottom: 4px; margin: 0; white-space: nowrap; font-size: 10px; letter-spacing: .02em; color: rgba(242, 241, 234, .55); pointer-events: none; z-index: 3; }
 @media (max-width: 800px) { .nr-credit { right: 10px; bottom: 2px; font-size: 8.5px; } }
 .nr-geo { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; background: #1b2318; }

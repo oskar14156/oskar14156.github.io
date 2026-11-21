@@ -297,7 +297,7 @@ function init() {
   const pl = new THREE.Vector3(), plAhead = new THREE.Vector3(), upL = new THREE.Vector3(), fwd = new THREE.Vector3(), right = new THREE.Vector3(), north = new THREE.Vector3();
   const tmp = new THREE.Vector3(), camPos = new THREE.Vector3(), target = new THREE.Vector3();
   const Y = new THREE.Vector3(0, 1, 0);
-  let videoArmed = false, videoPrimed = false;
+  let videoArmed = false, videoPrimed = false, handPrimed = false;
   const seekT0 = () => { try { video.currentTime = T0; } catch (e) {} };
   const primeVideo = () => { video.preload = 'auto'; video.pause(); if (video.readyState >= 1) seekT0(); else { video.addEventListener('loadedmetadata', seekT0, { once: true }); video.load(); } };
   const kmAcross = 1300;                            // the recap shows about 1,300 km across the screen
@@ -439,7 +439,9 @@ function init() {
       const v = st.P.clone().project(camera); st.el.style.transform = `translate(${((v.x * .5 + .5) * W).toFixed(1)}px, ${((-v.y * .5 + .5) * H).toFixed(1)}px)`; });
     cities.forEach((s) => { s.material.opacity = lineK * (1 - span(p, .6, .68)) * (s.position.clone().normalize().dot(camDir) > R / camera.position.length() ? 1 : 0); s.visible = s.material.opacity > 0; });
 
-    if (p < .792) { renderer.setRenderTarget(worldRT); renderer.render(worldScene, orthoCam); renderer.setRenderTarget(null); renderer.render(scene, camera); }
+    // keep the globe until the recording clip really has a frame on screen (iOS decodes late): never a see-through phone
+    const handOk = hand.readyState >= 2 && !hand.seeking, recOk = video.readyState >= 2 && !video.seeking && videoArmed;
+    if (p < .792 || (p < .8 && !handOk)) { renderer.setRenderTarget(worldRT); renderer.render(worldScene, orthoCam); renderer.setRenderTarget(null); renderer.render(scene, camera); }
 
     // plane icon (projected), same white plane as the recap
     const s0 = toScreen(pl, [0, 0]), s1 = toScreen(planeAt(f + .004, plAhead), [0, 0]);
@@ -463,7 +465,7 @@ function init() {
         const v = viewOffset, ins = { t: Math.max(0, v.y), l: Math.max(0, v.x), r: Math.max(0, W - v.x - v.w), b: Math.max(0, H - v.y - v.h) };
         clipBox.style.clipPath = `inset(${ins.t}px ${ins.r}px ${ins.b}px ${ins.l}px round ${v.w * .13 * span(p, .7, .74)}px)`;
       } else clipBox.style.clipPath = 'none';
-      clipBox.style.opacity = 1 - span(p, .772, .783);
+      clipBox.style.opacity = handOk ? 1 - span(p, .772, .783) : 1;
       // the recap's own chrome (status bar, title, distance, controls) comes in from the screen edges
       const band = span(p, .705, .75), mid = span(p, .755, .779);
       const mask = `linear-gradient(to bottom, #000 0, #000 12%, rgba(0,0,0,${mid}) 18%, rgba(0,0,0,${mid}) 72%, #000 79%)`;
@@ -479,9 +481,10 @@ function init() {
     const want = videoT(p);
     if (hand.readyState >= 1 && p < .8) { const ht = (clamp(Math.round((want - 3.8) * 30), 0, 41) + .5) / 30; if (!hand.seeking && Math.abs(hand.currentTime - ht) > 1 / 120) { try { hand.currentTime = ht; } catch (e) {} } }
     if (p > .55 && !videoPrimed) { videoPrimed = true; primeVideo(); }
+    if (p > .3 && !handPrimed) { handPrimed = true; hand.preload = 'auto'; const pp = hand.play(); if (pp && pp.then) pp.then(() => hand.pause()).catch(() => {}); else hand.pause(); }   // iOS only decodes after a play
     if (p < .8) { video.style.visibility = 'hidden'; video.style.opacity = 0; if (videoArmed) { videoArmed = false; video.pause(); } }
     else {
-      hand.style.opacity = 0; video.style.visibility = 'visible'; video.style.opacity = 1;
+      video.style.visibility = 'visible'; video.style.opacity = recOk ? 1 : 0; hand.style.opacity = recOk ? 0 : 1;   // the clip stays until the recording has its frame
       if (!videoArmed && video.readyState >= 1) { videoArmed = true; try { video.currentTime = videoT(.8); } catch (e) {} video.play().catch(() => {}); }
     }
     caps.forEach((el) => { const a = +el.dataset.a, b = +el.dataset.b; const o = span(p, a, a + .03) * (1 - span(p, b - .03, b)); el.style.opacity = o; el.style.transform = `translateY(${(1 - span(p, a, a + .03)) * 24}px)`; });
@@ -497,6 +500,7 @@ function init() {
   addEventListener('resize', () => { measure(); schedule(); });
   // the frame the recording clip is actually showing drives the flight while both are on screen
   if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) { const cb = (now, md) => { const t = Math.round(md.mediaTime * 30) / 30; if (t !== handShown) { handShown = t; schedule(); } hand.requestVideoFrameCallback(cb); }; hand.requestVideoFrameCallback(cb); }
+  ['loadeddata', 'seeked', 'playing'].forEach((ev) => { hand.addEventListener(ev, () => schedule()); video.addEventListener(ev, () => schedule()); });   // a clip becoming ready repaints at once
   video.dataset.manual = '1';
   if (reduce) { progress = 1; active = true; render(); active = false; return; }
   ScrollTrigger.create({ trigger: sec, start: 'top bottom', end: 'bottom top', onToggle: (st) => { active = st.isActive; if (active) { warmUntil = performance.now() + 2500; lastT = 0; schedule(); } } });

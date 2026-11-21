@@ -30,11 +30,11 @@
     return `rgb(${A.map((v, k) => Math.round(v + (B[k] - v) * u)).join(',')})`; };
 
   // one flight per screen shape: a landscape render for wide screens, a portrait render for phones (no cropping, small files)
-  const VAR = 'c', ORI = () => (innerWidth / innerHeight < 1 ? 'port' : 'land');
+  const VAR = 'd', ORI = () => (innerWidth / innerHeight < 1 ? 'port' : 'land');
   let ori = ORI(), videoReady = false;
   const stage = sec.querySelector('.nr-stage'), geo = sec.querySelector('.nr-geo'), still = sec.querySelector('.nr-end');
   let ends = null;
-  const ge = sec.querySelector('.nr-ge'), cv = sec.querySelector('.nr-ge-ov'), dotEl = sec.querySelector('.nr-ge-dot');
+  const attr = sec.querySelector('.nr-ge-attr') || document.createElement('span'), ge = sec.querySelector('.nr-ge'), cv = sec.querySelector('.nr-ge-ov'), dotEl = sec.querySelector('.nr-ge-dot');
   let videoOk = !!ge;
   if (ge) ge.addEventListener('error', () => { videoOk = false; ge.style.display = 'none'; });
 
@@ -185,6 +185,7 @@
       if (!rvfc || ge.readyState < 2) geT = vt;
     } else { geT = fi / flight.fps; geo.style.opacity = 0; }
     const m = draw(p), r = at(m);
+    attr.style.opacity = geo.style.opacity;   // the crop can cut the logo baked into the render, so the page shows its own
     out.km.textContent = (m / 1000).toFixed(2); out.time.textContent = hms(r.secs);
     out.pace.textContent = r.pace ? mmss(r.pace) : '–'; out.hr.textContent = r.hr || '–';
     sec.style.setProperty('--done', span(p, .86, .93));
@@ -227,7 +228,7 @@
         ge.addEventListener('loadeddata', () => { if (g === gen) { videoReady = true; if (ready) frame(); } }, { once: true });
       });
     }
-    Promise.all([data ? data : fetch('/developer/data/novus-run.json').then((r) => r.json()), fetch(`/developer/data/novus-flight-${VAR}-${o}.json?v=3`).then((r) => r.json()), ends ? ends : fetch(`/developer/data/novus-end-${VAR}.json?v=2`).then((r) => r.json())])
+    Promise.all([data ? data : fetch('/developer/data/novus-run.json').then((r) => r.json()), fetch(`/developer/data/novus-flight-${VAR}-${o}.json?v=3`).then((r) => r.json()), ends ? ends : fetch(`/developer/data/novus-end-c.json?v=2`).then((r) => r.json())])
       .then(([d, f, e]) => {
         if (g !== gen) return;
         data = d; flight = f; ends = e; total = d.pts[d.pts.length - 1][2];
