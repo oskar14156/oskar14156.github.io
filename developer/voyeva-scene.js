@@ -70,10 +70,27 @@ function init() {
   let FOV = 38, D0 = 0.085;
   const scene = new THREE.Scene();
   const loader = new THREE.TextureLoader();
-  const tex = (u, srgb = true) => { const t = loader.load(u, () => schedule()); if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; };
+  const TEX = []; let texLeft = 0;
+  const tex = (u, srgb = true) => { texLeft++; const t = loader.load(u, () => { texLeft--; schedule(); warm(); }); if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; TEX.push(t); return t; };
+  // Upload every texture and compile every shader while the browser is idle, long before the scene scrolls in,
+  // so the first frames of the flight never stall on GPU uploads or a shader compile.
+  let warmed = false;
+  const idle = (fn) => (window.requestIdleCallback ? requestIdleCallback(fn, { timeout: 1500 }) : setTimeout(fn, 60));
+  function warm() {
+    if (warmed || texLeft > 0 || !noiseReady || !planeReady) return; warmed = true;
+    const steps = TEX.map((t) => () => renderer.initTexture(t));
+    steps.push(() => renderer.initTexture(noise3D));
+    steps.push(() => (renderer.compileAsync ? renderer.compileAsync(worldScene, orthoCam) : renderer.compile(worldScene, orthoCam)));
+    steps.push(() => (renderer.compileAsync ? renderer.compileAsync(scene, camera) : renderer.compile(scene, camera)));
+    scene.traverse((o) => { const ms = o.material ? [].concat(o.material) : []; ms.forEach((m) => ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'aoMap', 'emissiveMap'].forEach((k) => m[k] && steps.push(() => renderer.initTexture(m[k])))); });
+    steps.push(() => { worldRT.viewport.set(0, 0, 8, 8); renderer.setRenderTarget(worldRT); renderer.render(worldScene, orthoCam); renderer.setRenderTarget(null); setRt(); });
+    steps.push(() => { const tiny = new THREE.WebGLRenderTarget(8, 8); renderer.setRenderTarget(tiny); renderer.render(scene, camera); renderer.setRenderTarget(null); tiny.dispose(); });
+    const run = () => { const f = steps.shift(); if (!f) return; Promise.resolve(f()).then(() => idle(run), () => idle(run)); };
+    idle(run);
+  }
 
   /* ---------- world shader: earth + volumetric clouds + atmosphere ---------- */
-  const noise3D = makeNoise3D(64);
+  let noiseReady = false; const noise3D = makeNoise3D(64, () => { noiseReady = true; warm(); });
   const CORR = new THREE.Vector4(0, 126, 18, 72), CCORR = new THREE.Vector4(5.625, 129.375, 22.5, 67.5), PATCH = new THREE.Vector4(76.5, 112.5, 40.5, 63);
   const worldMat = new THREE.ShaderMaterial({
     glslVersion: THREE.GLSL3, depthTest: false, depthWrite: false,
@@ -95,12 +112,12 @@ function init() {
   const worldRT = new THREE.WebGLRenderTarget(4, 4, { type: THREE.HalfFloatType, depthBuffer: false });
   const worldScene = new THREE.Scene(); const worldQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), worldMat); worldQuad.frustumCulled = false; worldScene.add(worldQuad);
   const blitMat = new THREE.ShaderMaterial({
-    depthTest: false, depthWrite: false, uniforms: { tWorld: { value: worldRT.texture }, uMap: { value: 0 }, uTexel: { value: new THREE.Vector2(1, 1) } },
-    vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0., 1.); }`,
+    depthTest: false, depthWrite: false, uniforms: { tWorld: { value: worldRT.texture }, uMap: { value: 0 }, uTexel: { value: new THREE.Vector2(1, 1) }, uScale: { value: new THREE.Vector2(1, 1) } },
+    vertexShader: `varying vec2 vUv0; void main(){ vUv0 = uv; gl_Position = vec4(position.xy, 0., 1.); }`,
     toneMapped: false,
-    fragmentShader: `uniform sampler2D tWorld; uniform float uMap; uniform vec2 uTexel; varying vec2 vUv;
+    fragmentShader: `uniform sampler2D tWorld; uniform float uMap; uniform vec2 uTexel, uScale; varying vec2 vUv0;
       vec3 aces(vec3 c){ c *= .6; return clamp((c * (2.51 * c + .03)) / (c * (2.43 * c + .59) + .14), 0., 1.); }
-      void main(){ vec3 c = texture2D(tWorld, vUv).rgb * .4;
+      void main(){ vec2 vUv = vUv0 * uScale; vec3 c = texture2D(tWorld, vUv).rgb * .4;
         c += (texture2D(tWorld, vUv + vec2(uTexel.x, 0.)).rgb + texture2D(tWorld, vUv - vec2(uTexel.x, 0.)).rgb + texture2D(tWorld, vUv + vec2(0., uTexel.y)).rgb + texture2D(tWorld, vUv - vec2(0., uTexel.y)).rgb) * .15;
         gl_FragColor = vec4(mix(aces(c * 1.55), c, uMap), 1.);
       #include <colorspace_fragment>
@@ -123,7 +140,7 @@ function init() {
       if (mt.transparent || mt.opacity < 1) { mt.color = new THREE.Color(0x0b1016); mt.roughness = .08; mt.metalness = .6; mt.opacity = .92; }
       else { mt.roughness = .32; mt.metalness = .05; }
     });
-    model.add(m); planeReady = true; schedule();
+    model.add(m); planeReady = true; schedule(); warm();
   });
   // light that matches the world: sun through the atmosphere + bright cloud deck below
   const sunL = new THREE.DirectionalLight(0xfff1de, 2.3); scene.add(sunL); scene.add(sunL.target);
@@ -218,22 +235,35 @@ function init() {
   const planeAt = (f, out) => out.copy(main(clamp(f, 0, 1))).multiplyScalar(R + CRUISE);
 
   /* ---------- sizing & phone geometry ---------- */
-  let fanRect = null, rtScale = small ? .5 : .55, rtMax = rtScale, ftAvg = 16, lastT = 0, adaptAt = 0;
+  // render scale for the raymarched world: starts where it settled last time on this device, then follows the frame time
+  // quality ladder for the raymarched world: cloud steps go first (they cost the most), then resolution.
+  // It starts where it settled last time on this device and follows the frame time from there.
+  const LADDER = small ? [[.5, 40], [.45, 36], [.42, 32], [.38, 28], [.34, 24]] : [[.55, 64], [.52, 52], [.5, 44], [.46, 38], [.43, 32], [.4, 28], [.36, 24], [.32, 22]];
+  const RT_KEY = 'vs-q-' + (small ? 's' : 'l'), rtMax = LADDER[0][0];
+  let lvl = small ? 2 : 3; try { const v = localStorage.getItem(RT_KEY); if (v !== null) lvl = Math.min(LADDER.length - 1, Math.max(0, +v | 0)); } catch (e) {}
+  let fanRect = null, rtScale = LADDER[lvl][0], ftAvg = 14, lastT = 0, adaptAt = 0, warmUntil = 0;
   function adapt() {
     const now = performance.now(), dt = lastT ? now - lastT : 16; lastT = now; if (dt > 200) return;
     ftAvg = ftAvg * .92 + dt * .08;
     if (now < adaptAt) return;
-    const next = ftAvg > 24 ? Math.max(.34, rtScale - .05) : ftAvg < 15.5 ? Math.min(rtMax, rtScale + .05) : rtScale;
-    if (next !== rtScale) { rtScale = next; measure(); adaptAt = now + 900; }
+    const next = ftAvg > 18 ? Math.min(LADDER.length - 1, lvl + 1) : ftAvg < 13.2 ? Math.max(0, lvl - 1) : lvl;
+    if (next !== lvl) { lvl = next; rtScale = LADDER[lvl][0]; worldMat.uniforms.uSteps.value = LADDER[lvl][1]; setRt(); adaptAt = now + (now < warmUntil ? 300 : 1100); try { localStorage.setItem(RT_KEY, lvl); } catch (e) {} }
+  }
+  let rtW = 2, rtH = 2;
+  function setRt() {
+    rtW = Math.max(2, Math.min(worldRT.width, Math.round(W * DPR * rtScale))); rtH = Math.max(2, Math.min(worldRT.height, Math.round(H * DPR * rtScale)));
+    worldRT.viewport.set(0, 0, rtW, rtH);
+    blitMat.uniforms.uTexel.value.set(.5 / worldRT.width, .5 / worldRT.height); blitMat.uniforms.uScale.value.set(rtW / worldRT.width, rtH / worldRT.height);
   }
   function measure() {
     W = sec.clientWidth; H = window.innerHeight;
     const tall = H / W; FOV = tall > 1 ? Math.min(54, 38 * Math.pow(tall, .45)) : 38; D0 = tall > 1 ? .085 * Math.min(1.7, Math.pow(tall, .7)) : .085;
     renderer.setSize(W, H, false);
-    const scale = rtScale;
-    worldRT.setSize(Math.max(2, Math.round(W * DPR * scale)), Math.max(2, Math.round(H * DPR * scale)));
-    blitMat.uniforms.uTexel.value.set(.5 / worldRT.width, .5 / worldRT.height);
-    worldMat.uniforms.uSteps.value = small ? 40 : 64;
+    // allocate the world target once at the largest scale; quality changes only move its viewport (no reallocation hitch)
+    const aw = Math.max(2, Math.round(W * DPR * rtMax)), ah = Math.max(2, Math.round(H * DPR * rtMax));
+    if (worldRT.width !== aw || worldRT.height !== ah) worldRT.setSize(aw, ah);
+    setRt();
+    worldMat.uniforms.uSteps.value = LADDER[lvl][1];
     lines.forEach((l) => [l.glow, l.core].forEach((m) => m.material.uniforms.uRes.value.set(W, H)));
     const prev = fanC.style.transform; fanC.style.transform = 'none';
     const r = fanC.getBoundingClientRect(), s = videoBox.getBoundingClientRect(), st = sec.querySelector('.vs-stage').getBoundingClientRect();
@@ -338,7 +368,7 @@ function init() {
       const cx = W / 2 + ((sx + sw / 2) - .5) * w * kk, cy = H / 2 + ((sy + sh / 2) - .5) * h * kk; scr = { x: cx - sW / 2, y: cy - sH / 2, w: sW, h: sH }; }
     mercK = easeIO(span(p, .63, .7));
     u.uMerc.value = mercK; u.uPlaneLL.value.set(planeLL.lat, planeLL.lon); u.uScr.value.set(scr.x, scr.y, scr.w, scr.h);
-    u.uRtScale.value = worldRT.width / W; u.uVpH.value = H;
+    u.uRtScale.value = rtW / W; u.uVpH.value = H;
     u.uInvProj.value.copy(camera.projectionMatrixInverse); u.uCamRot.value.setFromMatrix4(camera.matrixWorld);
     u.uUp.value.copy(camera.position).normalize(); u.uAlt.value = alt; u.uTime.value = t;
     u.uWind.value.copy(fwd).multiplyScalar(-t * .22);           // the deck streams under the plane: ~800 km/h
@@ -450,14 +480,14 @@ function init() {
   addEventListener('resize', () => { measure(); schedule(); });
   video.dataset.manual = '1';
   if (reduce) { progress = 1; active = true; render(); active = false; return; }
-  ScrollTrigger.create({ trigger: sec, start: 'top bottom', end: 'bottom top', onToggle: (st) => { active = st.isActive; if (active) schedule(); } });
+  ScrollTrigger.create({ trigger: sec, start: 'top bottom', end: 'bottom top', onToggle: (st) => { active = st.isActive; if (active) { warmUntil = performance.now() + 2500; lastT = 0; schedule(); } } });
   ScrollTrigger.create({ trigger: sec, start: 'top 80px', end: 'bottom top', toggleClass: { targets: document.body, className: 'vs-active' } });
   ScrollTrigger.create({ trigger: sec, start: 'top top', end: 'bottom bottom', onUpdate: (st) => { progress = st.progress; schedule(); }, onRefresh: () => measure() });
   window.voyevaScene = { seek: (p) => { progress = p; render(); }, measure, u: worldMat.uniforms, lines, camera, renderer, scene, blit, state: () => ({ p: progress, f: flightF(progress), alt: camera.position.length() - R }) };
 }
 
 /* Tileable 3D noise, RGBA8: R = Perlin-Worley (cloud body), G/B/A = Worley fbm at rising frequency (erosion). */
-function makeNoise3D(N) {
+function noiseData(N) {
   const data = new Uint8Array(N * N * N * 4);
   const hash = (x, y, z, s) => { let h = (x * 374761393 + y * 668265263 + z * 2147483647 + s * 1274126177) | 0; h = (h ^ (h >>> 13)) * 1274126177 | 0; return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
   const worley = (cells, seed) => {
@@ -493,9 +523,19 @@ function makeNoise3D(N) {
     data[i * 4] = pw * 255; data[i * 4 + 1] = (w8[i] * .625 + w16[i] * .25 + w32[i] * .125) * 255;
     data[i * 4 + 2] = (w16[i] * .625 + w32[i] * .375) * 255; data[i * 4 + 3] = w32[i] * 255;
   }
-  const t = new THREE.Data3DTexture(data, N, N, N);
+  return data;
+}
+// The noise takes ~250 ms to build: do it in a worker so the page never stalls; the texture fills in when it arrives.
+function makeNoise3D(N, done) {
+  const t = new THREE.Data3DTexture(new Uint8Array(N * N * N * 4), N, N, N);
   t.format = THREE.RGBAFormat; t.type = THREE.UnsignedByteType; t.minFilter = t.magFilter = THREE.LinearFilter;
   t.wrapS = t.wrapT = t.wrapR = THREE.RepeatWrapping; t.unpackAlignment = 1; t.needsUpdate = true;
+  const fill = (d) => { t.image.data = d; t.needsUpdate = true; done && done(); };
+  try {
+    const src = `const noiseData = ${noiseData.toString()}; onmessage = (e) => { const d = noiseData(e.data); postMessage(d, [d.buffer]); };`;
+    const w = new Worker(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })));
+    w.onmessage = (e) => { fill(e.data); w.terminate(); }; w.onerror = () => setTimeout(() => fill(noiseData(N))); w.postMessage(N);
+  } catch (e) { setTimeout(() => fill(noiseData(N))); }
   return t;
 }
 

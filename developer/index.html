@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/developer/portfolio.css?v=37">
+  <link rel="stylesheet" href="/developer/portfolio.css?v=39">
   <script>
     // Theme before first paint: saved pick, else the system setting.
     (function () {
@@ -178,7 +178,7 @@
       <section class="ng" id="novus-gym" aria-label="Novus: a training session, animated"></section>
       <section class="nr" id="novus-run" aria-labelledby="nr-title">
         <div class="nr-stage">
-          <div class="nr-gl" aria-hidden="true"></div><video class="nr-ge" data-manual data-src="/developer/media/novus-flight-{w}.mp4?v=2" muted playsinline preload="auto" aria-hidden="true"></video><canvas class="nr-ge-ov" aria-hidden="true"></canvas><span class="nr-ge-dot" aria-hidden="true"><i></i></span><div class="nr-scrim" aria-hidden="true"></div>
+          <div class="nr-geo" aria-hidden="true"><video class="nr-ge" data-manual data-src="/developer/media/novus-flight-{v}-{w}.mp4?v=2" muted playsinline preload="auto"></video></div><img class="nr-end" alt="" aria-hidden="true" decoding="async"><canvas class="nr-ge-ov" aria-hidden="true"></canvas><span class="nr-ge-dot" aria-hidden="true"><i></i></span><div class="nr-scrim" aria-hidden="true"></div>
           <div class="nr-head">
             <p class="nr-meta">Novus · real run · April 14, 2026</p>
             <h2 id="nr-title">29.8 km, replayed from the route and heart rate.</h2>
@@ -191,7 +191,7 @@
           </dl>
           <div class="nr-hr" aria-hidden="true"><p class="nr-meta">Heart rate · bpm</p><svg viewBox="0 0 600 120" preserveAspectRatio="none"><defs><linearGradient id="nrHrG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff2e63" stop-opacity=".3"/><stop offset="1" stop-color="#4c7dff" stop-opacity="0"/></linearGradient><linearGradient id="nrHrLine" gradientUnits="userSpaceOnUse" x1="0" y1="110" x2="0" y2="10"></linearGradient></defs><path d="M0 60 H600 M0 110 H600" stroke="rgba(255,255,255,.12)" stroke-width="1" vector-effect="non-scaling-stroke"/><path class="nr-hr-area" fill="url(#nrHrG)"/><path class="nr-hr-line" fill="none" stroke="url(#nrHrLine)" stroke-width="2" vector-effect="non-scaling-stroke"/><circle class="nr-hr-dot" r="3" fill="#fff"/></svg><p class="nr-hr-axis"><span>0 km</span><span>29.8 km</span></p></div><p class="nr-legend" aria-hidden="true"><span>Heart rate</span><span class="nr-lo">120</span><i></i><span class="nr-hi">195 bpm</span></p>
           <p class="nr-foot">In Novus, workouts come in from HealthKit with their route and heart rate, and every run is drawn coloured by heart rate.</p>
-          <p class="nr-credit">Flight: Google Earth Studio, imagery ©2026 Google · map: basemap.at</p>
+          <p class="nr-credit">Flight and overview: Google Earth Studio, imagery ©2026 Google</p>
         </div>
       </section>
 
@@ -561,13 +561,13 @@
   <script src="/developer/portfolio.js?v=18"></script>
   <script src="/developer/ink.js?v=15"></script>
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
-  <script type="module" src="/developer/voyeva-scene.js?v=14"></script>
+  <script type="module" src="/developer/voyeva-scene.js?v=16"></script>
   <script src="/developer/kz-unscroll.js?v=16"></script>
   <script src="/developer/novus-gym.js?v=12"></script>
   <script src="/developer/stub-flow.js?v=1"></script>
   <script src="/developer/rp-wake.js?v=5"></script>
   <script src="/developer/vbg-cut.js?v=1"></script>
-  <script src="/developer/novus-run.js?v=7"></script>
+  <script src="/developer/novus-run.js?v=9"></script>
   <script src="/developer/menu.js?v=1"></script>
 </body>
 </html>

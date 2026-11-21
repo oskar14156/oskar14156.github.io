@@ -483,7 +483,7 @@ html.pf-menu-open { overflow: hidden; }
 .nr-stats small { margin-left: 6px; font-size: 14px; letter-spacing: 0; color: rgba(242, 241, 234, .55); }
 .nr-legend { position: absolute; left: clamp(16px, 6vw, 90px); top: clamp(90px, 14vh, 140px); display: flex; align-items: center; gap: 10px; color: rgba(242, 241, 234, .6); }
 .nr-legend i { width: 120px; height: 8px; border-radius: 4px; background: linear-gradient(90deg, #4c7dff, #22c7e8, #3fe08a, #c8f169, #ffd23f, #ff7a3d, #ff2e63); }
-.nr-foot { position: absolute; right: clamp(16px, 5vw, 72px); bottom: clamp(170px, 24vh, 220px); width: min(30vw, 440px); font-size: 17px; line-height: 1.45; color: rgba(242, 241, 234, .75); opacity: var(--done, 0); transform: translateY(calc((1 - var(--done, 0)) * 20px)); }
+.nr-foot { position: absolute; right: clamp(16px, 5vw, 72px); bottom: clamp(210px, 27vh, 260px); width: min(30vw, 440px); font-size: 17px; line-height: 1.45; color: rgba(242, 241, 234, .75); opacity: var(--done, 0); transform: translateY(calc((1 - var(--done, 0)) * 20px)); }
 @media (max-width: 900px) {
   .nr-head { left: 16px; right: 16px; width: auto; top: 76px; }
   .nr-head h2 { font-size: 26px; }
@@ -632,20 +632,22 @@ html.pf-menu-open { overflow: hidden; }
 
 .pf-credits { margin: 28px auto 0; max-width: 980px; padding: 0 16px; font-family: var(--mono); font-size: 11px; line-height: 1.6; letter-spacing: .02em; color: var(--muted, rgba(127, 127, 127, .9)); text-align: center; }
 .pf-credits a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
-.nr-hr { position: absolute; z-index: 2; left: clamp(16px, 5vw, 72px); right: clamp(16px, 5vw, 72px); bottom: clamp(26px, 5vh, 56px); max-width: 820px; padding: 14px 18px 10px; border-radius: 16px; background: rgba(10, 15, 11, .62); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: var(--ov, 0); transform: translateY(calc((1 - var(--ov, 0)) * 24px)); pointer-events: none; }
+.nr-hr { position: absolute; z-index: 2; right: clamp(16px, 5vw, 72px); bottom: clamp(26px, 5vh, 56px); width: min(30vw, 440px); box-sizing: border-box; padding: 14px 18px 10px; border-radius: 16px; background: rgba(10, 15, 11, .62); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: var(--in, 0); pointer-events: none; }
 .nr-hr .nr-meta { color: #f2f1ea; }
 .nr-hr svg { display: block; width: 100%; height: 84px; margin-top: 8px; overflow: visible; }
 .nr-hr-axis { display: flex; justify-content: space-between; margin-top: 6px !important; font-family: var(--mono); font-size: 11px; color: rgba(242, 241, 234, .5); }
-@media (max-width: 800px) { .nr-hr { bottom: 18px; padding: 10px 14px 8px; } .nr-hr svg { height: 46px; } .nr-gl .maplibregl-ctrl-bottom-left { bottom: 132px; } }
+@media (max-width: 800px) { .nr-hr { left: 16px; right: 16px; width: auto; bottom: 18px; padding: 10px 14px 8px; } .nr-hr svg { height: 46px; } }
 .vs-stop { position: absolute; left: 0; top: 0; z-index: 3; opacity: 0; pointer-events: none; white-space: nowrap; font-size: 13px; font-weight: 600; letter-spacing: -.01em; color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .85), 0 0 12px rgba(0, 0, 0, .55); }
 .vs-stop::before { content: ""; position: absolute; left: 0; top: 50%; translate: 0 -50%; }
 .vs-stop { margin: -9px 0 0 10px; }
 .vs-stop-l { margin-left: 0; }
 .vs-stop-l { translate: calc(-100% - 10px) 0; }
 @media (max-width: 800px) { .vs-stop { font-size: 11px; } }
-.nr-ge { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; background: #1b2318; }
 .nr-credit { position: absolute; right: 14px; bottom: 4px; margin: 0; white-space: nowrap; font-size: 10px; letter-spacing: .02em; color: rgba(242, 241, 234, .55); pointer-events: none; z-index: 3; }
 @media (max-width: 800px) { .nr-credit { right: 10px; bottom: 2px; font-size: 8.5px; } }
+.nr-geo { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; background: #1b2318; }
+.nr-geo > video { position: absolute; inset: 0; width: 100%; height: 100%; }
+.nr-end { position: absolute; left: 0; top: 0; max-width: none; transform-origin: 0 0; will-change: transform; opacity: 0; pointer-events: none; }
 .nr-ge-ov { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.nr-ge-dot { position: absolute; left: 50%; top: 53%; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: #c8f169; border: 3px solid #0c120e; box-shadow: 0 0 0 3px rgba(200, 241, 105, .35), 0 0 24px rgba(200, 241, 105, .9); opacity: 0; pointer-events: none; }
+.nr-ge-dot { position: absolute; left: 50%; top: 60%; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: #c8f169; border: 3px solid #0c120e; box-shadow: 0 0 0 3px rgba(200, 241, 105, .35), 0 0 24px rgba(200, 241, 105, .9); opacity: 0; pointer-events: none; }
 .nr-ge-dot i { position: absolute; inset: -14px; border-radius: 50%; border: 2px solid rgba(200, 241, 105, .7); animation: nr-pulse 1.6s ease-out infinite; }
