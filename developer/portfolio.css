@@ -648,6 +648,9 @@ html.pf-menu-open { overflow: hidden; }
 .nr-geo { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; background: #1b2318; }
 .nr-geo > video { position: absolute; inset: 0; width: 100%; height: 100%; }
 .nr-end { position: absolute; left: 0; top: 0; max-width: none; transform-origin: 0 0; will-change: transform; opacity: 0; pointer-events: none; }
+.nr-load { position: absolute; z-index: 3; left: 50%; top: 58%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 16px 12px; border-radius: 14px; background: rgba(10, 15, 11, .62); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: rgba(242, 241, 234, .8); opacity: 0; transition: opacity .4s; pointer-events: none; }
+.nr-load::before { content: ''; width: 120px; height: 3px; border-radius: 2px; background: rgba(242, 241, 234, .18); order: 2; }
+.nr-load i { position: absolute; left: 16px; bottom: 12px; width: 120px; height: 3px; border-radius: 2px; background: #c8f169; transform-origin: 0 50%; transform: scaleX(0); }
 .nr-ge-ov { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .nr-ge-dot { position: absolute; left: 50%; top: 60%; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: #c8f169; border: 3px solid #0c120e; box-shadow: 0 0 0 3px rgba(200, 241, 105, .35), 0 0 24px rgba(200, 241, 105, .9); opacity: 0; pointer-events: none; }
 .nr-ge-dot i { position: absolute; inset: -14px; border-radius: 50%; border: 2px solid rgba(200, 241, 105, .7); animation: nr-pulse 1.6s ease-out infinite; }

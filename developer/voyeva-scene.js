@@ -59,7 +59,16 @@ function init() {
     YSO: [24.78, 110.49], KIX: [34.43, 135.24], OSA: [34.69, 135.5], NGO: [35.18, 136.91], SKG: [36.26, 136.91], CTS: [42.77, 141.69], SPK: [43.06, 141.35] };
   const main = flightArc(P.BUD, P.PEK);
   // The recap's plane: f = .70 at 4.3 s, .35 of the flight per second of video
-  const T0 = 4.5, videoF = (t) => .70 + (t - 4.3) * .35, videoT = (p) => T0 + (p - .7) * 4.16;
+  const T0 = 4.5, videoT = (p) => T0 + (p - .7) * 4.16;
+  // The recording, measured frame by frame from the cities it labels (Omsk ... Beijing, known positions): the plane's flight
+  // fraction and where it sits on the phone screen, as functions of the recording's own time in seconds (fit error < 0.001).
+  const recF = (t) => { const x = t - 4.4; return .739852 + x * (.35642 + x * (-.049207 + x * .008457)); };
+  const recA = (t) => { const x = t - 4.4; return [.546226 + x * (-.022689 + x * .009478), .514316 + x * (.02365 - x * .022089)]; };
+  // While the recording is on screen the flight follows the frame it is actually showing (30 fps), so both line up exactly.
+  let handShown = null;
+  const recTime = (p) => { const want = videoT(p); if (p < .7 || p >= .8) return want;
+    if (handShown !== null) return 3.8 + handShown;
+    return 3.8 + clamp(Math.round((want - 3.8) * 30), 0, 41) / 30; };
   const sunDir = unit(16, 70);
 
   /* ---------- renderer ---------- */
@@ -104,7 +113,7 @@ function init() {
       uSatG: { value: tex('/developer/media/earth/viirs-global.jpg?v=2') }, uSatC: { value: tex('/developer/media/earth/viirs-corridor.jpg?v=1') }, uSat: { value: 0 },
       uCloudAmt: { value: 1 }, uDetail: { value: 1 }, uSteps: { value: 64 }, uWind: { value: new THREE.Vector3() },
       uBoost: { value: unit(52, 28) }, uBoostAmt: { value: 1 }, uExposure: { value: 1 }, uDebug: { value: 0 }, uMap: { value: 0 }, uFine: { value: 1 },
-      uMerc: { value: 0 }, uCloudVis: { value: 1 }, uFar: { value: 0 }, uPlaneLL: { value: new THREE.Vector2() }, uScr: { value: new THREE.Vector4(0, 0, 1, 1) }, uRtScale: { value: 1 }, uVpH: { value: 1 },
+      uMerc: { value: 0 }, uCloudVis: { value: 1 }, uFar: { value: 0 }, uPlaneLL: { value: new THREE.Vector2() }, uScr: { value: new THREE.Vector4(0, 0, 1, 1) }, uRtScale: { value: 1 }, uVpH: { value: 1 }, MERC_W: { value: 20.04 }, ANCHOR: { value: new THREE.Vector2(.533, .521) },
     },
     vertexShader: `out vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0., 1.); }`,
     fragmentShader: WORLD_FRAG,
@@ -117,9 +126,15 @@ function init() {
     toneMapped: false,
     fragmentShader: `uniform sampler2D tWorld; uniform float uMap; uniform vec2 uTexel, uScale; varying vec2 vUv0;
       vec3 aces(vec3 c){ c *= .6; return clamp((c * (2.51 * c + .03)) / (c * (2.43 * c + .59) + .14), 0., 1.); }
-      void main(){ vec2 vUv = vUv0 * uScale; vec3 c = texture2D(tWorld, vUv).rgb * .4;
-        c += (texture2D(tWorld, vUv + vec2(uTexel.x, 0.)).rgb + texture2D(tWorld, vUv - vec2(uTexel.x, 0.)).rgb + texture2D(tWorld, vUv + vec2(0., uTexel.y)).rgb + texture2D(tWorld, vUv - vec2(0., uTexel.y)).rgb) * .15;
-        gl_FragColor = vec4(mix(aces(c * 1.55), c, uMap), 1.);
+      void main(){ vec2 vUv = vUv0 * uScale; vec3 c0 = texture2D(tWorld, vUv).rgb;
+        vec3 nb = texture2D(tWorld, vUv + vec2(uTexel.x, 0.)).rgb + texture2D(tWorld, vUv - vec2(uTexel.x, 0.)).rgb + texture2D(tWorld, vUv + vec2(0., uTexel.y)).rgb + texture2D(tWorld, vUv - vec2(0., uTexel.y)).rgb;
+        vec3 soft = c0 * .4 + nb * .15;                        // the flight: a touch of softening
+        vec3 sharp = max(c0 * 1.8 - nb * .2, 0.);             // the map: crisp like the recording
+        // map mode: brightness and contrast matched to the recording (measured per channel in sRGB over the same area)
+        vec3 s = pow(sharp, vec3(1. / 2.2));
+        s = (s - vec3(.396, .432, .284)) * vec3(1.18, 1.05, 1.08) + vec3(.440, .487, .319);
+        vec3 mapc = pow(clamp(s, 0., 1.), vec3(2.2));
+        gl_FragColor = vec4(mix(aces(soft * 1.55), mapc, uMap), 1.);
       #include <colorspace_fragment>
     }`,
   });
@@ -227,11 +242,11 @@ function init() {
   function buildF() {
     // speed grows with altitude until it is the recap's speed; integrate backwards from the handoff
     const sp = (p) => Math.min(VMAX, VMAX * zoomD(Math.min(p, .3)) / 900);
-    fTable[700] = videoF(videoT(.7));
+    fTable[700] = recF(videoT(.7));
     for (let i = 700; i > 0; i--) fTable[i - 1] = fTable[i] - sp((i - .5) / 1000) / 1000;
     for (let i = 700; i < 1000; i++) fTable[i + 1] = fTable[i] + VMAX / 1000;
   }
-  const flightF = (p) => { const x = clamp(p) * 1000, i = Math.min(999, Math.floor(x)); return lerp(fTable[i], fTable[i + 1], x - i); };
+  const flightF = (p) => { if (p >= .7) return recF(recTime(p)); const x = clamp(p) * 1000, i = Math.min(999, Math.floor(x)); return lerp(fTable[i], fTable[i + 1], x - i); };
   const planeAt = (f, out) => out.copy(main(clamp(f, 0, 1))).multiplyScalar(R + CRUISE);
 
   /* ---------- sizing & phone geometry ---------- */
@@ -286,8 +301,9 @@ function init() {
   const seekT0 = () => { try { video.currentTime = T0; } catch (e) {} };
   const primeVideo = () => { video.preload = 'auto'; video.pause(); if (video.readyState >= 1) seekT0(); else { video.addEventListener('loadedmetadata', seekT0, { once: true }); video.load(); } };
   const kmAcross = 1300;                            // the recap shows about 1,300 km across the screen
-  // the recap's map: Mercator, north up, 20.15 degrees of longitude across the screen, plane fixed at 53.3% / 52.1%
-  const MERC_W = 20.15, ANCHOR = [.533, .521];
+  // the recap's map: Mercator, north up, 20.04 degrees of longitude across the screen (measured: 27.55 px per degree on 552 px);
+  // the plane drifts slightly on screen during the clip, ANCHOR follows the measured position
+  const MERC_W = 20.04, ANCHOR = recA(T0);
   const merc = (lat) => Math.log(Math.tan(Math.PI / 4 + lat * DEG / 2));
   let scr = { x: 0, y: 0, w: 1, h: 1 }, mercK = 0;
   const pv = new THREE.Vector3();
@@ -367,6 +383,7 @@ function init() {
     if (fanRect) { const kk = revealScale(p), { sw, sh, sx, sy, w, h } = fanRect, sW = sw * w * kk, sH = sh * h * kk;
       const cx = W / 2 + ((sx + sw / 2) - .5) * w * kk, cy = H / 2 + ((sy + sh / 2) - .5) * h * kk; scr = { x: cx - sW / 2, y: cy - sH / 2, w: sW, h: sH }; }
     mercK = easeIO(span(p, .63, .7));
+    const an = recA(p < .7 ? T0 : recTime(p)); ANCHOR[0] = an[0]; ANCHOR[1] = an[1]; u.ANCHOR.value.set(an[0], an[1]);
     u.uMerc.value = mercK; u.uPlaneLL.value.set(planeLL.lat, planeLL.lon); u.uScr.value.set(scr.x, scr.y, scr.w, scr.h);
     u.uRtScale.value = rtW / W; u.uVpH.value = H;
     u.uInvProj.value.copy(camera.projectionMatrixInverse); u.uCamRot.value.setFromMatrix4(camera.matrixWorld);
@@ -460,7 +477,7 @@ function init() {
       endText.style.opacity = span(p, .79, .85); endText.style.transform = `translateY(${(1 - span(p, .79, .85)) * 40}px)`;
     }
     const want = videoT(p);
-    if (hand.readyState >= 1 && p < .8) { const ht = Math.min(1.38, Math.max(0, want - 3.8)); if (Math.abs(hand.currentTime - ht) > 1 / 45) { try { hand.currentTime = ht; } catch (e) {} } }
+    if (hand.readyState >= 1 && p < .8) { const ht = (clamp(Math.round((want - 3.8) * 30), 0, 41) + .5) / 30; if (!hand.seeking && Math.abs(hand.currentTime - ht) > 1 / 120) { try { hand.currentTime = ht; } catch (e) {} } }
     if (p > .55 && !videoPrimed) { videoPrimed = true; primeVideo(); }
     if (p < .8) { video.style.visibility = 'hidden'; video.style.opacity = 0; if (videoArmed) { videoArmed = false; video.pause(); } }
     else {
@@ -478,6 +495,8 @@ function init() {
   const schedule = () => { if (!raf) raf = requestAnimationFrame(loop); };
   measure();
   addEventListener('resize', () => { measure(); schedule(); });
+  // the frame the recording clip is actually showing drives the flight while both are on screen
+  if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) { const cb = (now, md) => { const t = Math.round(md.mediaTime * 30) / 30; if (t !== handShown) { handShown = t; schedule(); } hand.requestVideoFrameCallback(cb); }; hand.requestVideoFrameCallback(cb); }
   video.dataset.manual = '1';
   if (reduce) { progress = 1; active = true; render(); active = false; return; }
   ScrollTrigger.create({ trigger: sec, start: 'top bottom', end: 'bottom top', onToggle: (st) => { active = st.isActive; if (active) { warmUntil = performance.now() + 2500; lastT = 0; schedule(); } } });
@@ -545,7 +564,7 @@ in vec2 vUv; out highp vec4 fragOut;
 uniform mat4 uInvProj; uniform mat3 uCamRot; uniform vec3 uUp; uniform float uAlt; uniform vec3 uSun; uniform float uTime;
 uniform highp sampler3D uNoise; uniform sampler2D uSatG, uSatC, uGroundG, uGroundC, uGroundP, uCloudG, uCloudC, uStars; uniform vec4 uCorr, uCCorr, uPatch;
 uniform float uSat, uFar, uCloudVis, uCloudAmt, uDetail, uSteps, uBoostAmt, uExposure, uDebug, uMap, uFine, uMerc, uRtScale, uVpH; uniform vec2 uPlaneLL; uniform vec4 uScr;
-const float MERC_W = 20.15; const vec2 ANCHOR = vec2(.533, .521); uniform vec3 uWind, uBoost;
+uniform float MERC_W; uniform vec2 ANCHOR; uniform vec3 uWind, uBoost;
 const float R = 6371.; const float CB = 1.4; const float CT = 7.8; const float AT = 70.;
 const float PI = 3.14159265;
 const vec3 BR = vec3(5.8e-3, 13.5e-3, 33.1e-3); const float BMIE = 2.2e-3; const float HR = 8.; const float HM = 1.2;

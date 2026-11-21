@@ -1,5 +1,5 @@
-/* Novus: a real 29.8 km run through Vienna. A Google Earth Studio flight (pre-rendered, scrubbed by scroll at 120 fps)
- * follows the runner through the streets, climbs until the whole run is in frame, and that last frame becomes the
+/* Novus: a real 29.8 km run through Vienna. A Google Earth Studio flight (pre-rendered, scrubbed by scroll at 60 fps)
+ * follows the runner for the first 5.2 km, climbs until the whole run is in frame, and that last frame becomes the
  * overview the rest of the run is drawn onto. The route is drawn on a canvas with the camera of every rendered frame,
  * coloured by heart rate; where buildings hide the street it turns into a faint dotted line.
  * Data: developer/data/novus-run.json (600 samples of [lon, lat, metres, moving seconds, bpm, pace s/km]) and
@@ -29,7 +29,9 @@
     const u = clamp((b - BP[i]) / (BP[i + 1] - BP[i])), A = hex(RAMP[i]), B = hex(RAMP[i + 1]);
     return `rgb(${A.map((v, k) => Math.round(v + (B[k] - v) * u)).join(',')})`; };
 
-  const VAR = (new URLSearchParams(location.search).get('flight') || sec.dataset.flight || 'b').replace(/[^ab]/g, '') || 'b';
+  // one flight per screen shape: a landscape render for wide screens, a portrait render for phones (no cropping, small files)
+  const VAR = 'c', ORI = () => (innerWidth / innerHeight < 1 ? 'port' : 'land');
+  let ori = ORI(), videoReady = false;
   const stage = sec.querySelector('.nr-stage'), geo = sec.querySelector('.nr-geo'), still = sec.querySelector('.nr-end');
   let ends = null;
   const ge = sec.querySelector('.nr-ge'), cv = sec.querySelector('.nr-ge-ov'), dotEl = sec.querySelector('.nr-ge-dot');
@@ -55,7 +57,7 @@
   };
 
   // scroll → flight frame: [drop-in], street flight, climb; then the last frame stays while the rest of the run is drawn
-  const P0 = .03, PF1 = .46, PR1 = .64, PEND = .84;
+  const P0 = .03, PF1 = .46, PDRAW = .55, PR1 = .64, PEND = .84;
   const PF0 = () => (flight.intro ? .11 : P0);
   const lastF = () => flight.intro + flight.follow;
   function frameAt(p) {
@@ -68,7 +70,8 @@
   function metresAt(p) {
     const f = frameAt(p);
     if (f <= lastF()) return runAt(f);
-    return lerp(flight.run[flight.run.length - 1], total, Math.pow(span(p, PF1, PEND), 1.35));
+    // the runner waits at the end of the street flight until the climb has the city in view, then the rest is drawn in
+    return lerp(flight.run[flight.run.length - 1], total, Math.pow(span(p, PDRAW, PEND), 1.35));
   }
 
   // where the runner sits across the 16:9 frame, smoothed over ±0.5 s, so narrow screens can slide their crop with him
@@ -88,13 +91,13 @@
 
   // layout: the flight video covers the stage; the overview still (landscape or portrait) covers it too.
   // At the hand-over the still is laid exactly over the video's last frame, then it zooms out to fill the screen.
-  let W = 0, H = 0, S = 1, GW = 0, GH = 0, dpr = 1, E = null, ES = 1, EW = 0, EH = 0, hand = null, endCam = null, lastCam = null;
+  let W = 0, H = 0, S = 1, GW = 0, GH = 0, dpr = 1, E = null, ES = 1, EW = 0, EH = 0, hand = null, endCam = null, lastCam = null, endOff = { x: 0, y: 0 };
   function layout() {
     W = stage.clientWidth; H = stage.clientHeight; S = Math.max(W / flight.w, H / flight.h); GW = flight.w * S; GH = flight.h * S;
     geo.style.width = GW + 'px'; geo.style.height = GH + 'px';
     dpr = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-    E = (W / H < 1 && ends.port) ? ends.port : ends.land; endCam = camOf(E.cam); lastCam = camOf(flight.cam[flight.n]);
-    if (still.dataset.src !== E.src) { still.dataset.src = E.src; still.src = E.src; }
+    E = ori === 'port' ? ends.port : ends.land; endCam = camOf(E.cam); lastCam = camOf(flight.cam[flight.n]);
+    if (still.dataset.src !== E.src) { still.dataset.src = E.src; still.src = E.src; if (still.decode) still.decode().catch(() => {}); }   // decoded ahead, so it never shows black at the hand-over
     ES = Math.max(W / E.w, H / E.h); EW = E.w * ES; EH = E.h * ES;
     still.style.width = E.w + 'px'; still.style.height = E.h + 'px';
     // similarity that puts the still on top of the video's last frame (both look straight down, north up)
@@ -103,6 +106,11 @@
     const sx = (P) => { const q = proj(endCam, E.w, E.h, E.fov, P); return [(W - EW) / 2 + q[0] * ES, (H - EH) / 2 + q[1] * ES]; };
     const vA = vx(A), vB = vx(B), sA = sx(A), sB = sx(B), k = Math.hypot(vB[0] - vA[0], vB[1] - vA[1]) / Math.hypot(sB[0] - sA[0], sB[1] - sA[1]);
     hand = { k, tx: vA[0] - sA[0] * k, ty: vA[1] - sA[1] * k };
+    // screens narrower or taller than the still crop it: slide it within that slack so the whole run stays in view
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (const P of R) { const q = sx(P); x0 = Math.min(x0, q[0]); x1 = Math.max(x1, q[0]); y0 = Math.min(y0, q[1]); y1 = Math.max(y1, q[1]); }
+    const M = Math.min(W, H) * .04, fit = (lo, hi, size, slack) => clamp(lo < M ? M - lo : hi > size - M ? Math.max(size - M - hi, M - lo) : 0, slack, -slack);
+    endOff = { x: fit(x0, x1, W, (W - EW) / 2), y: fit(y0, y1, H, (H - EH) / 2) };
   }
 
   function draw(p) {
@@ -121,7 +129,7 @@
     } else {
       // the overview: zoom out from the video's last frame to the full-screen still
       const k = easeIO(span(p, PR1, PR1 + .07)), sc = lerp(hand.k, 1, k), tx = lerp(hand.tx, 0, k), ty = lerp(hand.ty, 0, k);
-      const ex = tx + (W - EW) / 2 * sc, ey = ty + (H - EH) / 2 * sc, f = ES * sc;
+      const ex = tx + (W - EW) / 2 * sc + endOff.x * k, ey = ty + (H - EH) / 2 * sc + endOff.y * k, f = ES * sc;
       still.style.transform = `translate(${ex.toFixed(1)}px, ${ey.toFixed(1)}px) scale(${f.toFixed(5)})`; still.style.opacity = 1;
       for (let i = 0; i < R.length; i++) { const q = proj(endCam, E.w, E.h, E.fov, R[i]); Q[i] = q && [ex + q[0] * f, ey + q[1] * f]; }
     }
@@ -165,7 +173,9 @@
   function frame() {
     if (!ready) return;
     const p = shown, fi = frameAt(p), end = p >= PR1;
-    if (ge && videoOk) {
+    loadPill(p);
+    if (ge && videoOk && !videoReady) { geT = 0; geo.style.opacity = p >= PR1 ? 0 : 1; }   // still loading: the poster (first frame) stands in
+    else if (ge && videoOk) {
       const vt = Math.min(fi / flight.fps, (ge.duration || flight.n / flight.fps) - 1 / 240);
       if (ge.readyState >= 1) seek(end ? Math.max(0, (ge.duration || 0) - 1 / 240) : vt);
       geo.style.opacity = end ? 0 : 1;
@@ -183,31 +193,53 @@
   }
   // the overlay follows the frame the video is actually showing, so line and streets never drift apart while seeking
   const rvfc = !!(window.HTMLVideoElement && 'requestVideoFrameCallback' in HTMLVideoElement.prototype);
-  if (ge && rvfc) { const cb = (now, md) => { geT = md.mediaTime; if (ready && shown < PR1) draw(shown); ge.requestVideoFrameCallback(cb); }; ge.requestVideoFrameCallback(cb); }
+  if (ge && rvfc) { const cb = (now, md) => { if (videoReady) { geT = md.mediaTime; if (ready && shown < PR1) draw(shown); } ge.requestVideoFrameCallback(cb); }; ge.requestVideoFrameCallback(cb); }
 
   // the scroll position is followed with a little inertia, so fast scrolling still reads as a flight
   let queued = false;
   const tick = () => { queued = false; const dlt = progress - shown; shown = Math.abs(dlt) < 1e-4 ? progress : shown + dlt * .12; frame(); if (shown !== progress) schedule(); };
   const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(tick); } };
-  let loading = false;
-  const load = () => {
-    if (loading) return; loading = true;
-    const w = innerWidth < 800 ? '960' : '1600';
-    if (ge) { ge.src = ge.dataset.src.replace('{v}', VAR).replace('{w}', w); ge.load(); }
-    Promise.all([fetch('/developer/data/novus-run.json').then((r) => r.json()), fetch(`/developer/data/novus-flight-${VAR}.json?v=3`).then((r) => r.json()), fetch(`/developer/data/novus-end-${VAR}.json?v=1`).then((r) => r.json())])
+  // loading: the flight video is fetched in full (with progress) well before the section, so scrubbing never waits on the network
+  const pill = document.createElement('div'); pill.className = 'nr-load'; pill.setAttribute('aria-hidden', 'true'); pill.innerHTML = '<i></i><span>Loading flight</span>';
+  stage.appendChild(pill);
+  let loadPct = 0;
+  const loadPill = (p) => { pill.style.opacity = (!videoReady && videoOk && p < PR1) ? 1 : 0; pill.querySelector('i').style.transform = `scaleX(${loadPct.toFixed(3)})`; };
+  let loaded = null, gen = 0;
+  async function fetchVideo(url, g) {
+    try {
+      const res = await fetch(url); if (!res.ok || !res.body) throw new Error('http');
+      const len = +res.headers.get('content-length') || 0, rd = res.body.getReader(), parts = []; let got = 0;
+      for (;;) { const { done, value } = await rd.read(); if (done) break; if (g !== gen) return; parts.push(value); got += value.length; if (len) { loadPct = got / len; if (ready) loadPill(shown); } }
+      return URL.createObjectURL(new Blob(parts, { type: 'video/mp4' }));
+    } catch (e) { return url; }                                   // fall back to streaming the file directly
+  }
+  const load = (o = ori) => {
+    if (loaded === o) return; loaded = o; const g = ++gen;
+    videoReady = false; loadPct = 0; ready = false;
+    if (ge) {
+      ge.poster = `/developer/media/novus-flight-${VAR}-${o}-poster.jpg?v=2`;
+      fetchVideo(`/developer/media/novus-flight-${VAR}-${o}.mp4?v=2`, g).then((src) => {
+        if (g !== gen || !src) return;
+        const prev = ge.src; ge.src = src; ge.load(); if (prev && prev.startsWith('blob:')) URL.revokeObjectURL(prev);
+        ge.addEventListener('loadeddata', () => { if (g === gen) { videoReady = true; if (ready) frame(); } }, { once: true });
+      });
+    }
+    Promise.all([data ? data : fetch('/developer/data/novus-run.json').then((r) => r.json()), fetch(`/developer/data/novus-flight-${VAR}-${o}.json?v=2`).then((r) => r.json()), ends ? ends : fetch(`/developer/data/novus-end-${VAR}.json?v=2`).then((r) => r.json())])
       .then(([d, f, e]) => {
+        if (g !== gen) return;
         data = d; flight = f; ends = e; total = d.pts[d.pts.length - 1][2];
-        cols = flight.route.map((q) => hrColor(at(q[3]).hr || data.avgHR));
         buildHR(); cols = flight.route.map((q) => hrColor(at(q[3]).hr || data.avgHR));
         rx = runnerTrack(); layout(); ready = true; frame();
-        addEventListener('resize', () => { layout(); frame(); });
       }).catch(() => { sec.classList.add('nr-offline'); });
   };
-  new IntersectionObserver((es, io) => { if (es.some((e) => e.isIntersecting)) { load(); io.disconnect(); } }, { rootMargin: '150% 0px' }).observe(sec);
+  addEventListener('resize', () => { if (ORI() !== ori) { ori = ORI(); if (loaded) load(ori); return; } if (ready) { layout(); frame(); } });
+  // start early: as soon as the work section comes up (the run is a few screens further down), or near the run itself
+  const early = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { load(); early.disconnect(); } }, { rootMargin: '100% 0px' });
+  [document.getElementById('work'), sec].forEach((el) => el && early.observe(el));
   if (reduce) { progress = shown = .8; }
   else {
     ScrollTrigger.create({ trigger: sec, start: 'top top', end: 'bottom bottom', onUpdate: (st) => { progress = st.progress; schedule(); } });
   }
   ScrollTrigger.create({ trigger: sec, start: 'top 80px', end: 'bottom top', toggleClass: { targets: document.body, className: 'nr-active' } });
-  window.novusRun = { state: () => ({ ready, p: progress, shown, variant: VAR, geT, target: ready && shown < PR1 ? frameAt(shown) / flight.fps : -1, ct: ge ? ge.currentTime : 0, seeking: ge ? ge.seeking : false, rs: ge ? ge.readyState : 0 }) };
+  window.novusRun = { state: () => ({ ready, videoReady, loadPct, ori, p: progress, shown, variant: VAR, geT, target: ready && shown < PR1 ? frameAt(shown) / flight.fps : -1, ct: ge ? ge.currentTime : 0, seeking: ge ? ge.seeking : false, rs: ge ? ge.readyState : 0 }) };
 })();
