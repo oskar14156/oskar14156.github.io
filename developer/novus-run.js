@@ -30,7 +30,7 @@
     return `rgb(${A.map((v, k) => Math.round(v + (B[k] - v) * u)).join(',')})`; };
 
   // one flight per screen shape: a landscape render for wide screens, a portrait render for phones (no cropping, small files)
-  const VAR = 'd', ORI = () => (innerWidth / innerHeight < 1 ? 'port' : 'land');
+  const VAR = 'g', ORI = () => (innerWidth / innerHeight < 1 ? 'port' : 'land');
   let ori = ORI(), videoReady = false;
   const stage = sec.querySelector('.nr-stage'), geo = sec.querySelector('.nr-geo'), still = sec.querySelector('.nr-end');
   let ends = null;
