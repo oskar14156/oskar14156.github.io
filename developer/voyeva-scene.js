@@ -271,12 +271,12 @@ function init() {
     blitMat.uniforms.uTexel.value.set(.5 / worldRT.width, .5 / worldRT.height); blitMat.uniforms.uScale.value.set(rtW / worldRT.width, rtH / worldRT.height);
   }
   function measure() {
-    W = sec.clientWidth; H = window.innerHeight;
+    W = sec.clientWidth; H = clipBox.clientHeight || window.innerHeight;   // the stage itself (dynamic viewport), not innerHeight: on iOS they differ while the toolbar moves
     const tall = H / W; FOV = tall > 1 ? Math.min(54, 38 * Math.pow(tall, .45)) : 38; D0 = tall > 1 ? .085 * Math.min(1.7, Math.pow(tall, .7)) : .085;
     renderer.setSize(W, H, false);
     // allocate the world target once at the largest scale; quality changes only move its viewport (no reallocation hitch)
     const aw = Math.max(2, Math.round(W * DPR * rtMax)), ah = Math.max(2, Math.round(H * DPR * rtMax));
-    if (worldRT.width !== aw || worldRT.height !== ah) worldRT.setSize(aw, ah);
+    if (worldRT.width < aw || worldRT.height < ah) worldRT.setSize(Math.max(aw, worldRT.width), Math.max(ah, worldRT.height));   // only ever grows: the iOS toolbar resizing the stage never reallocates
     setRt();
     worldMat.uniforms.uSteps.value = LADDER[lvl][1];
     lines.forEach((l) => [l.glow, l.core].forEach((m) => m.material.uniforms.uRes.value.set(W, H)));

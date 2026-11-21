@@ -75,7 +75,7 @@ html.lenis, html.lenis body { height: auto; }
 
 /* ---------- 1 · INTRO ---------- */
 .intro { position: relative; height: 260vh; --ink: 0; }
-.intro-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--bg); }
+.intro-stage { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg); }
 #ink-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 html:not(.has-ink) .intro-stage { background: var(--panel); }
 html:not(.has-ink) .intro-content { mix-blend-mode: normal; }
@@ -96,7 +96,7 @@ html:not(.has-ink) .intro-content { mix-blend-mode: normal; }
 
 /* ---------- 2 · FLIGHT ---------- */
 .flight { position: relative; height: 520vh; background: var(--panel); color: var(--on-panel); }
-.flight-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: grid; place-items: center; perspective: 1400px; }
+.flight-stage { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; display: grid; place-items: center; perspective: 1400px; }
 .flight-words { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
 .fw { grid-area: 1 / 1; display: grid; justify-items: center; gap: 2vh; visibility: hidden; }
 .fw.is-active { visibility: visible; }
@@ -301,10 +301,10 @@ html:not(.has-ink) .intro-content { mix-blend-mode: normal; }
 /* Reduced motion: no pinning, no flight; everything is laid out statically. */
 @media (prefers-reduced-motion: reduce) {
   .intro { height: auto; }
-  .intro-stage { position: relative; height: 100svh; background: var(--panel); }
+  .intro-stage { position: relative; height: 100vh; height: 100dvh; background: var(--panel); }
   .intro-content { mix-blend-mode: normal; }
   .flight { height: auto; }
-  .flight-stage { position: relative; height: 100svh; }
+  .flight-stage { position: relative; height: 100vh; height: 100dvh; }
   .intro-cue span { animation: none; }
 }
 
@@ -359,7 +359,7 @@ body.ink-cream .pf-header .pf-theme button[aria-pressed="true"] { color: #f4f3ec
 .win-label i { margin-left: auto; font-style: normal; font-size: 15px; font-weight: 600; }
 /* With JS: pinned, the windows stack on top of each other while you scroll. */
 .has-stack .stack { height: calc(var(--wins) * 85vh + 100vh); padding-top: 0; }
-.has-stack .stack-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: flex; flex-direction: column; padding-top: clamp(80px, 9vh, 110px); }
+.has-stack .stack-stage { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; padding-top: clamp(80px, 9vh, 110px); }
 .has-stack .stack-head { flex: none; }
 .has-stack .stack-head h2 { font-size: clamp(34px, 4.4vw, 64px); }
 .has-stack .stack-windows { position: relative; flex: 1; display: block; margin-top: 24px; perspective: 1800px; }
@@ -424,7 +424,7 @@ html.pf-menu-open { overflow: hidden; }
 
 /* ---------- VOYAGE: the recap plane dives into the phone ---------- */
 .voyage { position: relative; height: 460vh; background: #0a1418; color: #f4f2ea; }
-.vy-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
+.vy-stage { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; }
 .vy-map { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .vy-dim { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, rgba(10, 20, 24, .35), rgba(10, 20, 24, .92) 70%); opacity: 0; pointer-events: none; }
 .vy-plane { position: absolute; left: 0; top: 0; width: 64px; height: 64px; margin: -32px 0 0 -32px; fill: #fff; filter: drop-shadow(10px 14px 6px rgba(0, 0, 0, .45)); will-change: transform; z-index: 6; }
@@ -443,7 +443,7 @@ html.pf-menu-open { overflow: hidden; }
 }
 @media (prefers-reduced-motion: reduce) {
   .voyage { height: auto; }
-  .vy-stage { position: relative; height: 100svh; }
+  .vy-stage { position: relative; height: 100vh; height: 100dvh; }
   .vy-phone, .vy-cap-3 { opacity: 1; }
   .vy-screen video { clip-path: none; }
   .vy-plane, .vy-cap-1, .vy-cap-2 { display: none; }
@@ -451,7 +451,7 @@ html.pf-menu-open { overflow: hidden; }
 
 /* ---------- Unscroll short: flat-vector scene ---------- */
 .kz { position: relative; height: 620vh; background: #2a1580; color: #fff; }
-.kz-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
+.kz-stage { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; }
 .kz-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .kz-cap { position: absolute; left: clamp(16px, 5vw, 72px); bottom: clamp(40px, 9vh, 100px); z-index: 2; max-width: min(460px, 86vw); opacity: 0; }
 .kz-cap-3 { color: #2a1580; }
@@ -465,7 +465,7 @@ html.pf-menu-open { overflow: hidden; }
 
 /* ---------- Novus: a real run replayed ---------- */
 .nr { position: relative; height: 560vh; background: #0c120e; color: #f2f1ea; }
-.nr-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
+.nr-stage { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; }
 .nr-stage .nr-gl { position: absolute; inset: 0; width: 100%; height: 100%; background: #1b2318; }
 .nr-gl .maplibregl-ctrl-attrib { font-size: 10px; background: rgba(12, 18, 14, .55); color: rgba(242, 241, 234, .75); }
 .nr-gl .maplibregl-ctrl-attrib a { color: inherit; }
@@ -498,7 +498,7 @@ html.pf-menu-open { overflow: hidden; }
 
 /* ---------- VOYEVA SCENE: sky -> globe -> phone -> fan ---------- */
 .vs { position: relative; height: 760vh; }
-.vs-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: #03060c; color: #f4f2ea; }
+.vs-stage { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; background: #03060c; color: #f4f2ea; }
 .vs-card { position: absolute; inset: 0 clamp(8px, 1.4vw, 20px); border-radius: calc(var(--radius) + 8px) calc(var(--radius) + 8px) 0 0; opacity: 0; }
 .vs-clip { position: absolute; inset: 0; z-index: 2; will-change: clip-path; }
 .vs-clip canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
@@ -531,7 +531,7 @@ html.pf-menu-open { overflow: hidden; }
 
 /* ---------- Novus: lifter silhouette ---------- */
 .ng { position: relative; height: 330vh; background: #0c120e; color: #f2f1ea; }
-.ng-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
+.ng-stage { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; }
 .ng-svg { position: absolute; left: 0; bottom: 0; width: 62%; height: 92%; }
 .ng-head-copy { position: absolute; left: clamp(16px, 5vw, 72px); top: clamp(90px, 14vh, 140px); max-width: min(520px, 50vw); }
 .ng-meta { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: #c8f169; }
@@ -558,7 +558,7 @@ html.pf-menu-open { overflow: hidden; }
 
 /* ---------- Stub: receipt -> flow ---------- */
 .sf { position: relative; height: 440vh; }
-.sf-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
+.sf-stage { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; }
 .sf-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .sf-mono { font-family: "Geist Mono", ui-monospace, monospace; font-size: 18px; fill: #2b241d; }
 .sf-store { font-size: 30px; font-weight: 600; letter-spacing: .2em; } .sf-small { font-size: 14px; fill: #8a7f71; } .sf-bold { font-weight: 600; }
@@ -570,11 +570,11 @@ html.pf-menu-open { overflow: hidden; }
 .sf-meta { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .sf-big { margin-top: 10px !important; font-size: clamp(24px, 2.5vw, 36px); line-height: 1.1; letter-spacing: -.04em; font-weight: 500; }
 .sf-active .work-index { opacity: 0; visibility: hidden; pointer-events: none; }
-@media (max-width: 900px) { .sf-svg { width: 200%; left: -10%; } .sf-phone { width: 46vw; margin-top: -48vw; right: 6vw; } .sf-cap-2 { left: 16px; text-align: left; } }
+@media (max-width: 900px) { .sf-svg { width: 200%; left: -10%; } .sf-phone { width: 52vw; margin-top: -53vw; right: 24vw; top: 46%; } .sf-cap-2 { left: 16px; text-align: left; } }
 
 /* ---------- RiseProof: push-ups to stop the alarm ---------- */
 .rw { position: relative; height: 340vh; color: #eef1ff; }
-.rw-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: #0b1020; }
+.rw-stage { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; background: #0b1020; }
 .rw-sky { position: absolute; inset: 0; background: linear-gradient(180deg, #ff9a52 0%, #ffcf6b 45%, #ffe9b8 100%); opacity: var(--dawn, 0); }
 .rw-sun { position: absolute; left: 50%; bottom: 10%; width: 46vh; height: 46vh; margin-left: -23vh; border-radius: 50%; background: radial-gradient(circle, #fff7da 0 40%, rgba(255, 240, 190, .6) 55%, rgba(255, 220, 140, 0) 70%); opacity: var(--dawn, 0); transform: translateY(calc((1 - var(--dawn, 0)) * 30vh)); }
 .rw-svg { position: absolute; left: 1%; bottom: 6%; width: 64%; height: 62%; }
@@ -606,7 +606,7 @@ html.pf-menu-open { overflow: hidden; }
 
 /* ---------- Video BG Remover: one cutout, any background ---------- */
 .vc { position: relative; height: 400vh; color: var(--text); }
-.vc-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: grid; place-items: center; }
+.vc-stage { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; display: grid; place-items: center; }
 .vc-copy { position: absolute; left: clamp(16px, 5vw, 72px); top: clamp(90px, 14vh, 140px); max-width: min(440px, 30vw); }
 .vc-meta { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .vc-title { margin-top: 12px !important; font-size: clamp(30px, 3.4vw, 54px); line-height: 1; letter-spacing: -.05em; font-weight: 500; }

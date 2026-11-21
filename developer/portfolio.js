@@ -161,7 +161,10 @@
     const cs = getComputedStyle(chip);
     const d = parseFloat(cs.getPropertyValue('--d')) || 1;
     const vw = window.innerWidth / 100, vh = window.innerHeight / 100;
-    const x = parseFloat(cs.getPropertyValue('--x')) * vw, y = parseFloat(cs.getPropertyValue('--y')) * vh;
+    // phones: fewer chips (their paths never cross), each kept inside the screen
+    if (window.innerWidth < 600 && chip.classList.contains('chip-wide')) { chip.style.display = 'none'; return; }
+    const lim = window.innerWidth / 2 - chip.offsetWidth / 2 - 10;
+    const x = Math.max(-lim, Math.min(lim, parseFloat(cs.getPropertyValue('--x')) * vw)), y = parseFloat(cs.getPropertyValue('--y')) * vh;
     gsap.set(chip, { xPercent: -50, yPercent: -50, x });
     gsap.fromTo(chip, { y: y + d * 220, opacity: 0 }, {
       y: y - d * 220, opacity: 1, ease: 'none',

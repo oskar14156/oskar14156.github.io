@@ -75,11 +75,17 @@
     .to(q('.sf-grow'), { attr: { width: X1 - X0 + 20 }, duration: .16, ease: 'power2.inOut' }, .5)
     .to(qa('.sf-node'), { opacity: 1, duration: .03, stagger: .015 }, .6)
     .fromTo('.sf-cap-2', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .04 }, .66)
-    .fromTo(q('.sf-phone'), { xPercent: 120, rotation: 8, opacity: 0 }, { xPercent: 0, rotation: -3, opacity: 1, duration: .14, ease: 'power3.out' }, .74)
-    .to(q('.sf-svg'), { x: '-14%', scale: .9, transformOrigin: '50% 50%', duration: .14, ease: 'power2.inOut' }, .74)
-    .to({}, { duration: .1 }, .9);
+    .fromTo(q('.sf-phone'), { xPercent: 120, rotation: 8, opacity: 0 }, { xPercent: 0, rotation: -3, opacity: 1, duration: .14, ease: 'power3.out' }, .74);
+  // narrow screens: the drawing is twice the screen wide, so the camera pans from the receipt to the flow as the chips leave,
+  // and the flow steps back behind the phone instead of sliding under it
+  const narrow = matchMedia('(max-width: 900px)').matches;
+  const pan = () => { const W = host.clientWidth, H = q('.sf-stage').clientHeight, s = Math.min(2 * W / 1600, H / 900);
+    const right = -.1 * W + (2 * W - 1600 * s) / 2 + 1350 * s; return Math.min(0, W - 14 - right); };
+  if (narrow) tl.to(q('.sf-svg'), { x: pan, duration: .2, ease: 'power2.inOut' }, .38).to(q('.sf-svg'), { opacity: .28, duration: .1 }, .74);
+  else tl.to(q('.sf-svg'), { x: '-14%', scale: .9, transformOrigin: '50% 50%', duration: .14, ease: 'power2.inOut' }, .74);
+  tl.to({}, { duration: .1 }, .9);
 
   if (reduce) { tl.progress(1); return; }
-  ScrollTrigger.create({ trigger: host, start: 'top top', end: 'bottom bottom', scrub: .5, animation: tl });
+  ScrollTrigger.create({ trigger: host, start: 'top top', end: 'bottom bottom', scrub: .5, animation: tl, invalidateOnRefresh: true });
   ScrollTrigger.create({ trigger: host, start: 'top 80px', end: 'bottom top', toggleClass: { targets: document.body, className: 'sf-active' } });
 })();

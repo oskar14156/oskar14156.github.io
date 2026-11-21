@@ -114,11 +114,14 @@
   }
 
   function draw(p) {
-    const end = p >= PR1, m = metresAt(p), R = flight.route, Q = new Array(R.length);
-    let fi = flight.n, rise = 1;
+    const end = p >= PR1, R = flight.route, Q = new Array(R.length);
+    let fi = flight.n, rise = 1, m = metresAt(p);
     if (!end) {
-      // street flight / climb: the video, its crop following the runner on narrow screens
-      fi = clamp(geT * flight.fps, 0, flight.n); const F = flight.cam, a = Math.floor(fi), b = Math.min(flight.n, a + 1), u = fi - a;
+      // street flight / climb: the video, its crop following the runner on narrow screens.
+      // Camera and runner both come from the frame on screen, so the dot never slides against a still picture
+      fi = videoReady ? clamp(Math.floor(geT * flight.fps + .25), 0, flight.n) : clamp(geT * flight.fps, 0, flight.n);
+      if (videoReady && fi <= lastF()) m = runAt(fi);
+      const F = flight.cam, a = Math.floor(fi), b = Math.min(flight.n, a + 1), u = fi - a;
       const K = camOf(F[a].map((v, j) => v + (F[b][j] - v) * u));
       const fol = 1 - span(fi, lastF(), lastF() + 200), fr = Math.round(fi), rr = rx.raw[fr] * S;
       const follow = clamp(clamp(W / 2 - rx.smooth[fr] * S, W * .15 - rr, W * .85 - rr), W - GW, 0);
@@ -176,7 +179,7 @@
     loadPill(p);
     if (ge && videoOk && !videoReady) { geT = 0; geo.style.opacity = p >= PR1 ? 0 : 1; }   // still loading: the poster (first frame) stands in
     else if (ge && videoOk) {
-      const vt = Math.min(fi / flight.fps, (ge.duration || flight.n / flight.fps) - 1 / 240);
+      const vt = Math.min((Math.floor(fi) + .5) / flight.fps, (ge.duration || flight.n / flight.fps) - 1 / 240);
       if (ge.readyState >= 1) seek(end ? Math.max(0, (ge.duration || 0) - 1 / 240) : vt);
       geo.style.opacity = end ? 0 : 1;
       if (!rvfc || ge.readyState < 2) geT = vt;
@@ -241,5 +244,5 @@
     ScrollTrigger.create({ trigger: sec, start: 'top top', end: 'bottom bottom', onUpdate: (st) => { progress = st.progress; schedule(); } });
   }
   ScrollTrigger.create({ trigger: sec, start: 'top 80px', end: 'bottom top', toggleClass: { targets: document.body, className: 'nr-active' } });
-  window.novusRun = { state: () => ({ ready, videoReady, loadPct, ori, p: progress, shown, variant: VAR, geT, target: ready && shown < PR1 ? frameAt(shown) / flight.fps : -1, ct: ge ? ge.currentTime : 0, seeking: ge ? ge.seeking : false, rs: ge ? ge.readyState : 0 }) };
+  window.novusRun = { state: () => ({ ready, videoReady, loadPct, ori, p: progress, shown, variant: VAR, geT, target: ready && shown < PR1 ? (Math.floor(frameAt(shown)) + .5) / flight.fps : -1, ct: ge ? ge.currentTime : 0, seeking: ge ? ge.seeking : false, rs: ge ? ge.readyState : 0 }) };
 })();
