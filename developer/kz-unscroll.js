@@ -158,6 +158,8 @@
         </g>
       </g>
 
+    </svg>
+    <svg class="kz-svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <!-- ===== ROOM (beats 1-4) ===== -->
       <g class="kz-indoor">
       <g class="kz-room">
@@ -230,6 +232,10 @@
           <path d="M104 -2 l4 -34 h18 l4 34z" fill="#bfe9ff" opacity=".55"/><path d="M106 -16 h22" stroke="#7fd0ff" stroke-width="2" opacity=".7"/>
         </g>
       </g>
+      </g>
+    </svg>
+    <svg class="kz-svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <g class="kz-indoor">
 
       <!-- notifications around the head (beat 1) -->
       <g class="kz-notes">
@@ -340,16 +346,20 @@
   </div>`;
 
   const q = (s) => host.querySelector(s), qa = (s) => host.querySelectorAll(s);
-  const svgEl = q('.kz-svg');
+  const svgs = [...host.querySelectorAll('.kz-svg')], svgEl = svgs[0];
+  { const set = Element.prototype.setAttribute, rem = Element.prototype.removeAttribute;
+    host.querySelectorAll('.kz-svg *').forEach((n) => { n.setAttribute = function (k, v) { v = String(v); if (this['_a' + k] === v) return; this['_a' + k] = v; set.call(this, k, v); };
+      n.removeAttribute = function (k) { this['_a' + k] = undefined; rem.call(this, k); }; }); }   // three layers: outdoors, room, the boy and the light
   // very sharp phone screens: the whole illustration is re-rasterised every frame, so it is drawn at about 1.65x pixel density
   // and scaled up on the GPU (half the raster work; flat artwork, no visible loss) instead of at 2.6x
   { const k = Math.min(1, 1.65 / (devicePixelRatio || 1)); if (k < .9 && matchMedia('(pointer: coarse)').matches) {
-    svgEl.style.cssText = `inset:auto;left:0;top:0;width:${(100 / (1 / k)).toFixed(2)}%;height:${(100 * k).toFixed(2)}%;transform:scale(${(1 / k).toFixed(4)});transform-origin:0 0;will-change:transform`; } }
+    svgs.forEach((sv) => { sv.style.cssText = `inset:auto;left:0;top:0;width:${(100 / (1 / k)).toFixed(2)}%;height:${(100 * k).toFixed(2)}%;transform:scale(${(1 / k).toFixed(4)});transform-origin:0 0;will-change:transform`; }); } }
   const setText = (el, v) => { v = String(v); if (el._t !== v) { el._t = v; el.textContent = v; } };   // replacing an unchanged text node still costs a style + layout pass
-  const idle = [];   // the endless idle loops (kite, clouds, notes) run only while the scene is on screen
-  let inView = false; new IntersectionObserver((es) => { inView = es[0].isIntersecting; idle.forEach((tw) => (inView ? tw.play() : tw.pause())); }, { rootMargin: '20% 0px' }).observe(host);
+  const idle = [], idleIn = [];
+  const idleSync = (p) => idle.forEach((tw, i) => { const on = inView && p >= idleIn[i][0] && p <= idleIn[i][1]; if (on === tw.paused()) on ? tw.play() : tw.pause(); });   // the endless idle loops (kite, clouds, notes) run only while the scene is on screen
+  let inView = false; new IntersectionObserver((es) => { inView = es[0].isIntersecting; idleSync(tl ? tl.progress() : 0); }, { rootMargin: '20% 0px' }).observe(host);
   const narrow = host.clientWidth / window.innerHeight < 0.8;
-  if (narrow) svgEl.setAttribute('viewBox', '520 0 860 900');
+  if (narrow) svgs.forEach((sv) => sv.setAttribute('viewBox', '520 0 860 900'));
   // phones: the big blurs are the expensive part, drop them
   const lite = narrow || matchMedia('(max-width: 800px)').matches;
   if (lite) host.querySelectorAll('.kz-morning [filter], .kz-beam').forEach((n) => n.removeAttribute('filter'));
@@ -516,22 +526,21 @@
   }
   gsap.ticker.add((time) => {
     if (!inView) return;
-    const p = tl.progress();
+    const p = tl.progress(); idleSync(p);
     throwAt(p);
     clockAt(p, time);
     kidEl.setAttribute('transform', `translate(${kidX(p)} 540)`);
-    drawKid(p, time, el, true); drawKid(.97, time, elOut, false);
+    if (p < .82) drawKid(p, time, el, true); if (p > .66) drawKid(.97, time, elOut, false);   // only the boy on screen
     if (p > .5 && p < .82) motesEl.forEach((o) => { o.m.setAttribute('cx', (o.x + Math.sin(time * .3 + o.s) * 18).toFixed(1)); o.m.setAttribute('cy', (o.y + Math.cos(time * .23 + o.s) * 14 - (time * 6 % 40)).toFixed(1)); });
   });
 
   if (!reduce) {
-    idle.push(gsap.to(qa('.kz-note'), { y: '-=10', duration: 1.6, ease: 'sine.inOut', yoyo: true, repeat: -1, stagger: { each: .2, from: 'random' } }));
-    idle.push(gsap.to(q('.kz-rays'), { rotation: 360, svgOrigin: '1205 400', duration: 120, ease: 'none', repeat: -1 }));
-    idle.push(gsap.to(q('.kz-kite'), { rotation: 22, y: '+=14', duration: 2.4, ease: 'sine.inOut', yoyo: true, repeat: -1 }));
-    idle.push(gsap.to(q('.kz-wave'), { rotation: -14, transformOrigin: '0% 100%', duration: .5, ease: 'sine.inOut', yoyo: true, repeat: -1 }));
-    idle.push(gsap.to(q('.kz-cloud-a'), { x: '-=70', duration: 11, ease: 'sine.inOut', yoyo: true, repeat: -1 }));
-    idle.push(gsap.to(q('.kz-cloud-b'), { x: '+=50', duration: 13, ease: 'sine.inOut', yoyo: true, repeat: -1 }));
-    idle.forEach((tw) => (inView ? tw.play() : tw.pause()));
+    idleIn.push([0, .3]); idle.push(gsap.to(qa('.kz-note'), { y: '-=10', duration: 1.6, ease: 'sine.inOut', yoyo: true, repeat: -1, stagger: { each: .2, from: 'random' } }));
+    idleIn.push([.66, 1]); idle.push(gsap.to(q('.kz-rays'), { rotation: 360, svgOrigin: '1205 400', duration: 120, ease: 'none', repeat: -1 }));
+    idleIn.push([.66, 1]); idle.push(gsap.to(q('.kz-kite'), { rotation: 22, y: '+=14', duration: 2.4, ease: 'sine.inOut', yoyo: true, repeat: -1 }));
+    idleIn.push([.66, 1]); idle.push(gsap.to(q('.kz-wave'), { rotation: -14, transformOrigin: '0% 100%', duration: .5, ease: 'sine.inOut', yoyo: true, repeat: -1 }));
+    idleIn.push([.66, 1]); idle.push(gsap.to(q('.kz-cloud-a'), { x: '-=70', duration: 11, ease: 'sine.inOut', yoyo: true, repeat: -1 }));
+    idleIn.push([.66, 1]); idle.push(gsap.to(q('.kz-cloud-b'), { x: '+=50', duration: 13, ease: 'sine.inOut', yoyo: true, repeat: -1 }));
   }
 
   // parallax: through the window the landscape is small; layers grow at different rates as we push through
@@ -562,9 +571,9 @@
     .to(q('.kz-clock'), { opacity: 0, duration: .02 }, 0.54)
     .to(q('.kz-clockdim'), { opacity: 0, duration: .06 }, 0.54)
   // Beat 5 (0.68-1): push through the window; the room blurs past, the landscape opens in depth
-    .to(q('.kz-indoor'), { scale: 8, svgOrigin: WC, duration: .13, ease: 'power3.in' }, 0.68)
+    .to(qa('.kz-indoor'), { scale: 8, svgOrigin: WC, duration: .13, ease: 'power3.in' }, 0.68)
     .to(pushBlur, { attr: { stdDeviation: 16 }, duration: .1, ease: 'power2.in' }, 0.69)
-    .to(q('.kz-indoor'), { opacity: 0, duration: .025 }, 0.79)
+    .to(qa('.kz-indoor'), { opacity: 0, duration: .025 }, 0.79)
     .to(qa('.kz-bars'), { opacity: 0, duration: .03 }, 0.7)
     .to(kidEl, { opacity: 0, duration: .035 }, 0.705)
     .to(q('.kz-o-sky'), { scale: 1, svgOrigin: WC, duration: .15, ease: 'power2.inOut' }, 0.69)
@@ -573,9 +582,9 @@
     .to(q('.kz-o-near'), { scale: 1, svgOrigin: WC, duration: .15, ease: 'power2.inOut' }, 0.69)
     .fromTo(q('.kz-birds'), { x: -160 }, { x: 240, duration: .26 }, 0.74)
     .fromTo('.kz-cap-3', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .05 }, 0.83)
-    .to(svgEl, { attr: { viewBox: narrow ? '140 0 900 900' : '0 0 1600 900' }, duration: .1 }, 0.74)
+    .to(svgs, { attr: { viewBox: narrow ? '140 0 900 900' : '0 0 1600 900' }, duration: .1 }, 0.74)
     .to({}, { duration: .02 }, 0.98);
-  tl.eventCallback('onUpdate', () => { const p = tl.progress(); q('.kz-indoor').setAttribute('filter', !lite && p > .69 && p < .8 ? 'url(#kzPush)' : ''); });
+  tl.eventCallback('onUpdate', () => { const p = tl.progress(); const fl = !lite && p > .69 && p < .8 ? 'url(#kzPush)' : ''; qa('.kz-indoor').forEach((g) => { if (g.getAttribute('filter') !== fl) g.setAttribute('filter', fl); }); });
 
   if (reduce) { tl.progress(0.9); return; }
   ScrollTrigger.create({ trigger: host, start: 'top top', end: 'bottom bottom', scrub: 0.6, animation: tl });
