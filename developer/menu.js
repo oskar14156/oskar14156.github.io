@@ -6,6 +6,7 @@
     ['unscroll', 'Unscroll', 'Screen time'], ['riseproof', 'RiseProof', 'Alarm'], ['vbg', 'Video Background Remover', 'Video']];
   const here = location.pathname;
   const btn = document.createElement('button');
+  header.classList.add('has-menu');
   btn.type = 'button'; btn.className = 'pf-menu-btn'; btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-controls', 'pf-menu');
   btn.innerHTML = '<span class="pf-menu-icon" aria-hidden="true"><i></i><i></i></span><span class="pf-menu-label">Menu</span>';
   header.insertBefore(btn, header.firstChild);

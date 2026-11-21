@@ -150,7 +150,8 @@
     kick();
   });
   window.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', () => { resize(); update(); }, { passive: true });
+  const onResize = (fn) => { let w = innerWidth, t = 0; const touch = matchMedia('(pointer: coarse)').matches; addEventListener('resize', () => { clearTimeout(t); if (!touch || innerWidth !== w) { w = innerWidth; fn(); } else t = setTimeout(fn, 250); }, { passive: true }); };   // phones: the address bar sliding in and out only changes the height; apply that once it has settled, not mid-scroll
+  onResize(() => { resize(); update(); });
   document.addEventListener('pf-theme', () => { setColors(); draw(); });
   document.documentElement.classList.add('has-ink');
   setColors();

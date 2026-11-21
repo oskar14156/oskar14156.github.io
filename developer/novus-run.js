@@ -39,7 +39,8 @@
   // Chrome and Android: the map frame is drawn into the same canvas as the route, so the two can never drift a frame apart
   // (the browser composites a <video> on its own path). iPhone Safari keeps the video element: it never hands over seeks of a paused video reliably
   const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  const LOCK = !IOS && !!(window.HTMLVideoElement && 'requestVideoFrameCallback' in HTMLVideoElement.prototype);
+  const LOCK = !/[?&]nolock/.test(location.search) && !IOS && !!(window.HTMLVideoElement && 'requestVideoFrameCallback' in HTMLVideoElement.prototype);
+  const WC = LOCK && typeof VideoDecoder === 'function' && typeof EncodedVideoChunk === 'function' && !/[?&]nowc/.test(location.search);
   const attr = sec.querySelector('.nr-ge-attr') || document.createElement('span'), ge = sec.querySelector('.nr-ge'), cv = sec.querySelector('.nr-ge-ov'), dotEl = sec.querySelector('.nr-ge-dot');
   let videoOk = !!ge;
   // a decode error (the phone freed the decoder) reloads the same file once, then streams it from the network, and only then gives up
@@ -51,13 +52,20 @@
   let data = null, flight = null, ready = false, progress = 0, shown = 0, geT = 0;
   let cols = null, rx = null, total = 0;
   const hrEl = sec.querySelector('.nr-hr svg'), hrLine = hrEl && hrEl.querySelector('.nr-hr-line'), hrArea = hrEl && hrEl.querySelector('.nr-hr-area'), hrDot = hrEl && hrEl.querySelector('.nr-hr-dot');
-  let hrPts = [];
+  let hrPts = [], hrClip = null, hrN = -1, txtAt = 0; const cssV = [-1, -1, -1];
   const buildHR = () => { const P = data.pts, n = P.length - 1;
     const hs = P.map((q) => q[4]).filter(Boolean).sort((x, y) => x - y); BP = QS.map((q) => hs[Math.min(hs.length - 1, Math.round(q * (hs.length - 1)))]);
     for (let i = 1; i < BP.length; i++) if (BP[i] <= BP[i - 1]) BP[i] = BP[i - 1] + 1;
     const g = sec.querySelector('#nrHrLine'); if (g) g.innerHTML = BP.map((b, i) => `<stop offset="${clamp((b - 120) / 80).toFixed(3)}" stop-color="${RAMP[i]}"/>`).join('');
     const lg = sec.querySelector('.nr-legend'); if (lg) { lg.querySelector('i').style.background = `linear-gradient(90deg, ${RAMP.join(', ')})`; lg.querySelector('.nr-lo').textContent = BP[0]; lg.querySelector('.nr-hi').textContent = BP[BP.length - 1] + ' bpm'; }
-    hrPts = P.map((q, k) => `${(k / n * 600).toFixed(1)} ${(110 - clamp(((q[4] || data.avgHR) - 120) / 80) * 100).toFixed(1)}`); };
+    hrPts = P.map((q, k) => `${(k / n * 600).toFixed(1)} ${(110 - clamp(((q[4] || data.avgHR) - 120) / 80) * 100).toFixed(1)}`);
+    // the whole curve is built once and uncovered by a clip: rebuilding a 3,000-point path every frame cost a parse, layout and repaint
+    if (hrEl) { const all = hrPts.join(' L'); hrLine.setAttribute('d', 'M' + all); hrArea.setAttribute('d', `M${hrPts[0]} L${all} L600 120 L0 120Z`);
+      if (!hrClip) { const box = document.createElement('div'), win = document.createElement('div'), inner = document.createElement('div'), pin = document.createElement('i');
+        box.className = 'nr-hr-box'; win.className = 'nr-hr-win'; inner.className = 'nr-hr-in'; pin.className = 'nr-hr-pin';
+        hrEl.parentNode.insertBefore(box, hrEl); box.appendChild(win); win.appendChild(inner); inner.appendChild(hrEl); box.appendChild(pin); hrDot.style.display = 'none';
+        hrClip = { box, win, inner, pin, w: 0, h: 0 }; }
+      hrN = -1; } };
   // position along the run by distance
   const at = (m) => {
     const P = data.pts; m = clamp(m, 0, P[P.length - 1][2]);
@@ -105,9 +113,9 @@
   // At the hand-over the still is laid exactly over the video's last frame, then it zooms out to fill the screen.
   let W = 0, H = 0, S = 1, GW = 0, GH = 0, dpr = 1, E = null, ES = 1, EW = 0, EH = 0, hand = null, endCam = null, lastCam = null, endOff = { x: 0, y: 0 };
   function layout() {
-    W = stage.clientWidth; H = stage.clientHeight; S = Math.max(W / flight.w, H / flight.h); GW = flight.w * S; GH = flight.h * S;
+    W = stage.clientWidth; H = stage.clientHeight; if (hrClip) { hrClip.w = 0; hrN = -1; } S = Math.max(W / flight.w, H / flight.h); GW = flight.w * S; GH = flight.h * S;
     geo.style.width = GW + 'px'; geo.style.height = GH + 'px';
-    dpr = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    dpr = Math.min(devicePixelRatio || 1, W < 800 ? 1.5 : 2); cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);   // phones: 1.5x is already finer than the 720 px video under it
     E = ori === 'port' ? ends.port : ends.land; endCam = camOf(E.cam); lastCam = camOf(flight.cam[flight.n]);
     if (still.dataset.src !== E.src) { still.dataset.src = E.src; still.src = E.src; if (still.decode) still.decode().catch(() => {}); }   // decoded ahead, so it never shows black at the hand-over
     ES = Math.max(W / E.w, H / E.h); EW = E.w * ES; EH = E.h * ES;
@@ -149,11 +157,8 @@
       for (let i = 0; i < R.length; i++) { const q = proj(endCam, E.w, E.h, E.fov, R[i]); Q[i] = q && [ex + q[0] * f, ey + q[1] * f]; }
     }
     // no decoded frame for a moment (mid-seek): keep the last picture, map and route together, rather than clear to the bare video below
-    // Chrome/Android: the map comes from the last frame the video presented (copied in the frame callback), never from the
-    // element itself, which reports no frame at all while a seek is in flight; until the first frame lands the video shows
-    if (LOCK && !end && videoReady && fcT < 0) return m;
     const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
-    if (LOCK && !end && videoReady) g.drawImage(fc, vox, voy, GW, GH);
+    if (wc && !end && fcT >= 0 && !glm) { const vf = wc.frame(); if (vf) g.drawImage(vf, vox, voy, GW, GH); }   // no WebGL: the map goes into the route canvas
     g.lineCap = g.lineJoin = 'round';
     if (rise > 0) { g.beginPath(); let pen = false;
       for (let i = 0; i < R.length; i++) { const q = Q[i]; if (!q) { pen = false; continue; } if (pen) g.lineTo(q[0], q[1]); else { g.moveTo(q[0], q[1]); pen = true; } }
@@ -179,7 +184,7 @@
     // the runner, between the last two samples
     const A = R[n], B = R[Math.min(R.length - 1, n + 1)], t = B[3] > A[3] ? clamp((m - A[3]) / (B[3] - A[3])) : 0;
     const qa = Q[n], qb = Q[Math.min(R.length - 1, n + 1)] || qa;
-    if (qa) { dotEl.style.left = lerp(qa[0], qb[0], t) + 'px'; dotEl.style.top = lerp(qa[1], qb[1], t) + 'px'; }
+    if (qa) dotEl.style.transform = `translate3d(${lerp(qa[0], qb[0], t).toFixed(1)}px, ${lerp(qa[1], qb[1], t).toFixed(1)}px, 0)`;   // a transform: no layout pass per frame
     dotEl.style.opacity = qa ? span(p, .02, .04) * (1 - span(p, .8, .86)) * (hid[n] ? .45 : 1) : 0;   // dimmed while a building hides him
     return m;
   }
@@ -198,6 +203,7 @@
     if (ready) frame(); };
   document.addEventListener('visibilitychange', wake); addEventListener('pageshow', wake);
 
+  const setText = (el, v) => { v = String(v); if (el._t !== v) { el._t = v; el.textContent = v; } };   // an unchanged text is not rewritten (that cost a style and layout pass per frame)
   function frame() {
     if (!ready) return;
     const p = shown, fi = frameAt(p), end = p >= PR1;
@@ -205,21 +211,24 @@
     if (ge && videoOk && !videoReady) { geT = 0; geo.style.opacity = p >= PR1 ? 0 : 1; }   // still loading: the poster (first frame) stands in
     else if (ge && videoOk) {
       const vt = Math.min((Math.floor(fi) + .5) / flight.fps, (ge.duration || flight.n / flight.fps) - 1 / 240);
-      if (ge.readyState >= 1) { if (end) { halt(); seek(Math.max(0, (ge.duration || 0) - 1 / 240)); } else if (LOCK) drive(vt); else seek(vt); }
+      if (wc) { if (!end) { wc.want(Math.floor(fi)); const k = wc.take(); if (k >= 0) { const m2 = glMap(); fcT = (k + .5) / flight.fps; if (m2) { m2.put(wc.frame()); if (ge.style.visibility !== 'hidden') ge.style.visibility = 'hidden'; } } } }
+      else if (ge.readyState >= 1) { if (end) { halt(); seek(Math.max(0, (ge.duration || 0) - 1 / 240)); } else if (LOCK) drive(vt); else seek(vt); }
       geo.style.opacity = end ? 0 : 1;
-      if (LOCK) geT = fcT >= 0 ? fcT : vt;   // route and runner follow the cached frame exactly
+      if (wc || fc) geT = fcT >= 0 ? fcT : vt;   // route and runner follow the frame on the map canvas exactly
       else if (!rvfc || ge.readyState < 2) geT = vt;
     } else { geT = fi / flight.fps; geo.style.opacity = 0; }
     const m = draw(p), r = at(m);
     attr.style.opacity = geo.style.opacity;   // the crop can cut the logo baked into the render, so the page shows its own
-    out.km.textContent = (m / 1000).toFixed(2); out.time.textContent = hms(r.secs);
-    out.pace.textContent = r.pace ? mmss(r.pace) : '–'; out.hr.textContent = r.hr || '–';
-    sec.style.setProperty('--done', span(p, .86, .93));
-    sec.style.setProperty('--ov', span(p, .58, .66));
-    sec.style.setProperty('--in', span(p, .005, .03));
-    if (hrEl) { const n = Math.max(1, Math.round(r.i)), D = hrPts.slice(0, n + 1).join(' L');
-      hrLine.setAttribute('d', 'M' + D); hrArea.setAttribute('d', `M${hrPts[0]} L${D} L${hrPts[n].split(' ')[0]} 120 L0 120Z`);
-      hrDot.setAttribute('cx', hrPts[n].split(' ')[0]); hrDot.setAttribute('cy', hrPts[n].split(' ')[1]); }
+    const nowT = performance.now(); if (nowT - txtAt > 30 || shown === progress) { txtAt = nowT;   // unreadable faster anyway; each change costs a layout pass
+      setText(out.km, (m / 1000).toFixed(2)); setText(out.time, hms(r.secs)); setText(out.pace, r.pace ? mmss(r.pace) : '–'); setText(out.hr, r.hr || '–'); }
+    // section-wide variables restyle the whole subtree: written only when they change
+    const vd = span(p, .86, .93), vo = span(p, .58, .66), vi = span(p, .005, .03);
+    if (vd !== cssV[0]) { cssV[0] = vd; sec.style.setProperty('--done', vd); } if (vo !== cssV[1]) { cssV[1] = vo; sec.style.setProperty('--ov', vo); } if (vi !== cssV[2]) { cssV[2] = vi; sec.style.setProperty('--in', vi); }
+    if (hrEl && hrClip) { const n = Math.max(1, Math.round(r.i)); if (n !== hrN && hrPts[n]) { hrN = n; const [hx, hy] = hrPts[n].split(' ').map(Number);
+      if (!hrClip.w) { hrClip.w = hrClip.box.clientWidth; hrClip.h = hrEl.clientHeight; }
+      const x = hx / 600 * hrClip.w + 2, y = hy / 120 * hrClip.h;
+      hrClip.win.style.transform = `translate3d(${(x - hrClip.w).toFixed(1)}px,0,0)`; hrClip.inner.style.transform = `translate3d(${(hrClip.w - x).toFixed(1)}px,0,0)`;
+      hrClip.pin.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`; } }
   }
   // the overlay follows the frame the video is actually showing, so line and streets never drift apart while seeking
   const rvfc = !!(window.HTMLVideoElement && 'requestVideoFrameCallback' in HTMLVideoElement.prototype);
@@ -236,10 +245,32 @@
     if (!ge.paused) ge.pause(); seek(t);
   };
   if (ge && LOCK) ge.addEventListener('seeked', () => { if (drvT >= 0 && seekTo === null) drive(drvT); });   // the scroll moved on during the seek
-  const fc = LOCK ? document.createElement('canvas') : null; let fcT = -1;
+  // Chrome/Android: the map is a canvas inside the video's own box, at the video's size, holding the last frame the video
+  // presented (copied once, 1:1, in the frame callback). Route and map are painted in the same task, so they never drift;
+  // the element itself reports no frame mid-seek, the canvas keeps the last one. Until the first frame lands the video shows.
+  const fc = LOCK && !WC && geo ? document.createElement('canvas') : null; let fcT = -1;
+  // WebCodecs frames go into a WebGL texture (no 2D raster pass, which held Chrome to half rate); the canvas sits in the video's box
+  let glm = null;
+  const glMap = () => { if (glm !== null) return glm; glm = false; try {
+    const c = document.createElement('canvas'); c.className = 'nr-map'; c.setAttribute('aria-hidden', 'true');
+    const gl = c.getContext('webgl', { alpha: false, antialias: false, depth: false, premultipliedAlpha: false, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
+    if (!gl) return glm;
+    const sh = (t, src) => { const o = gl.createShader(t); gl.shaderSource(o, src); gl.compileShader(o); return o; }, pr = gl.createProgram();
+    gl.attachShader(pr, sh(gl.VERTEX_SHADER, 'attribute vec2 p; varying vec2 v; void main(){ v = vec2(p.x * .5 + .5, .5 - p.y * .5); gl_Position = vec4(p, 0., 1.); }'));
+    gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, 'precision mediump float; varying vec2 v; uniform sampler2D t; void main(){ gl_FragColor = texture2D(t, v); }'));
+    gl.linkProgram(pr); gl.useProgram(pr);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    gl.bindTexture(gl.TEXTURE_2D, gl.createTexture()); [gl.TEXTURE_MIN_FILTER, gl.TEXTURE_MAG_FILTER].forEach((k) => gl.texParameteri(gl.TEXTURE_2D, k, gl.LINEAR));
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    geo.appendChild(c); glm = { c, gl, put(vf) { if (c.width !== vf.displayWidth) { c.width = vf.displayWidth; c.height = vf.displayHeight; gl.viewport(0, 0, c.width, c.height); }
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, vf); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); } };
+  } catch (e) { glm = false; } return glm; };
+  if (fc) { fc.className = 'nr-map'; fc.setAttribute('aria-hidden', 'true'); geo.appendChild(fc); }
   const grab = (t) => { if (!fc || !ge.videoWidth) return; if (fc.width !== ge.videoWidth) { fc.width = ge.videoWidth; fc.height = ge.videoHeight; }
-    try { fc.getContext('2d').drawImage(ge, 0, 0); fcT = t; } catch (e) {} };
-  if (ge && rvfc) { const cb = (now, md) => { if (videoReady) { if (LOCK) { grab(md.mediaTime); if (!ge.paused && (drvT < 0 || md.mediaTime >= drvT - .75 / flight.fps)) ge.pause(); } geT = LOCK && fcT >= 0 ? fcT : md.mediaTime; if (ready && shown < PR1) draw(shown); } ge.requestVideoFrameCallback(cb); }; ge.requestVideoFrameCallback(cb); }
+    try { fc.getContext("2d").drawImage(ge, 0, 0); fcT = t; } catch (e) {} };
+  // Chrome: the frame callback copies the map image and asks for one route paint in this same refresh (not one more per video frame)
+  if (ge && rvfc) { const cb = (now, md) => { if (videoReady) { if (LOCK) { grab(md.mediaTime); if (!ge.paused && (drvT < 0 || md.mediaTime >= drvT - .75 / flight.fps)) ge.pause(); } geT = LOCK && fcT >= 0 ? fcT : md.mediaTime; if (ready && shown < PR1) { if (LOCK) schedule(); else draw(shown); } } ge.requestVideoFrameCallback(cb); }; ge.requestVideoFrameCallback(cb); }
 
   // the scroll position is followed with a little inertia, so fast scrolling still reads as a flight
   let queued = false;
@@ -251,6 +282,75 @@
   let loadPct = 0;
   const loadPill = (p) => { pill.style.opacity = (!videoReady && videoOk && p < PR1) ? 1 : 0; pill.querySelector('i').style.transform = `scaleX(${loadPct.toFixed(3)})`; };
   let loaded = null, gen = 0;
+
+  // ---------- WebCodecs map (Chrome, Android) ----------
+  // The flight is decoded here frame by frame on the hardware decoder (about 200 frames/s on a Pixel 7) and drawn straight
+  // onto the map canvas; route and map are painted in the same animation frame, so they are locked by construction.
+  // A <video> element could not do both: seeking it per frame stalled, and copying frames out of it cost ~10 ms each.
+  // The frame table comes from the MP4 itself (stsz/stco/stsc/stss/stts/ctts), so the same files serve every path.
+  let wc = null;
+  function mp4Index(buf) {
+    const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength), u32 = (o) => dv.getUint32(o);
+    const find = (a, b, type) => { for (let o = a; o + 8 <= b;) { let size = u32(o), h = 8; const t = String.fromCharCode(buf[o + 4], buf[o + 5], buf[o + 6], buf[o + 7]);
+      if (size === 1) { size = Number(dv.getBigUint64(o + 8)); h = 16; } else if (size === 0) size = b - o; if (size < 8) return null; if (t === type) return [o + h, o + size]; o += size; } return null; };
+    const path = (types, from = [0, buf.length]) => { let r = from; for (const t of types) { r = find(r[0], r[1], t); if (!r) return null; } return r; };
+    const stbl = path(['moov', 'trak', 'mdia', 'minf', 'stbl']), box = (t) => find(stbl[0], stbl[1], t);
+    const st = box('stsd'), e0 = st[0] + 8, avcC = find(e0 + 8 + 78, e0 + u32(e0), 'avcC'), desc = buf.slice(avcC[0], avcC[1]);
+    const sz = box('stsz'), fixed = u32(sz[0] + 4), n = u32(sz[0] + 8), size = new Uint32Array(n); for (let i = 0; i < n; i++) size[i] = fixed || u32(sz[0] + 12 + i * 4);
+    let co = box('stco'), big = false; if (!co) { co = box('co64'); big = true; }
+    const nc = u32(co[0] + 4), sc = box('stsc'), ns = u32(sc[0] + 4), off = new Float64Array(n);
+    for (let c = 0, i = 0; c < nc && i < n; c++) { let per = 1; for (let k = 0; k < ns; k++) if (c + 1 >= u32(sc[0] + 8 + k * 12)) per = u32(sc[0] + 12 + k * 12);
+      let o = big ? Number(dv.getBigUint64(co[0] + 8 + c * 8)) : u32(co[0] + 8 + c * 4); for (let k = 0; k < per && i < n; k++) { off[i] = o; o += size[i]; i++; } }
+    const key = new Uint8Array(n), ss = box('stss'); if (ss) { const m = u32(ss[0] + 4); for (let k = 0; k < m; k++) key[u32(ss[0] + 8 + k * 4) - 1] = 1; } else key.fill(1);
+    const tt = box('stts'), pts = new Float64Array(n); let d = 0; { const m = u32(tt[0] + 4); for (let k = 0, i = 0, t = 0; k < m; k++) { const cnt = u32(tt[0] + 8 + k * 8); d = d || u32(tt[0] + 12 + k * 8); for (let j = 0; j < cnt && i < n; j++) { pts[i++] = t; t += u32(tt[0] + 12 + k * 8); } } }
+    const ct = box('ctts'); if (ct) { const v1 = buf[ct[0]] === 1, m = u32(ct[0] + 4); for (let k = 0, i = 0; k < m; k++) { const cnt = u32(ct[0] + 8 + k * 8), o = v1 ? dv.getInt32(ct[0] + 12 + k * 8) : u32(ct[0] + 12 + k * 8); for (let j = 0; j < cnt && i < n; j++) pts[i++] += o; } }
+    let p0 = Infinity; for (let i = 0; i < n; i++) p0 = Math.min(p0, pts[i]);
+    const frameOf = new Int32Array(n), sampleOf = new Int32Array(n); for (let i = 0; i < n; i++) { const f = Math.round((pts[i] - p0) / d); frameOf[i] = f; if (f >= 0 && f < n) sampleOf[f] = i; }
+    return { n, desc, size, off, key, frameOf, sampleOf, codec: 'avc1.' + [desc[1], desc[2], desc[3]].map((x) => x.toString(16).padStart(2, '0')).join('') };
+  }
+  function makeWC(buf, onFrame, onFail) {
+    const ix = mp4Index(buf), N = ix.n, US = 1e6 / flight.fps;
+    const cfg = { codec: ix.codec, description: ix.desc, hardwareAcceleration: 'prefer-hardware', optimizeForLatency: true };
+    let dec = null, fed = -1, runTo = -1, runStart = 0, outK = -1, backRun = false, want = 0, latest = null, latestK = -1, shownK = -1, dead = false, resetAt = 0, flushed = false;
+    // decoded frames wait in a small buffer (a phone decoder has only a handful of output buffers); the one nearest the
+    // target is shown, so slow scrolling either way is served from here without restarting the decoder
+    const pool = [];
+    const promote = () => { let best = -1, bd = latestK >= 0 ? Math.abs(latestK - want) : Infinity;
+      for (let i = 0; i < pool.length; i++) { const d = Math.abs(pool[i].k - want); if (d < bd) { bd = d; best = i; } }
+      if (best < 0) return; const b = pool.splice(best, 1)[0]; if (latest) latest.close(); latest = b.f; latestK = b.k; onFrame(); };
+    const output = (f) => { const k = Math.round(f.timestamp / US); outK = Math.max(outK, k);
+      if (dead) { f.close(); return; }
+      pool.push({ k, f });
+      while (pool.length > 6) { let far = 0; for (let i = 1; i < pool.length; i++) if (Math.abs(pool[i].k - want) > Math.abs(pool[far].k - want)) far = i; pool.splice(far, 1)[0].f.close(); }
+      promote(); };
+    let fails = 0;   // a decoder that keeps failing hands over to the <video> path instead of being rebuilt forever
+    const make = () => { dec = new VideoDecoder({ output, error: () => { if (dead) return; try { dec.close(); } catch (e) {} if (++fails > 2) { dead = true; onFail(); return; } make(); fed = -1; runTo = -1; } }); dec.configure(cfg); };
+    const restart = (k) => { backRun = latestK >= 0 && k < latestK; pool.splice(0).forEach((b) => b.f.close()); try { dec.reset(); dec.configure(cfg); } catch (e) { make(); } let s = ix.sampleOf[k]; while (s > 0 && !ix.key[s]) s--; fed = s - 1; runStart = ix.frameOf[s]; runTo = k; outK = -1; resetAt = performance.now(); if (!backRun) latestK = -1; flushed = false; };
+    const chunk = (i) => new EncodedVideoChunk({ type: ix.key[i] ? 'key' : 'delta', timestamp: ix.frameOf[i] * US, data: buf.subarray(ix.off[i], ix.off[i] + ix.size[i]) });
+    make();
+    return {
+      // ask for frame k: keep decoding forward towards it, or restart at the keyframe before it (backwards, or a long jump)
+      want(k) { if (dead) return; want = k = Math.max(0, Math.min(N - 1, k)); promote(); if (latestK === k) return;
+        const ahead = fed >= 0 ? ix.frameOf[fed] : -1;
+        const busy = performance.now() - resetAt < 160 && outK < runTo;   // a restart still on its way to its frame
+        // restart only when nothing within two frames of the target is on hand and this run cannot bring it (a decoder only goes forward)
+        let near = latestK >= 0 ? Math.abs(latestK - k) : Infinity; for (const b of pool) near = Math.min(near, Math.abs(b.k - k));
+        const reach = k >= runStart && k > outK;
+        if (fed < 0 || k > ahead + 36 || (!reach && near > 2 && !busy)) restart(k);
+        else if (reach) runTo = Math.max(runTo, k);
+        const s = ix.sampleOf[Math.max(k, runTo)];
+        let budget = 2;   // at most two new frames per refresh: the decoder never floods the GPU while the page scrolls
+        while (budget-- > 0 && fed < Math.min(N - 1, s + 4) && dec.decodeQueueSize < 6) { fed++; try { dec.decode(chunk(fed)); } catch (e) { restart(k); break; } }
+        if (fed >= N - 1 && !flushed) { flushed = true; dec.flush().catch(() => {}); }
+      },
+      // the newest decoded frame, drawn by the caller (it then owns nothing: the frame stays here until replaced)
+      take() { if (!latest || latestK === shownK) return -1; shownK = latestK; return latestK; },
+      frame: () => latest,
+      dbg: () => ({ fed, fedFrame: fed >= 0 ? ix.frameOf[fed] : -1, runStart, runTo, outK, backRun, want, latestK, shownK, dead, q: dec.decodeQueueSize, st: dec.state, fails }),
+      close() { dead = true; if (latest) latest.close(); latest = null; pool.splice(0).forEach((b) => b.f.close()); try { dec.close(); } catch (e) {} },
+    };
+  }
+
   async function fetchVideo(url, g) {
     try {
       const res = await fetch(url); if (!res.ok || !res.body) throw new Error('http');
@@ -261,11 +361,22 @@
   }
   const load = (o = ori) => {
     if (loaded === o) return; loaded = o; const g = ++gen;
-    videoReady = false; loadPct = 0; ready = false; fcT = -1;
+    videoReady = false; loadPct = 0; ready = false; fcT = -1; if (wc) { wc.close(); wc = null; } if (ge) ge.style.visibility = '';
     if (ge) {
       ge.poster = `/developer/media/novus-flight-${VAR}-${o}-poster.jpg?v=3`;
       fetchVideo(`/developer/media/novus-flight-${VAR}-${o}${LITE}.mp4?v=3`, g).then((src) => {
         if (g !== gen || !src) return;
+        if (WC && src.startsWith('blob:')) {
+          const viaVideo = () => { if (g !== gen) return; if (wc) { wc.close(); wc = null; } fcT = -1; videoReady = false; ge.style.visibility = '';
+            ge.src = src; ge.load(); ge.addEventListener('loadeddata', () => { if (g === gen) { videoReady = true; if (ready) frame(); } }, { once: true }); };
+          fetch(src).then((r) => r.arrayBuffer()).then(async (ab) => { if (g !== gen) return;
+            const buf = new Uint8Array(ab), ix = mp4Index(buf);
+            const ok = await VideoDecoder.isConfigSupported({ codec: ix.codec, description: ix.desc }).then((r) => r.supported, () => false);
+            if (!ok || g !== gen) return ok ? null : viaVideo();
+            if (wc) wc.close(); wc = makeWC(buf, () => schedule(), viaVideo); videoReady = true; if (ready) frame(); })
+            .catch(viaVideo);   // no WebCodecs after all (or an unreadable file): the video path
+          return;
+        }
         const prev = ge.src; ge.src = src; ge.load(); if (prev && prev.startsWith('blob:')) URL.revokeObjectURL(prev);
         ge.addEventListener('loadeddata', () => { if (g === gen) { videoReady = true; if (ready) frame(); } }, { once: true });
       });
@@ -274,11 +385,12 @@
       .then(([d, f, e]) => {
         if (g !== gen) return;
         data = d; flight = f; ends = e; total = d.pts[d.pts.length - 1][2];
-        buildHR(); cols = flight.route.map((q) => hrColor(at(q[3]).hr || data.avgHR));
+        buildHR(); cols = flight.route.map((q) => hrColor(Math.round((at(q[3]).hr || data.avgHR) / 3) * 3));   // 3 bpm steps: neighbours share a colour, so the line goes out in long strokes, not thousands
         rx = runnerTrack(); layout(); ready = true; frame();
       }).catch(() => { sec.classList.add('nr-offline'); });
   };
-  addEventListener('resize', () => { if (ORI() !== ori) { ori = ORI(); if (loaded) load(ori); return; } if (ready) { layout(); frame(); } });
+  const onResize = (fn) => { let w = innerWidth, t = 0; const touch = matchMedia('(pointer: coarse)').matches; addEventListener('resize', () => { clearTimeout(t); if (!touch || innerWidth !== w) { w = innerWidth; fn(); } else t = setTimeout(fn, 250); }, { passive: true }); };   // phones: the address bar sliding in and out only changes the height; apply that once it has settled, not mid-scroll
+  onResize(() => { if (ORI() !== ori) { ori = ORI(); if (loaded) load(ori); return; } if (ready) { layout(); frame(); } });
   // start early: as soon as the work section comes up (the run is a few screens further down), or near the run itself
   const early = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { load(); early.disconnect(); } }, { rootMargin: '100% 0px' });
   [document.getElementById('work'), sec].forEach((el) => el && early.observe(el));
@@ -287,5 +399,5 @@
     ScrollTrigger.create({ trigger: sec, start: 'top top', end: 'bottom bottom', onUpdate: (st) => { progress = st.progress; schedule(); } });
   }
   ScrollTrigger.create({ trigger: sec, start: 'top 80px', end: 'bottom top', toggleClass: { targets: document.body, className: 'nr-active' } });
-  window.novusRun = { preload: () => load(), state: () => ({ ready, videoReady, loadPct, ori, p: progress, shown, variant: VAR, geT, target: ready && shown < PR1 ? (Math.floor(frameAt(shown)) + .5) / flight.fps : -1, ct: ge ? ge.currentTime : 0, seeking: ge ? ge.seeking : false, rs: ge ? ge.readyState : 0 }) };
+  window.novusRun = { wc: () => wc && wc.dbg(), preload: () => load(), state: () => ({ ready, videoReady, loadPct, ori, p: progress, shown, variant: VAR, geT, target: ready && shown < PR1 ? (Math.floor(frameAt(shown)) + .5) / flight.fps : -1, ct: ge ? ge.currentTime : 0, seeking: ge ? ge.seeking : false, rs: ge ? ge.readyState : 0 }) };
 })();

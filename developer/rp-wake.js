@@ -103,7 +103,7 @@
     E.pglow.style.opacity = ringing ? .7 + .3 * Math.sin(time * 8) : .15;
     E.blanket.style.opacity = 1 - span(p, .1, .18);
     const reps = p < .51 ? 7 : Math.min(10, 7 + Math.floor(span(p, .51, .84) * 3 + .5));
-    E.n.textContent = p < .27 ? '–' : reps;
+    { const v = String(p < .27 ? '–' : reps); if (E.n._t !== v) { E.n._t = v; E.n.textContent = v; } }
     E.bar.style.transform = `scaleX(${p < .27 ? 0 : reps / 10})`;
     const ov = span(p, .47, .5) * (1 - span(p, .84, .88));
     E.pose.style.opacity = ov;

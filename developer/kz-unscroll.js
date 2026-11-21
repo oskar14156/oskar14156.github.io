@@ -341,7 +341,13 @@
 
   const q = (s) => host.querySelector(s), qa = (s) => host.querySelectorAll(s);
   const svgEl = q('.kz-svg');
-  let inView = false; new IntersectionObserver((es) => { inView = es[0].isIntersecting; }, { rootMargin: '20% 0px' }).observe(host);
+  // very sharp phone screens: the whole illustration is re-rasterised every frame, so it is drawn at about 1.65x pixel density
+  // and scaled up on the GPU (half the raster work; flat artwork, no visible loss) instead of at 2.6x
+  { const k = Math.min(1, 1.65 / (devicePixelRatio || 1)); if (k < .9 && matchMedia('(pointer: coarse)').matches) {
+    svgEl.style.cssText = `inset:auto;left:0;top:0;width:${(100 / (1 / k)).toFixed(2)}%;height:${(100 * k).toFixed(2)}%;transform:scale(${(1 / k).toFixed(4)});transform-origin:0 0;will-change:transform`; } }
+  const setText = (el, v) => { v = String(v); if (el._t !== v) { el._t = v; el.textContent = v; } };   // replacing an unchanged text node still costs a style + layout pass
+  const idle = [];   // the endless idle loops (kite, clouds, notes) run only while the scene is on screen
+  let inView = false; new IntersectionObserver((es) => { inView = es[0].isIntersecting; idle.forEach((tw) => (inView ? tw.play() : tw.pause())); }, { rootMargin: '20% 0px' }).observe(host);
   const narrow = host.clientWidth / window.innerHeight < 0.8;
   if (narrow) svgEl.setAttribute('viewBox', '520 0 860 900');
   // phones: the big blurs are the expensive part, drop them
@@ -493,8 +499,8 @@
     moon.setAttribute('transform', `translate(${L(-190, 0, k)} ${L(150, 0, Math.sqrt(k))})`);
     const mi = Math.floor(m);
     if (mi !== lastMin) { lastMin = mi; const H = Math.floor(mi / 60), M = mi % 60;
-      clockTxt.textContent = `${pad(H)}:${pad(M)}`;
-      capMeta.textContent = `Unscroll · ${((H + 11) % 12) + 1}:${pad(M)} ${H >= 12 ? 'p.m.' : 'a.m.'}`; }
+      setText(clockTxt, `${pad(H)}:${pad(M)}`);
+      setText(capMeta, `Unscroll · ${((H + 11) % 12) + 1}:${pad(M)} ${H >= 12 ? 'p.m.' : 'a.m.'}`); }
   }
   // the throw: the phone leaves his hand where the hand is, arcs over and lands on the rug, skids, locks
   const fly = q('.kz-phone-fly');
@@ -519,12 +525,13 @@
   });
 
   if (!reduce) {
-    gsap.to(qa('.kz-note'), { y: '-=10', duration: 1.6, ease: 'sine.inOut', yoyo: true, repeat: -1, stagger: { each: .2, from: 'random' } });
-    gsap.to(q('.kz-rays'), { rotation: 360, svgOrigin: '1205 400', duration: 120, ease: 'none', repeat: -1 });
-    gsap.to(q('.kz-kite'), { rotation: 22, y: '+=14', duration: 2.4, ease: 'sine.inOut', yoyo: true, repeat: -1 });
-    gsap.to(q('.kz-wave'), { rotation: -14, transformOrigin: '0% 100%', duration: .5, ease: 'sine.inOut', yoyo: true, repeat: -1 });
-    gsap.to(q('.kz-cloud-a'), { x: '-=70', duration: 11, ease: 'sine.inOut', yoyo: true, repeat: -1 });
-    gsap.to(q('.kz-cloud-b'), { x: '+=50', duration: 13, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+    idle.push(gsap.to(qa('.kz-note'), { y: '-=10', duration: 1.6, ease: 'sine.inOut', yoyo: true, repeat: -1, stagger: { each: .2, from: 'random' } }));
+    idle.push(gsap.to(q('.kz-rays'), { rotation: 360, svgOrigin: '1205 400', duration: 120, ease: 'none', repeat: -1 }));
+    idle.push(gsap.to(q('.kz-kite'), { rotation: 22, y: '+=14', duration: 2.4, ease: 'sine.inOut', yoyo: true, repeat: -1 }));
+    idle.push(gsap.to(q('.kz-wave'), { rotation: -14, transformOrigin: '0% 100%', duration: .5, ease: 'sine.inOut', yoyo: true, repeat: -1 }));
+    idle.push(gsap.to(q('.kz-cloud-a'), { x: '-=70', duration: 11, ease: 'sine.inOut', yoyo: true, repeat: -1 }));
+    idle.push(gsap.to(q('.kz-cloud-b'), { x: '+=50', duration: 13, ease: 'sine.inOut', yoyo: true, repeat: -1 }));
+    idle.forEach((tw) => (inView ? tw.play() : tw.pause()));
   }
 
   // parallax: through the window the landscape is small; layers grow at different rates as we push through

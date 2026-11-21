@@ -512,7 +512,8 @@ function init() {
   const loop = () => { raf = 0; if (!active) return; render(); if (progress < .79) adapt(); else lastT = 0; raf = requestAnimationFrame(loop); };
   const schedule = () => { if (!raf) raf = requestAnimationFrame(loop); };
   measure();
-  addEventListener('resize', () => { measure(); schedule(); });
+  const onResize = (fn) => { let w = innerWidth, t = 0; const touch = matchMedia('(pointer: coarse)').matches; addEventListener('resize', () => { clearTimeout(t); if (!touch || innerWidth !== w) { w = innerWidth; fn(); } else t = setTimeout(fn, 250); }, { passive: true }); };   // phones: the address bar sliding in and out only changes the height; apply that once it has settled, not mid-scroll
+  onResize(() => { measure(); schedule(); });
   // the frame the recording clip is actually showing drives the flight while both are on screen
   // the recording counts as on screen once it has presented a frame after the seek, or its clock is visibly running
   if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) { const vcb = (now, md) => { if (videoArmed && !recPainted && md.mediaTime >= armT - .02) { recPainted = true; schedule(); } video.requestVideoFrameCallback(vcb); }; video.requestVideoFrameCallback(vcb); }

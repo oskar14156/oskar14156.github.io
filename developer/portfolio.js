@@ -96,25 +96,41 @@
     }));
   }
 
-  /* ---------- Browser chrome follows the page: iPhone Safari tints the status bar from the page background,
-     Android Chrome its address bar from theme-color; both take the colour of whatever is under the header ---------- */
+  /* ---------- Header and Android address bar follow the colour under the header ----------
+     The colour bands of the page are measured once (after load, after every ScrollTrigger refresh, on theme change);
+     while scrolling only scrollY is compared against them: no DOM reads, no forced layout in the scroll path. */
   const themeMeta = document.querySelector('meta[name="theme-color"]');
-  let topC = '', topQ = 0;
   const opaque = (c) => c && c !== 'transparent' && !/rgba\([^)]*,\s*0(\.0+)?\)$/.test(c);
-  const topColor = () => {
-    for (const el of document.elementsFromPoint(innerWidth / 2, Math.min(innerHeight - 1, header.offsetHeight + 4))) {
-      if (el.closest('.pf-header, .pf-loader, .pf-menu')) continue;
-      if (el.closest('#intro')) return header.classList.contains('on-dark') ? 'rgb(17, 25, 22)' : getComputedStyle(body).backgroundColor;   // the ink is a canvas: the intro timeline knows when it covers the top
-      for (let n = el; n && n !== root; n = n.parentElement) { const c = getComputedStyle(n).backgroundColor; if (opaque(c)) return c; }
-    }
-    return getComputedStyle(body).backgroundColor;
-  };
   const dark = (c) => { const m = c.match(/[\d.]+/g); if (!m) return false; const [r, g, b] = m.map(Number); return .2126 * r + .7152 * g + .0722 * b < 110; };
-  let inIntro = false;
-  const syncTop = () => { topQ = 0; inIntro = scrollY < (document.getElementById('intro') || header).offsetHeight - header.offsetHeight; const c = root.classList.contains('pf-loading') ? 'rgb(17, 25, 22)' : topColor(); if (c !== topC) { topC = c; root.style.backgroundColor = c; if (themeMeta) themeMeta.setAttribute('content', c); if (!inIntro) header.classList.toggle('on-dark', dark(c)); } };
-  addEventListener('scroll', () => { if (!topQ) topQ = requestAnimationFrame(syncTop); }, { passive: true });
-  document.addEventListener('pf-theme', () => setTimeout(syncTop, 50)); document.addEventListener('pf-loaded', () => setTimeout(syncTop, 50));
-  syncTop();
+  let bands = [], bodyC = '', introEnd = 0, hH = 60, topC = '', topQ = 0, sy = scrollY;
+  const buildBands = () => {
+    bodyC = getComputedStyle(body).backgroundColor; hH = header.offsetHeight;
+    const intro = document.getElementById('intro'); introEnd = intro ? intro.offsetTop + intro.offsetHeight : 0;
+    bands = [];
+    document.querySelectorAll('main section, main article, .site-footer').forEach((el) => {
+      let c = getComputedStyle(el).backgroundColor;
+      if (!opaque(c)) { const st = el.querySelector(':scope > [class$="-stage"], :scope > [class*="-stage "]'); if (st) c = getComputedStyle(st).backgroundColor; }
+      if (!opaque(c)) return;
+      const r = el.getBoundingClientRect(); bands.push([r.top + scrollY, r.bottom + scrollY, c, r.height]);
+    });
+    bands.sort((a, b) => a[3] - b[3]);   // the smallest band that contains the point wins (a dark stage inside a light section)
+    sy = scrollY; topC = ''; syncTop();
+  };
+  const syncTop = () => {
+    topQ = 0;
+    const y = sy + hH, inIntro = y < introEnd;
+    let c = bodyC;
+    if (root.classList.contains('pf-loading')) c = 'rgb(17, 25, 22)';
+    else if (inIntro) c = header.classList.contains('on-dark') ? 'rgb(17, 25, 22)' : bodyC;   // the ink is a canvas: the intro timeline decides
+    else for (const b of bands) if (b[0] <= y && b[1] > y) { c = b[2]; break; }
+    if (c === topC) return; topC = c;
+    if (themeMeta) themeMeta.setAttribute('content', c);
+    if (!inIntro) header.classList.toggle('on-dark', dark(c));
+  };
+  addEventListener('scroll', () => { sy = scrollY; if (!topQ) topQ = requestAnimationFrame(syncTop); }, { passive: true });   // read in the event, where layout is clean
+  document.addEventListener('pf-theme', () => setTimeout(buildBands, 60)); document.addEventListener('pf-loaded', () => setTimeout(buildBands, 60));
+  ScrollTrigger.addEventListener('refresh', () => setTimeout(buildBands, 0));
+  buildBands();
 
   /* ---------- Header: solid after the intro, light text over dark scenes ---------- */
   ScrollTrigger.create({ trigger: '#flight', start: 'top 70px', end: 'max', onToggle: (s) => header.classList.toggle('is-solid', s.isActive) });
@@ -303,4 +319,10 @@
 
   ScrollTrigger.sort();
   window.addEventListener('load', () => { ScrollTrigger.sort(); ScrollTrigger.refresh(); });
+
+  /* ---------- Looping CSS animations (swipe arrows, pulse rings, the alarm bell) run only while on screen:
+     off screen they still cost a style pass every frame ---------- */
+  const loopIO = new IntersectionObserver((es) => es.forEach((e) => { e.target.style.animationPlayState = e.isIntersecting ? 'running' : 'paused'; }), { rootMargin: '10% 0px' });
+  const watchLoops = () => document.querySelectorAll('.pf-swipe i, .nr-ge-dot i, .rw-bell, .intro-cue span').forEach((el) => { if (el._loop) return; el._loop = 1; el.style.animationPlayState = 'paused'; loopIO.observe(el); });
+  watchLoops(); window.addEventListener('load', watchLoops);   // the scenes build their own markup in later scripts
 })();

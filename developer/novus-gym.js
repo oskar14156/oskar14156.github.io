@@ -13,7 +13,6 @@
   <div class="ng-stage">
     <svg class="ng-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
       <defs>
-        <filter id="ngGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
         <linearGradient id="ngFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${LIME}" stop-opacity=".22"/><stop offset="1" stop-color="${LIME}" stop-opacity="0"/></linearGradient>
         <radialGradient id="ngSpot" cx=".5" cy="1" r=".75"><stop offset="0" stop-color="${LIME}" stop-opacity=".16"/><stop offset="1" stop-color="${LIME}" stop-opacity="0"/></radialGradient>
       </defs>
@@ -22,15 +21,8 @@
       <rect x="0" y="${GROUND}" width="${W}" height="${H - GROUND}" fill="url(#ngFloor)"/>
       <path d="M0 ${GROUND} H${W}" stroke="${LIME}" stroke-opacity=".5" stroke-width="2"/>
       <g class="ng-rack"></g>
-      <g class="ng-body" filter="url(#ngGlow)">
-        <path class="ng-p ng-leg-b" fill="#6f8a3c"/><path class="ng-p ng-arm-b" fill="#6f8a3c"/>
-        <path class="ng-p ng-torso" fill="${LIME}"/><path class="ng-p ng-head" fill="${LIME}"/>
-        <path class="ng-p ng-leg-f" fill="${LIME}"/><path class="ng-p ng-arm-f" fill="${LIME}"/>
-        <g class="ng-rack-front"></g>
-        <g class="ng-bar"><circle class="ng-plate" r="46" fill="${LIME}" fill-opacity=".1" stroke="${LIME}" stroke-width="5"/><circle class="ng-plate2" r="31" fill="none" stroke="${LIME}" stroke-width="2.5" stroke-opacity=".45"/><circle class="ng-hub" r="10" fill="${LIME}"/></g>
-        <path class="ng-p ng-detail" fill="none" stroke="#0c120e" stroke-width="2.4" stroke-linecap="round" stroke-opacity=".55"/>
-      </g>
     </svg>
+    <canvas class="ng-cv" aria-hidden="true"></canvas>
     <div class="ng-head-copy"><p class="ng-meta">Novus · training log</p><h2 class="ng-title">Every set counted, every week on the map.</h2></div>
     <div class="ng-card">
       <p class="ng-meta ng-ex">Back squat · set 3 of 3</p>
@@ -42,8 +34,33 @@
   </div>`;
 
   const q = (s) => host.querySelector(s);
-  const E = { legF: q('.ng-leg-f'), legB: q('.ng-leg-b'), armF: q('.ng-arm-f'), armB: q('.ng-arm-b'), torso: q('.ng-torso'), head: q('.ng-head'), detail: q('.ng-detail'),
-    bar: q('.ng-bar'), lanes: q('.ng-lanes'), rack: q('.ng-rack'), rackF: q('.ng-rack-front') };
+  // The figure, the bar and the near rack upright are drawn on a canvas: as SVG every pose change cost a style, layout and
+  // repaint pass of the whole scene per frame (45 fps on a Pixel 7); the frame code still writes path strings, captured here
+  const PD = {}; const part = (k) => ({ setAttribute: (_, v) => { PD[k] = v; }, style: {} });
+  const E = { legF: part('legF'), legB: part('legB'), armF: part('armF'), armB: part('armB'), torso: part('torso'), head: part('head'), detail: part('detail'),
+    bar: part('bar'), lanes: q('.ng-lanes'), rack: q('.ng-rack'), rackF: part('rackF') };
+  const cv = q('.ng-cv'), cx2 = cv.getContext('2d'); let cvK = null, rackFD = [];
+  const sizeCv = () => { const r = cv.getBoundingClientRect(); if (!r.width) return; const dpr = Math.min(devicePixelRatio || 1, 2);
+    cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr); const k = Math.min(r.width / W, r.height / H);
+    cvK = [dpr * k, dpr * (r.width - W * k) / 2, dpr * (r.height - H * k)]; };   // preserveAspectRatio xMidYMax meet, as the SVG
+  const paint = () => {
+    if (!cvK) sizeCv(); if (!cvK) return;
+    const g = cx2; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, cv.width, cv.height); g.setTransform(cvK[0], 0, 0, cvK[0], cvK[1], cvK[2]);
+    const fillP = (d, c) => { if (d) { g.fillStyle = c; g.fill(new Path2D(d)); } };
+    fillP(PD.legB, '#6f8a3c'); fillP(PD.armB, '#6f8a3c'); fillP(PD.torso, LIME); fillP(PD.head, LIME); fillP(PD.legF, LIME); fillP(PD.armF, LIME);
+    const fade = E.bar.style.opacity === undefined ? 1 : +E.bar.style.opacity;   // bar and near upright stay behind as the run begins
+    g.globalAlpha = fade; g.lineCap = 'round'; g.lineJoin = 'round';
+    for (const r of rackFD) { if (r.c) { g.globalAlpha = fade * .6; g.fillStyle = '#0c120e'; g.beginPath(); g.arc(r.c[0], r.c[1], 2.4, 0, 7); g.fill(); continue; }
+      g.globalAlpha = fade * r.a; g.strokeStyle = LIME; g.lineWidth = r.w; g.stroke(new Path2D(r.d)); }
+    const m = /translate\(([-\d.]+) ([-\d.]+)\)/.exec(PD.bar || '');
+    if (m) { const bx = +m[1], by = +m[2];
+      g.globalAlpha = fade * .1; g.fillStyle = LIME; g.beginPath(); g.arc(bx, by, 46, 0, 7); g.fill();
+      g.globalAlpha = fade; g.strokeStyle = LIME; g.lineWidth = 5; g.stroke();
+      g.globalAlpha = fade * .45; g.lineWidth = 2.5; g.beginPath(); g.arc(bx, by, 31, 0, 7); g.stroke();
+      g.globalAlpha = fade; g.beginPath(); g.arc(bx, by, 10, 0, 7); g.fill(); }
+    g.globalAlpha = .55; if (PD.detail) { g.strokeStyle = '#0c120e'; g.lineWidth = 2.4; g.stroke(new Path2D(PD.detail)); }
+    g.globalAlpha = 1;
+  };
   const rep = q('.ng-rep'), vol = q('.ng-vol'), ex = q('.ng-ex'), cells = [...host.querySelectorAll('.ng-heat i')];
   // A deterministic training log: 4-5 sessions a week, heavier towards the end
   const levels = cells.map((_, i) => { const d = i % 7, w = Math.floor(i / 7); const s = Math.sin(i * 12.9898) * 43758.5453; const r = s - Math.floor(s);
@@ -101,11 +118,10 @@
     // far upright behind him, near upright (with the J-hook and safety arm) in front: the rack stands either side of the lifter
     E.rack.innerHTML = `<path d="M${x + 16} ${GROUND} V${y - 150} M${x} ${GROUND} h56" stroke="${LIME}" stroke-opacity=".2" stroke-width="12" stroke-linecap="round" fill="none"/>
       <path d="M${x + 16} ${y + 10} H${x - 12} V${y - 6}" stroke="${LIME}" stroke-opacity=".22" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`;
-    E.rackF.innerHTML = `<path d="M${x} ${GROUND} V${y - 160} M${x - 30} ${GROUND} h64" stroke="${LIME}" stroke-opacity=".38" stroke-width="13" stroke-linecap="round" fill="none"/>
-      <path d="M${x} ${y + 12} H${x - 30} V${y - 6}" stroke="${LIME}" stroke-opacity=".75" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-      <path d="M${x} ${y + 120} H${x - 70}" stroke="${LIME}" stroke-opacity=".35" stroke-width="8" stroke-linecap="round"/>
-      ${Array.from({ length: 9 }, (_, i) => `<circle cx="${x}" cy="${y - 140 + i * 30}" r="2.4" fill="#0c120e" opacity=".6"/>`).join('')}`; })();
+    rackFD = [{ d: `M${x} ${GROUND} V${y - 160} M${x - 30} ${GROUND} h64`, a: .38, w: 13 }, { d: `M${x} ${y + 12} H${x - 30} V${y - 6}`, a: .75, w: 7 },
+      { d: `M${x} ${y + 120} H${x - 70}`, a: .35, w: 8 }, ...Array.from({ length: 9 }, (_, i) => ({ c: [x, y - 140 + i * 30] }))]; })();
 
+  const setText = (el, v) => { v = String(v); if (el._t !== v) { el._t = v; el.textContent = v; } };   // an unchanged text is not rewritten (that cost a style and layout pass per frame)
   function frame(p, time) {
     const cx = 450, G = GROUND;
     // ---- 3 squats, walk the bar forward into the rack, let go, step back, run
@@ -163,22 +179,23 @@
     const hem = add(H, up, 22);
     E.detail.setAttribute('d', `M${f1(hem[0] - 18 * up[1] * -1)} ${f1(hem[1])} l${f1(back[0] * -30)} ${f1(back[1] * -30)} M${f1(legF.K[0] - 6)} ${f1(legF.K[1] - 10)} q6 8 0 16`);
     // ---- treadmill floor; the rack and the bar stay behind as the run begins
-    E.lanes.setAttribute('transform', `translate(${f1(-((cycles * STRIDE) % 70) * runW)} 0)`);
+    { const v = `translate(${f1(-((cycles * STRIDE) % 70) * runW)} 0)`; if (E.lanes._t !== v) { E.lanes._t = v; E.lanes.setAttribute('transform', v); } }
     E.bar.setAttribute('transform', `translate(${f1(bar[0])} ${f1(bar[1])})`);
     const gone = span(p, .68, .74);
-    E.bar.style.opacity = 1 - gone; E.rack.style.opacity = 1 - gone; E.rackF.style.opacity = 1 - gone;
+    E.bar.style.opacity = 1 - gone; if (E.rack._o !== gone) { E.rack._o = gone; E.rack.style.opacity = 1 - gone; }
     const reps = p < .06 ? 0 : Math.min(3, Math.floor(span(p, .06, .46) * 3 + (f > .5 ? .5 : 0)));
-    rep.textContent = reps;
-    vol.textContent = (2400 + reps * 100).toLocaleString('en-US');
-    ex.textContent = p < .6 ? 'Back squat · set 3 of 3' : 'Then the run: 29.8 km';
+    setText(rep, reps);
+    setText(vol, (2400 + reps * 100).toLocaleString('en-US'));
+    setText(ex, p < .6 ? 'Back squat · set 3 of 3' : 'Then the run: 29.8 km');
     const fill = Math.floor(span(p, .05, .5) * cells.length);
-    cells.forEach((c, i) => { c.dataset.l = i < fill ? levels[i] : 0; });
-    host.style.setProperty('--ng-p', p);
+    if (fill !== lastFill) { lastFill = fill; cells.forEach((c, i) => { c.dataset.l = i < fill ? levels[i] : 0; }); }   // 105 cells, rewritten only when the count moves
   }
 
-  let progress = 0;
+  let progress = 0, lastFill = -1, lastP = -1;
   let inView = false; new IntersectionObserver((es) => { inView = es[0].isIntersecting; }, { rootMargin: '20% 0px' }).observe(host);
-  gsap.ticker.add((time) => { if (inView) frame(progress, time); });
+  // drawn only when the scroll moved (the pose depends on nothing else)
+  gsap.ticker.add((time) => { if (inView && progress !== lastP) { lastP = progress; frame(progress, time); paint(); } });
+  addEventListener('resize', () => { cvK = null; lastP = -1; }, { passive: true });
   if (reduce) { progress = .4; return; }
   ScrollTrigger.create({ trigger: host, start: 'top top', end: 'bottom bottom', onUpdate: (st) => { progress = st.progress; } });
   ScrollTrigger.create({ trigger: host, start: 'top 80px', end: 'bottom top', toggleClass: { targets: document.body, className: 'ng-active' } });

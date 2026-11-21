@@ -41,7 +41,7 @@
 }
 
 .pf { background: var(--bg); color: var(--text); font-family: var(--sans); overflow-x: clip; }
-html:has(> body.pf) { overflow-x: clip; }   /* nothing may widen the page: a phone could pan sideways onto a white edge */
+html.pf-page { overflow-x: clip; }   /* a class, not :has(): :has() on the root was re-checked on every class change while scrolling */   /* nothing may widen the page: a phone could pan sideways onto a white edge */
 .pf :where(h1, h2, h3, p) { margin: 0; }
 .pf em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -0.01em; }
 .pf img, .pf video { display: block; }
@@ -410,7 +410,7 @@ body.ink-cream .pf-header .pf-theme button[aria-pressed="true"] { color: #f4f3ec
 /* ---------- Site menu (top left) ---------- */
 .pf-menu-btn { display: inline-flex; align-items: center; gap: 10px; margin-right: auto; margin-left: 0; padding: 8px 12px 8px 0; background: none; border: 0; color: inherit; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; order: -1; }
 .pf-menu-btn + .pf-brand { margin-right: auto; }
-.pf-header:has(.pf-menu-btn) .pf-menu-btn { margin-right: 6px; }
+.pf-header.has-menu .pf-menu-btn { margin-right: 6px; }
 .pf-menu-icon { display: grid; gap: 5px; width: 20px; }
 .pf-menu-icon i { display: block; height: 1.5px; background: currentColor; border-radius: 2px; transition: transform .3s ease; }
 .pf-menu-icon i:last-child { width: 70%; }
@@ -507,7 +507,7 @@ html.pf-menu-open { overflow: hidden; }
   .nr-foot { display: none; }
 }
 .kz-active .work-index, .nr-active .work-index, .vs-active .work-index { opacity: 0; visibility: hidden; pointer-events: none; }
-@media (max-width: 480px) { .pf-header:has(.pf-menu-btn) .pf-brand-name { display: none; } }
+@media (max-width: 480px) { .pf-header.has-menu .pf-brand-name { display: none; } }
 
 /* ---------- VOYEVA SCENE: sky -> globe -> phone -> fan ---------- */
 .vs { position: relative; height: 760vh; }
@@ -545,7 +545,8 @@ html.pf-menu-open { overflow: hidden; }
 /* ---------- Novus: lifter silhouette ---------- */
 .ng { position: relative; height: 330vh; background: #0c120e; color: #f2f1ea; }
 .ng-stage { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; }
-.ng-svg { position: absolute; left: 0; bottom: 0; width: 62%; height: 92%; }
+.ng-svg, .ng-cv { position: absolute; left: 0; bottom: 0; width: 62%; height: 92%; }
+.ng-cv { pointer-events: none; filter: drop-shadow(0 0 7px rgba(200, 241, 105, .45)); will-change: transform; }   /* the glow, as a GPU filter on the canvas layer */
 .ng-head-copy { position: absolute; left: clamp(16px, 5vw, 72px); top: clamp(90px, 14vh, 140px); max-width: min(520px, 50vw); }
 .ng-meta { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: #c8f169; }
 .ng-title { margin-top: 12px !important; font-size: clamp(30px, 3.4vw, 54px); line-height: 1; letter-spacing: -.05em; font-weight: 500; }
@@ -563,7 +564,7 @@ html.pf-menu-open { overflow: hidden; }
 .ng-heat i[data-l="3"] { background: rgba(200, 241, 105, .75); } .ng-heat i[data-l="4"] { background: #c8f169; }
 .ng-active .work-index { opacity: 0; visibility: hidden; pointer-events: none; }
 @media (max-width: 900px) {
-  .ng-svg { width: 100%; height: 58%; }
+  .ng-svg, .ng-cv { width: 100%; height: 58%; }
   .ng-head-copy { right: 16px; max-width: none; top: 76px; } .ng-title { font-size: 28px; }
   .ng-card { left: 16px; right: 16px; width: auto; top: auto; bottom: auto; transform: none; top: 190px; padding: 16px; display: grid; grid-template-columns: auto 1fr; gap: 0 18px; align-items: end; }
   .ng-card .ng-ex { grid-column: 1 / -1; } .ng-rep { font-size: 64px; } .ng-stats { margin: 0; } .ng-hm-label, .ng-heat { display: none; }
@@ -662,6 +663,7 @@ html.pf-menu-open { overflow: hidden; }
 @media (max-width: 800px) { .nr-credit { right: 10px; bottom: 2px; font-size: 8.5px; } }
 .nr-geo { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; background: #1b2318; }
 .nr-geo > video { position: absolute; inset: 0; width: 100%; height: 100%; }
+.nr-geo > .nr-map { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .nr-end { position: absolute; left: 0; top: 0; max-width: none; transform-origin: 0 0; will-change: transform; opacity: 0; pointer-events: none; }
 .nr-load { position: absolute; z-index: 3; left: 50%; top: 58%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 16px 12px; border-radius: 14px; background: rgba(10, 15, 11, .62); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: rgba(242, 241, 234, .8); opacity: 0; transition: opacity .4s; pointer-events: none; }
 .nr-load::before { content: ''; width: 120px; height: 3px; border-radius: 2px; background: rgba(242, 241, 234, .18); order: 2; }
@@ -738,3 +740,13 @@ html.pf-entered .intro-line { animation-delay: .7s; }
 /* sideways on a notched phone: keep content clear of the notch, as Safari does without viewport-fit=cover */
 body.pf { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
 .pf-header { padding-left: max(clamp(16px, 3vw, 36px), env(safe-area-inset-left, 0px)); padding-right: max(clamp(16px, 3vw, 36px), env(safe-area-inset-right, 0px)); }
+
+.nr-ge-dot { left: 0; top: 0; will-change: transform; }   /* moved with transform by the script */
+
+/* heart-rate chart: uncovered by a moving window (GPU transforms), the dot rides on top */
+.nr-hr-box { position: relative; margin-top: 8px; }
+.nr-hr-box svg { margin-top: 0; }
+.nr-hr-win { overflow: hidden; will-change: transform; transform: translate3d(-100%, 0, 0); }
+.nr-hr-in { will-change: transform; transform: translate3d(100%, 0, 0); }
+.nr-hr-pin { position: absolute; left: 0; top: 0; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; border-radius: 50%; background: #fff; will-change: transform; }
+.nr-stats dd { contain: layout paint; }
