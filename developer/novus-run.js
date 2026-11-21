@@ -149,9 +149,11 @@
       for (let i = 0; i < R.length; i++) { const q = proj(endCam, E.w, E.h, E.fov, R[i]); Q[i] = q && [ex + q[0] * f, ey + q[1] * f]; }
     }
     // no decoded frame for a moment (mid-seek): keep the last picture, map and route together, rather than clear to the bare video below
-    if (LOCK && !end && videoReady && ge.readyState < 2) return m;
+    // Chrome/Android: the map comes from the last frame the video presented (copied in the frame callback), never from the
+    // element itself, which reports no frame at all while a seek is in flight; until the first frame lands the video shows
+    if (LOCK && !end && videoReady && fcT < 0) return m;
     const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
-    if (LOCK && !end && videoReady) g.drawImage(ge, vox, voy, GW, GH);
+    if (LOCK && !end && videoReady) g.drawImage(fc, vox, voy, GW, GH);
     g.lineCap = g.lineJoin = 'round';
     if (rise > 0) { g.beginPath(); let pen = false;
       for (let i = 0; i < R.length; i++) { const q = Q[i]; if (!q) { pen = false; continue; } if (pen) g.lineTo(q[0], q[1]); else { g.moveTo(q[0], q[1]); pen = true; } }
@@ -203,10 +205,10 @@
     if (ge && videoOk && !videoReady) { geT = 0; geo.style.opacity = p >= PR1 ? 0 : 1; }   // still loading: the poster (first frame) stands in
     else if (ge && videoOk) {
       const vt = Math.min((Math.floor(fi) + .5) / flight.fps, (ge.duration || flight.n / flight.fps) - 1 / 240);
-      if (ge.readyState >= 1) seek(end ? Math.max(0, (ge.duration || 0) - 1 / 240) : vt);
+      if (ge.readyState >= 1) { if (end) { halt(); seek(Math.max(0, (ge.duration || 0) - 1 / 240)); } else if (LOCK) drive(vt); else seek(vt); }
       geo.style.opacity = end ? 0 : 1;
-      if (!rvfc || ge.readyState < 2) geT = vt;
-      else if (LOCK && !ge.seeking) geT = ge.currentTime;   // the frame the canvas is about to draw
+      if (LOCK) geT = fcT >= 0 ? fcT : vt;   // route and runner follow the cached frame exactly
+      else if (!rvfc || ge.readyState < 2) geT = vt;
     } else { geT = fi / flight.fps; geo.style.opacity = 0; }
     const m = draw(p), r = at(m);
     attr.style.opacity = geo.style.opacity;   // the crop can cut the logo baked into the render, so the page shows its own
@@ -221,7 +223,23 @@
   }
   // the overlay follows the frame the video is actually showing, so line and streets never drift apart while seeking
   const rvfc = !!(window.HTMLVideoElement && 'requestVideoFrameCallback' in HTMLVideoElement.prototype);
-  if (ge && rvfc) { const cb = (now, md) => { if (videoReady) { geT = md.mediaTime; if (ready && shown < PR1) draw(shown); } ge.requestVideoFrameCallback(cb); }; ge.requestVideoFrameCallback(cb); }
+  // Chrome/Android scrolling forward: play the video at a rate that catches up with the scroll instead of seeking frame by
+  // frame (a seek per frame left the map standing still mid-scroll); the frame callback pauses it on the target.
+  // Backwards or a long jump: one seek. Rates stay within what a phone decoder keeps up with.
+  let drvT = -1;
+  const halt = () => { drvT = -1; if (ge && !ge.paused) ge.pause(); };
+  const drive = (t) => {
+    drvT = t; if (ge.seeking) return;
+    const d = t - ge.currentTime, fr = 1 / flight.fps;
+    if (Math.abs(d) <= 1.5 * fr) { if (!ge.paused) ge.pause(); return; }
+    if (d > 0 && d < 2.5) { ge.playbackRate = clamp(d / .12, .25, 6); if (ge.paused) { const pp = ge.play(); if (pp && pp.catch) pp.catch(() => seek(t)); } return; }
+    if (!ge.paused) ge.pause(); seek(t);
+  };
+  if (ge && LOCK) ge.addEventListener('seeked', () => { if (drvT >= 0 && seekTo === null) drive(drvT); });   // the scroll moved on during the seek
+  const fc = LOCK ? document.createElement('canvas') : null; let fcT = -1;
+  const grab = (t) => { if (!fc || !ge.videoWidth) return; if (fc.width !== ge.videoWidth) { fc.width = ge.videoWidth; fc.height = ge.videoHeight; }
+    try { fc.getContext('2d').drawImage(ge, 0, 0); fcT = t; } catch (e) {} };
+  if (ge && rvfc) { const cb = (now, md) => { if (videoReady) { if (LOCK) { grab(md.mediaTime); if (!ge.paused && (drvT < 0 || md.mediaTime >= drvT - .75 / flight.fps)) ge.pause(); } geT = LOCK && fcT >= 0 ? fcT : md.mediaTime; if (ready && shown < PR1) draw(shown); } ge.requestVideoFrameCallback(cb); }; ge.requestVideoFrameCallback(cb); }
 
   // the scroll position is followed with a little inertia, so fast scrolling still reads as a flight
   let queued = false;
@@ -243,7 +261,7 @@
   }
   const load = (o = ori) => {
     if (loaded === o) return; loaded = o; const g = ++gen;
-    videoReady = false; loadPct = 0; ready = false;
+    videoReady = false; loadPct = 0; ready = false; fcT = -1;
     if (ge) {
       ge.poster = `/developer/media/novus-flight-${VAR}-${o}-poster.jpg?v=3`;
       fetchVideo(`/developer/media/novus-flight-${VAR}-${o}${LITE}.mp4?v=3`, g).then((src) => {

@@ -46,7 +46,7 @@ html:has(> body.pf) { overflow-x: clip; }   /* nothing may widen the page: a pho
 .pf em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -0.01em; }
 .pf img, .pf video { display: block; }
 html.lenis, html.lenis body { height: auto; }
-.lenis.lenis-smooth { scroll-behavior: auto !important; }
+html.lenis, .lenis.lenis-smooth { scroll-behavior: auto !important; }   /* the site-wide smooth behaviour turned every scripted scroll into a slow glide on phones */
 
 .eyebrow-pf { font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); display: inline-flex; align-items: center; gap: 10px; }
 .eyebrow-pf::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-deep); }
