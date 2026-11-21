@@ -96,11 +96,29 @@
     }));
   }
 
+  /* ---------- Browser chrome follows the page: iPhone Safari tints the status bar from the page background,
+     Android Chrome its address bar from theme-color; both take the colour of whatever is under the header ---------- */
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  let topC = '', topQ = 0;
+  const opaque = (c) => c && c !== 'transparent' && !/rgba\([^)]*,\s*0(\.0+)?\)$/.test(c);
+  const topColor = () => {
+    for (const el of document.elementsFromPoint(innerWidth / 2, Math.min(innerHeight - 1, header.offsetHeight + 4))) {
+      if (el.closest('.pf-header, .pf-loader, .pf-menu')) continue;
+      if (el.closest('#intro')) return header.classList.contains('on-dark') ? 'rgb(17, 25, 22)' : getComputedStyle(body).backgroundColor;   // the ink is a canvas: the intro timeline knows when it covers the top
+      for (let n = el; n && n !== root; n = n.parentElement) { const c = getComputedStyle(n).backgroundColor; if (opaque(c)) return c; }
+    }
+    return getComputedStyle(body).backgroundColor;
+  };
+  const dark = (c) => { const m = c.match(/[\d.]+/g); if (!m) return false; const [r, g, b] = m.map(Number); return .2126 * r + .7152 * g + .0722 * b < 110; };
+  let inIntro = false;
+  const syncTop = () => { topQ = 0; inIntro = scrollY < (document.getElementById('intro') || header).offsetHeight - header.offsetHeight; const c = root.classList.contains('pf-loading') ? 'rgb(17, 25, 22)' : topColor(); if (c !== topC) { topC = c; root.style.backgroundColor = c; if (themeMeta) themeMeta.setAttribute('content', c); if (!inIntro) header.classList.toggle('on-dark', dark(c)); } };
+  addEventListener('scroll', () => { if (!topQ) topQ = requestAnimationFrame(syncTop); }, { passive: true });
+  document.addEventListener('pf-theme', () => setTimeout(syncTop, 50)); document.addEventListener('pf-loaded', () => setTimeout(syncTop, 50));
+  syncTop();
+
   /* ---------- Header: solid after the intro, light text over dark scenes ---------- */
   ScrollTrigger.create({ trigger: '#flight', start: 'top 70px', end: 'max', onToggle: (s) => header.classList.toggle('is-solid', s.isActive) });
-  ['#voyeva-scene', '#flight', '.tint-ink', '.contact'].forEach((sel) => document.querySelectorAll(sel).forEach((el) => {
-    ScrollTrigger.create({ trigger: el, start: 'top 40px', end: 'bottom 40px', onToggle: (s) => header.classList.toggle('on-dark', s.isActive) });
-  }));
+  // light text over dark scenes: decided from the colour actually under the header (see syncTop), so no dark scene can be missed
 
   /* ---------- 1 · Intro: the name shrinks into the header ---------- */
   const mark = document.getElementById('intro-wordmark');

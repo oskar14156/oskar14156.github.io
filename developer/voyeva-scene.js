@@ -91,7 +91,10 @@ function init() {
   const scene = new THREE.Scene();
   const loader = new THREE.TextureLoader();
   const TEX = []; let texLeft = 0;
-  const tex = (u, srgb = true) => { texLeft++; const t = loader.load(u, () => { texLeft--; schedule(); warm(); }); if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; TEX.push(t); return t; };
+  // heavy downloads start only once the page loader has let go: the globe is several screens down, and the loader should not wait on it
+  const afterLoad = (fn) => { if (window.pfLoaded || !document.documentElement.classList.contains('pf-loading')) fn(); else document.addEventListener('pf-loaded', fn, { once: true }); };
+  const tex = (u, srgb = true) => { texLeft++; window.vsTexLeft = texLeft; const t = new THREE.Texture(); if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; TEX.push(t);
+    afterLoad(() => loader.load(u, (lt) => { t.image = lt.image; t.needsUpdate = true; texLeft--; window.vsTexLeft = texLeft; schedule(); warm(); }, undefined, () => { texLeft--; window.vsTexLeft = texLeft; })); return t; };
   // Upload every texture and compile every shader while the browser is idle, long before the scene scrolls in,
   // so the first frames of the flight never stall on GPU uploads or a shader compile.
   let warmed = false;
@@ -110,6 +113,8 @@ function init() {
   }
 
   /* ---------- world shader: earth + volumetric clouds + atmosphere ---------- */
+  // phones: the whole-globe textures at 2K (a quarter of the GPU memory; iPhone Safari drops tabs that hold too much), corridor detail stays full
+  const EG = small ? '/developer/media/earth/m/' : '/developer/media/earth/';
   let noiseReady = false; const noise3D = makeNoise3D(64, () => { noiseReady = true; warm(); });
   const CORR = new THREE.Vector4(0, 126, 18, 72), CCORR = new THREE.Vector4(5.625, 129.375, 22.5, 67.5), PATCH = new THREE.Vector4(76.5, 112.5, 40.5, 63);
   const worldMat = new THREE.ShaderMaterial({
@@ -117,11 +122,11 @@ function init() {
     uniforms: {
       uInvProj: { value: new THREE.Matrix4() }, uCamRot: { value: new THREE.Matrix3() }, uUp: { value: new THREE.Vector3() }, uAlt: { value: 10 },
       uSun: { value: sunDir }, uTime: { value: 0 }, uNoise: { value: noise3D },
-      uGroundG: { value: tex('/developer/media/earth/ground-global.jpg?v=2') }, uGroundC: { value: tex('/developer/media/earth/ground-corridor.jpg?v=2') },
-      uCloudG: { value: tex('/developer/media/earth/clouds-global.jpg', false) }, uCloudC: { value: tex('/developer/media/earth/clouds-corridor.jpg', false) },
-      uStars: { value: tex('/developer/media/earth/night-sky.png') }, uCorr: { value: CORR }, uCCorr: { value: CCORR }, uPatch: { value: PATCH },
+      uGroundG: { value: tex(EG + 'ground-global.jpg?v=2') }, uGroundC: { value: tex('/developer/media/earth/ground-corridor.jpg?v=2') },
+      uCloudG: { value: tex(EG + 'clouds-global.jpg', false) }, uCloudC: { value: tex('/developer/media/earth/clouds-corridor.jpg', false) },
+      uStars: { value: tex(small ? EG + 'night-sky.jpg' : '/developer/media/earth/night-sky.png') }, uCorr: { value: CORR }, uCCorr: { value: CCORR }, uPatch: { value: PATCH },
       uGroundP: { value: tex('/developer/media/earth/ground-patch.jpg?v=1') },
-      uSatG: { value: tex('/developer/media/earth/viirs-global.jpg?v=2') }, uSatC: { value: tex('/developer/media/earth/viirs-corridor.jpg?v=1') }, uSat: { value: 0 },
+      uSatG: { value: tex(EG + 'viirs-global.jpg?v=2') }, uSatC: { value: tex('/developer/media/earth/viirs-corridor.jpg?v=1') }, uSat: { value: 0 },
       uCloudAmt: { value: 1 }, uDetail: { value: 1 }, uSteps: { value: 64 }, uWind: { value: new THREE.Vector3() },
       uBoost: { value: unit(52, 28) }, uBoostAmt: { value: 1 }, uExposure: { value: 1 }, uDebug: { value: 0 }, uMap: { value: 0 }, uFine: { value: 1 },
       uMerc: { value: 0 }, uCloudVis: { value: 1 }, uFar: { value: 0 }, uPlaneLL: { value: new THREE.Vector2() }, uScr: { value: new THREE.Vector4(0, 0, 1, 1) }, uRtScale: { value: 1 }, uVpH: { value: 1 }, MERC_W: { value: 20.04 }, ANCHOR: { value: new THREE.Vector2(.533, .521) },
@@ -158,7 +163,7 @@ function init() {
   const draco = new DRACOLoader(); draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/');
   const gl = new GLTFLoader(); gl.setDRACOLoader(draco);
   let planeReady = false;
-  gl.load('/developer/models/a350-voyeva.glb?v=2', (g) => {
+  afterLoad(() => gl.load('/developer/models/a350-voyeva.glb?v=2', (g) => {
     const m = g.scene; const box = new THREE.Box3().setFromObject(m), c = box.getCenter(new THREE.Vector3());
     m.position.sub(c); m.position.y += 1.2;
     m.traverse((o) => { if (!o.isMesh) return; const mt = o.material; if (!mt) return;
@@ -167,7 +172,7 @@ function init() {
       else { mt.roughness = .32; mt.metalness = .05; }
     });
     model.add(m); planeReady = true; schedule(); warm();
-  });
+  }));
   // light that matches the world: sun through the atmosphere + bright cloud deck below
   const sunL = new THREE.DirectionalLight(0xfff1de, 2.3); scene.add(sunL); scene.add(sunL.target);
   const hemi = new THREE.HemisphereLight(0x9cc4ff, 0xe8edf4, .7); scene.add(hemi);
@@ -755,4 +760,11 @@ void main(){
   fragOut = vec4(col * uExposure, 1.);
 }`;
 
-if (sec) init();
+// no WebGL2 (older Safari, some Android WebViews, blocked GPU) or the scene fails to start: a still end card instead of a black hole
+const glOK = () => { if (/[?&]nogl\b/.test(location.search)) return false; try { return !!document.createElement('canvas').getContext('webgl2'); } catch (e) { return false; } };
+const fallback = () => {
+  sec.classList.add('vs-static');
+  const v = sec.querySelector('.fan-c video'); if (v) { v.preload = 'auto'; v.loop = true; v.muted = true; const pp = v.play(); if (pp && pp.catch) pp.catch(() => {}); }
+  if (window.ScrollTrigger) ScrollTrigger.refresh();
+};
+if (sec) { if (glOK()) { try { init(); } catch (e) { console.error(e); fallback(); } } else fallback(); }

@@ -36,6 +36,10 @@
   let ori = ORI(), videoReady = false;
   const stage = sec.querySelector('.nr-stage'), geo = sec.querySelector('.nr-geo'), still = sec.querySelector('.nr-end');
   let ends = null;
+  // Chrome and Android: the map frame is drawn into the same canvas as the route, so the two can never drift a frame apart
+  // (the browser composites a <video> on its own path). iPhone Safari keeps the video element: it never hands over seeks of a paused video reliably
+  const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const LOCK = !IOS && !!(window.HTMLVideoElement && 'requestVideoFrameCallback' in HTMLVideoElement.prototype);
   const attr = sec.querySelector('.nr-ge-attr') || document.createElement('span'), ge = sec.querySelector('.nr-ge'), cv = sec.querySelector('.nr-ge-ov'), dotEl = sec.querySelector('.nr-ge-dot');
   let videoOk = !!ge;
   // a decode error (the phone freed the decoder) reloads the same file once, then streams it from the network, and only then gives up
@@ -63,12 +67,14 @@
   };
 
   // scroll → flight frame: [drop-in], street flight, climb; then the last frame stays while the rest of the run is drawn
-  const P0 = .03, PF1 = .46, PDRAW = .55, PR1 = .64, PEND = .84;
-  const PF0 = () => (flight.intro ? .11 : P0);
+  // the drop-in gets about a fifth of the scroll (its fast descent first, the tilt into the chase slowly), the chase itself a bit less
+  const P0 = .03, PF1 = .44, PDRAW = .55, PR1 = .64, PEND = .84;
+  const PF0 = () => (flight.intro ? .21 : P0);
+  const dropIn = (u) => u * .3 + .7 * (1 - (1 - u) * (1 - u));
   const lastF = () => flight.intro + flight.follow;
   function frameAt(p) {
     const fi = flight.intro, ff = lastF();
-    if (p < PF0()) return fi ? lerp(0, fi, span(p, P0, PF0())) : 0;
+    if (p < PF0()) return fi ? lerp(0, fi, dropIn(span(p, P0, PF0()))) : 0;
     if (p < PF1) return lerp(fi, ff, span(p, PF0(), PF1));
     return lerp(ff, flight.n, span(p, PF1, PR1));
   }
@@ -121,7 +127,7 @@
 
   function draw(p) {
     const end = p >= PR1, R = flight.route, Q = new Array(R.length);
-    let fi = flight.n, rise = 1, m = metresAt(p);
+    let fi = flight.n, rise = 1, m = metresAt(p), vox = 0, voy = 0;
     if (!end) {
       // street flight / climb: the video, its crop following the runner on narrow screens.
       // Camera and runner both come from the frame on screen, so the dot never slides against a still picture
@@ -132,7 +138,7 @@
       const fol = 1 - span(fi, lastF(), lastF() + 200), fr = Math.round(fi), rr = rx.raw[fr] * S;
       const follow = clamp(clamp(W / 2 - rx.smooth[fr] * S, W * .15 - rr, W * .85 - rr), W - GW, 0);
       const ox = lerp((W - GW) / 2, follow, fol), oy = (H - GH) / 2;
-      geo.style.transform = `translate(${ox.toFixed(1)}px, ${oy.toFixed(1)}px)`;
+      geo.style.transform = `translate(${ox.toFixed(1)}px, ${oy.toFixed(1)}px)`; vox = ox; voy = oy;
       for (let i = 0; i < R.length; i++) { const q = proj(K, flight.w, flight.h, flight.fov, R[i]); Q[i] = q && [ox + q[0] * S, oy + q[1] * S]; }
       rise = span(fi, lastF() - 30, lastF() + 150); still.style.opacity = 0;
     } else {
@@ -142,7 +148,10 @@
       still.style.transform = `translate(${ex.toFixed(1)}px, ${ey.toFixed(1)}px) scale(${f.toFixed(5)})`; still.style.opacity = 1;
       for (let i = 0; i < R.length; i++) { const q = proj(endCam, E.w, E.h, E.fov, R[i]); Q[i] = q && [ex + q[0] * f, ey + q[1] * f]; }
     }
+    // no decoded frame for a moment (mid-seek): keep the last picture, map and route together, rather than clear to the bare video below
+    if (LOCK && !end && videoReady && ge.readyState < 2) return m;
     const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+    if (LOCK && !end && videoReady) g.drawImage(ge, vox, voy, GW, GH);
     g.lineCap = g.lineJoin = 'round';
     if (rise > 0) { g.beginPath(); let pen = false;
       for (let i = 0; i < R.length; i++) { const q = Q[i]; if (!q) { pen = false; continue; } if (pen) g.lineTo(q[0], q[1]); else { g.moveTo(q[0], q[1]); pen = true; } }
@@ -197,6 +206,7 @@
       if (ge.readyState >= 1) seek(end ? Math.max(0, (ge.duration || 0) - 1 / 240) : vt);
       geo.style.opacity = end ? 0 : 1;
       if (!rvfc || ge.readyState < 2) geT = vt;
+      else if (LOCK && !ge.seeking) geT = ge.currentTime;   // the frame the canvas is about to draw
     } else { geT = fi / flight.fps; geo.style.opacity = 0; }
     const m = draw(p), r = at(m);
     attr.style.opacity = geo.style.opacity;   // the crop can cut the logo baked into the render, so the page shows its own

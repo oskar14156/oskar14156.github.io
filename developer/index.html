@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Oskar Polster, mobile developer. React Native and Expo with native Swift and Kotlin modules; native iOS apps in SwiftUI with Firebase.">
   <meta name="theme-color" content="#111916">
   <title>Oskar Polster — Mobile Developer</title>
@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/developer/portfolio.css?v=46">
+  <link rel="stylesheet" href="/developer/portfolio.css?v=50">
   <script>
     // Theme before first paint: saved pick, else the system setting.
     (function () {
@@ -29,21 +29,17 @@
     <p class="pf-loader-pct"><span id="pf-loader-pct">0</span>% <span class="pf-loader-note">loading the scenes</span></p>
   </div>
   <script>
-    // Loader: releases the scroll once the page (images, fonts, globe textures) has loaded, at most after 8 s.
+    // Loader: releases the scroll once the page itself (images, fonts, scripts) has loaded, at most after 8 s; the globe loads right after.
     // Then the big videos load in the background, in page order, ahead of the reader.
     (function () {
-      var root = document.documentElement, t0 = Date.now(), done = false, shown = 0, target = 0;
+      var root = document.documentElement, t0 = Date.now(), done = false, target = 0;
       var fill = document.getElementById('pf-loader-fill'), pct = document.getElementById('pf-loader-pct');
-      function tick() {
-        if (!done) {
-          var all = performance.getEntriesByType ? performance.getEntriesByType('resource').length : 0;
-          target = Math.max(target, Math.min(.92, 1 - Math.exp(-(Date.now() - t0) / 1800)), Math.min(.92, all / 60));
-        }
-        shown += ((done ? 1 : target) - shown) * .18;
-        fill.style.transform = 'scaleX(' + shown.toFixed(3) + ')'; pct.textContent = Math.round(shown * 100);
-        if (done && shown > .995) return finish();
-        requestAnimationFrame(tick);
-      }
+      // timer-driven (not animation frames), so a busy or throttled device never holds the loader longer than the load itself
+      var iv = setInterval(function () {
+        var all = performance.getEntriesByType ? performance.getEntriesByType('resource').length : 0;
+        target = Math.max(target, Math.min(.92, 1 - Math.exp(-(Date.now() - t0) / 1800)), Math.min(.92, all / 40));
+        fill.style.transform = 'scaleX(' + target.toFixed(3) + ')'; pct.textContent = Math.round(target * 100);
+      }, 120);
       function finish() {
         root.classList.remove('pf-loading'); root.classList.add('pf-entered');
         document.getElementById('pf-loader').setAttribute('aria-hidden', 'true');
@@ -51,19 +47,20 @@
         // warm the big videos one after another in page order; skipped on data saver or a slow connection
         var c = navigator.connection || {};
         if (c.saveData || /(^|-)2g|3g/.test(c.effectiveType || '')) return;
-        setTimeout(function () {
+        var t1 = Date.now();
+        (function wait() { if (window.vsTexLeft > 0 && Date.now() - t1 < 12000) return setTimeout(wait, 300); warmVideos(); })();   // globe textures first, they are needed sooner
+        function warmVideos() {
           var rec = document.querySelector('#voyeva-scene video[data-manual]'), next = function () { if (window.novusRun) window.novusRun.preload(); };
           if (!rec) return next();
           var once = false, go = function () { if (!once) { once = true; next(); } };
           rec.addEventListener('canplaythrough', go, { once: true }); setTimeout(go, 15000);
           if (rec.preload !== 'auto') { rec.preload = 'auto'; if (rec.readyState < 1) rec.load(); }
-        }, 600);
+        }
       }
-      function ready() { if (done) return; done = true; }
+      function ready() { if (done) return; done = true; clearInterval(iv); fill.style.transform = 'scaleX(1)'; pct.textContent = '100'; setTimeout(finish, 280); }
       var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
-      addEventListener('load', function () { fonts.then(function () { setTimeout(ready, Math.max(0, 700 - (Date.now() - t0))); }); });
+      addEventListener('load', function () { fonts.then(function () { setTimeout(ready, Math.max(0, 450 - (Date.now() - t0))); }); });
       setTimeout(ready, 8000);
-      requestAnimationFrame(tick);
     })();
   </script>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -608,16 +605,16 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-  <script src="/developer/portfolio.js?v=21"></script>
+  <script src="/developer/portfolio.js?v=22"></script>
   <script src="/developer/ink.js?v=15"></script>
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
-  <script type="module" src="/developer/voyeva-scene.js?v=22"></script>
+  <script type="module" src="/developer/voyeva-scene.js?v=23"></script>
   <script src="/developer/kz-unscroll.js?v=16"></script>
   <script src="/developer/novus-gym.js?v=12"></script>
   <script src="/developer/stub-flow.js?v=2"></script>
   <script src="/developer/rp-wake.js?v=5"></script>
   <script src="/developer/vbg-cut.js?v=1"></script>
-  <script src="/developer/novus-run.js?v=20"></script>
+  <script src="/developer/novus-run.js?v=22"></script>
   <script src="/developer/menu.js?v=1"></script>
 </body>
 </html>

@@ -59,7 +59,7 @@ html.lenis, html.lenis body { height: auto; }
 }
 .pf-header.is-solid { background: color-mix(in srgb, var(--bg) 80%, transparent); backdrop-filter: blur(14px) saturate(1.3); -webkit-backdrop-filter: blur(14px) saturate(1.3); }
 .pf-header.on-dark { color: #fffef9; }
-.pf-header.on-dark.is-solid { background: rgba(17, 25, 22, .72); }
+.pf-header.on-dark.is-solid { background: #111916; }   /* opaque: iPhone Safari tints the status bar only from an opaque fixed header */
 .pf-brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
 .pf-brand .brand-mark { background: var(--text); color: var(--bg); }
 .pf-header.on-dark .pf-brand .brand-mark { background: #fffef9; color: #111916; }
@@ -679,7 +679,7 @@ html.pf-loading, html.pf-loading body { overflow: hidden; touch-action: none; }
 html:not(.pf-loading) .pf-loader { clip-path: inset(0 0 100% 0); visibility: hidden; pointer-events: none; }
 .pf-loader-name { margin: 0; font-size: clamp(34px, 7vw, 96px); font-weight: 800; letter-spacing: -.05em; line-height: .9; text-transform: uppercase; }
 .pf-loader-bar { width: min(420px, 100%); height: 3px; background: rgba(255, 255, 255, .14); border-radius: 3px; overflow: hidden; }
-.pf-loader-bar i { display: block; height: 100%; background: var(--accent); transform: scaleX(0); transform-origin: 0 50%; }
+.pf-loader-bar i { display: block; height: 100%; background: var(--accent); transform: scaleX(0); transform-origin: 0 50%; transition: transform .25s ease-out; }
 .pf-loader-pct { margin: 0; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; color: rgba(255, 255, 255, .6); }
 .pf-loader-note { margin-left: .6em; }
 /* hero entrance after the loader: kicker, name, line rise in turn (CSS translate, so the scroll transforms stay untouched) */
@@ -717,3 +717,24 @@ html.pf-entered .intro-line { animation-delay: .7s; }
   .stack .win-label i { margin-left: auto; white-space: nowrap; }
   .ng { height: 260vh; }
 }
+/* Voyeva without WebGL2: the end card and the three phones, standing still */
+.vs.vs-static { height: auto; }
+.vs-static .vs-stage { position: relative; height: auto; overflow: visible; background: transparent; color: inherit; }
+.vs-static .vs-clip, .vs-static .vs-haze, .vs-static .vs-cap, .vs-static .vs-hand { display: none; }
+.vs-static .vs-card { opacity: 1; }
+.vs-static .vs-end { position: relative; inset: auto; padding-top: clamp(80px, 10vw, 120px); padding-bottom: 60px; }
+.vs-static .vs-end .vs-text, .vs-static .vs-fan > *, .vs-static .vs-fan .fan-c video { opacity: 1; }
+.vs-static .vs-fan .fan-l, .vs-static .vs-fan .fan-r { display: none; }
+.vs-static .vs-fan { height: auto; padding: 24px 0; }
+@media (max-width: 380px) {
+  .stack .win-label { flex-wrap: wrap; row-gap: 2px; }
+  .stack .win-label small { order: 3; flex-basis: 100%; white-space: normal; padding-left: 26px; }
+}
+
+/* the page runs under the status bar on notched phones; the header reaches up to it, so the bar always shows the header's own colour */
+.pf-header { padding-top: calc(16px + env(safe-area-inset-top, 0px)); }
+@media (max-width: 640px) { .pf-header { padding-top: calc(12px + env(safe-area-inset-top, 0px)); } }
+.pf-loader { padding-top: env(safe-area-inset-top, 0px); }
+/* sideways on a notched phone: keep content clear of the notch, as Safari does without viewport-fit=cover */
+body.pf { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+.pf-header { padding-left: max(clamp(16px, 3vw, 36px), env(safe-area-inset-left, 0px)); padding-right: max(clamp(16px, 3vw, 36px), env(safe-area-inset-right, 0px)); }
