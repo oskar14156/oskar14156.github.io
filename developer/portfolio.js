@@ -50,6 +50,28 @@
   document.querySelectorAll('video:not([data-manual])').forEach((v) => videoIO.observe(v));
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Screenshot strips: show that they swipe ----------
+     A label with a moving arrow under each strip, a fade on the edge that has more, and one gentle nudge of the cards
+     the first time the strip is on screen. Label and fade go once the strip has been swiped. */
+  const nudgeIO = new IntersectionObserver((entries) => entries.forEach((e) => {
+    if (!e.isIntersecting) return; nudgeIO.unobserve(e.target);
+    if (!reduce && e.target.scrollLeft < 4) { e.target.classList.add('is-nudging'); setTimeout(() => e.target.classList.remove('is-nudging'), 2600); }
+  }), { threshold: .7 });
+  document.querySelectorAll('.pf-gallery').forEach((g) => {
+    const hint = document.createElement('button'); hint.type = 'button'; hint.className = 'pf-swipe';
+    const touch = matchMedia('(hover: none)').matches;
+    hint.innerHTML = `<span>${touch ? 'Swipe for more screens' : 'More screens'}</span><i></i>`;
+    hint.addEventListener('click', () => { const f = g.querySelector('figure'), end = g.scrollLeft >= g.scrollWidth - g.clientWidth - 8;
+      if (end) g.scrollTo({ left: 0, behavior: 'smooth' }); else g.scrollBy({ left: f ? f.offsetWidth + 22 : 260, behavior: 'smooth' }); });
+    g.after(hint);
+    const update = () => { const more = g.scrollWidth - g.clientWidth > 8, left = g.scrollLeft;
+      g.classList.toggle('has-more', more && left < g.scrollWidth - g.clientWidth - 8); hint.hidden = !more;
+      if (left > 24 && touch) hint.classList.add('is-done'); };
+    g.addEventListener('scroll', update, { passive: true }); addEventListener('resize', update); update();
+    nudgeIO.observe(g);
+  });
+
   if (reduce || !window.gsap || !window.ScrollTrigger) {
     header.classList.add('is-solid', 'show-name');
     document.querySelectorAll('.flight-captions li')[0]?.classList.add('is-active');
