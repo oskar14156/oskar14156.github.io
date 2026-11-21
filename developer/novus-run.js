@@ -220,14 +220,14 @@
     if (loaded === o) return; loaded = o; const g = ++gen;
     videoReady = false; loadPct = 0; ready = false;
     if (ge) {
-      ge.poster = `/developer/media/novus-flight-${VAR}-${o}-poster.jpg?v=2`;
-      fetchVideo(`/developer/media/novus-flight-${VAR}-${o}.mp4?v=2`, g).then((src) => {
+      ge.poster = `/developer/media/novus-flight-${VAR}-${o}-poster.jpg?v=3`;
+      fetchVideo(`/developer/media/novus-flight-${VAR}-${o}.mp4?v=3`, g).then((src) => {
         if (g !== gen || !src) return;
         const prev = ge.src; ge.src = src; ge.load(); if (prev && prev.startsWith('blob:')) URL.revokeObjectURL(prev);
         ge.addEventListener('loadeddata', () => { if (g === gen) { videoReady = true; if (ready) frame(); } }, { once: true });
       });
     }
-    Promise.all([data ? data : fetch('/developer/data/novus-run.json').then((r) => r.json()), fetch(`/developer/data/novus-flight-${VAR}-${o}.json?v=2`).then((r) => r.json()), ends ? ends : fetch(`/developer/data/novus-end-${VAR}.json?v=2`).then((r) => r.json())])
+    Promise.all([data ? data : fetch('/developer/data/novus-run.json').then((r) => r.json()), fetch(`/developer/data/novus-flight-${VAR}-${o}.json?v=3`).then((r) => r.json()), ends ? ends : fetch(`/developer/data/novus-end-${VAR}.json?v=2`).then((r) => r.json())])
       .then(([d, f, e]) => {
         if (g !== gen) return;
         data = d; flight = f; ends = e; total = d.pts[d.pts.length - 1][2];
