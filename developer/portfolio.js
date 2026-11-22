@@ -291,22 +291,8 @@
       .fromTo('.scan-phone', { rotate: 4, xPercent: 34 }, { rotate: 0, xPercent: 0, ease: 'none', duration: .4 }, .6);
   }
 
-  /* ---------- 6 · AppReleaser: the window stands up, chips float ---------- */
-  gsap.fromTo('#ar-browser', { rotateX: 32, scale: .86, y: 80 }, {
-    rotateX: 0, scale: 1, y: 0, ease: 'none',
-    scrollTrigger: { trigger: '.ar-stage', start: 'top 95%', end: 'center 55%', scrub: 1 },
-  });
-  // Real UI cards drift at different speeds around the dashboard (parallax).
-  [['.ar-card-compliance', 140, -120, -6], ['.ar-card-prices', 220, -160, 5], ['.ar-card-texts', 180, -200, -3], ['.ar-card-connections', 260, -140, 4]].forEach(([sel, from, to, rot]) => {
-    gsap.from(sel, { opacity: 0, scale: .9, duration: .8, ease: 'power3.out', scrollTrigger: { trigger: '.ar-stage', start: 'top 70%' } });
-    gsap.fromTo(sel, { y: from, rotate: rot }, {
-      y: to, rotate: 0, ease: 'none',
-      scrollTrigger: { trigger: '.ar-stage', start: 'top 90%', end: 'bottom top', scrub: true },
-    });
-  });
-
   /* ---------- Generic reveals ---------- */
-  gsap.utils.toArray('.practice-grid > div, .tool-list li, .numbers-grid > div, .ar-tile').forEach((el) => {
+  gsap.utils.toArray('.practice-grid > div, .tool-list li, .numbers-grid > div, .fork-card').forEach((el) => {
     gsap.from(el, { y: 40, opacity: 0, duration: .9, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 90%' } });
   });
 
@@ -323,6 +309,6 @@
   /* ---------- Looping CSS animations (swipe arrows, pulse rings, the alarm bell) run only while on screen:
      off screen they still cost a style pass every frame ---------- */
   const loopIO = new IntersectionObserver((es) => es.forEach((e) => { e.target.style.animationPlayState = e.isIntersecting ? 'running' : 'paused'; }), { rootMargin: '10% 0px' });
-  const watchLoops = () => document.querySelectorAll('.pf-swipe i, .nr-ge-dot i, .rw-bell, .intro-cue span').forEach((el) => { if (el._loop) return; el._loop = 1; el.style.animationPlayState = 'paused'; loopIO.observe(el); });
+  const watchLoops = () => document.querySelectorAll('.pf-swipe i, .nr-ge-dot i, .rw-bell, .intro-cue span, .fk-pill b, .fk-bar i, .fk-ready em').forEach((el) => { if (el._loop) return; el._loop = 1; el.style.animationPlayState = 'paused'; loopIO.observe(el); });
   watchLoops(); window.addEventListener('load', watchLoops);   // the scenes build their own markup in later scripts
 })();
