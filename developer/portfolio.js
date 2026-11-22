@@ -292,8 +292,11 @@
   }
 
   /* ---------- Visitor stats (GoatCounter, no cookies): how far people get, one event per section and visit ---------- */
-  { const sent = new Set(), send = (p) => { const go = () => { if (!window.goatcounter || !goatcounter.count) return false; goatcounter.count({ path: p, title: p, event: true }); return true; };
-      if (!go()) setTimeout(go, 4000); };
+  { const sent = new Set(), queue = []; let busy = false;   // one event a second at most: GoatCounter answers bursts with 429
+    const pump = () => { if (!queue.length) { busy = false; return; } busy = true;
+      if (window.goatcounter && goatcounter.count) { const p = queue.shift(); goatcounter.count({ path: p, title: p, event: true }); }
+      setTimeout(pump, 1100); };
+    const send = (p) => { queue.push(p); if (!busy) pump(); };
     const io = new IntersectionObserver((es) => es.forEach((e) => { const id = e.target.id; if (e.isIntersecting && !sent.has(id)) { sent.add(id); io.unobserve(e.target); send('reached/' + id); } }), { threshold: 0, rootMargin: '-40% 0px -40% 0px' });
     ['flight', 'fork', 'voyeva', 'novus', 'stub', 'unscroll', 'riseproof', 'vbg', 'pages', 'colophon', 'contact'].forEach((id) => { const el = document.getElementById(id); if (el) io.observe(el); }); }
 
