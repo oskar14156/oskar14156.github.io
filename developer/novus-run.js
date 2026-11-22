@@ -55,7 +55,7 @@
   let data = null, flight = null, ready = false, progress = 0, shown = 0, geT = 0;
   let cols = null, rx = null, total = 0;
   const hrEl = sec.querySelector('.nr-hr svg'), hrLine = hrEl && hrEl.querySelector('.nr-hr-line'), hrArea = hrEl && hrEl.querySelector('.nr-hr-area'), hrDot = hrEl && hrEl.querySelector('.nr-hr-dot');
-  let hrPts = [], hrClip = null, hrN = -1, txtAt = 0, cvClear = false; const cssV = [-1, -1, -1];
+  let hrPts = [], hrClip = null, hrN = -1, txtAt = 0, cvClear = false; const cssV = [-1, -1, -1]; const varEl = { done: sec.querySelector('.nr-foot'), in: sec.querySelector('.nr-hr') };
   const buildHR = () => { const P = data.pts, n = P.length - 1;
     const hs = P.map((q) => q[4]).filter(Boolean).sort((x, y) => x - y); BP = QS.map((q) => hs[Math.min(hs.length - 1, Math.round(q * (hs.length - 1)))]);
     for (let i = 1; i < BP.length; i++) if (BP[i] <= BP[i - 1]) BP[i] = BP[i - 1] + 1;
@@ -150,7 +150,7 @@
       const follow = clamp(clamp(W / 2 - rx.smooth[fr] * S, W * .15 - rr, W * .85 - rr), W - GW, 0);
       const ox = lerp((W - GW) / 2, follow, fol), oy = (H - GH) / 2;
       geo.style.transform = `translate(${ox.toFixed(1)}px, ${oy.toFixed(1)}px)`; vox = ox; voy = oy;
-      if (BAKED && videoReady) { if (!cvClear) { cv.getContext('2d').clearRect(0, 0, cv.width, cv.height); cvClear = true; } dotEl.style.opacity = 0; still.style.opacity = 0; return m; }
+      if (BAKED && videoReady) { if (!cvClear) { cv.getContext('2d').clearRect(0, 0, cv.width, cv.height); cvClear = true; } dotEl.style.opacity = 0; dotEl.classList.add('nr-off'); still.style.opacity = 0; return m; }
       for (let i = 0; i < R.length; i++) { const q = proj(K, flight.w, flight.h, flight.fov, R[i]); Q[i] = q && [ox + q[0] * S, oy + q[1] * S]; }
       rise = span(fi, lastF() - 30, lastF() + 150); still.style.opacity = 0;
     } else {
@@ -189,7 +189,8 @@
     const A = R[n], B = R[Math.min(R.length - 1, n + 1)], t = B[3] > A[3] ? clamp((m - A[3]) / (B[3] - A[3])) : 0;
     const qa = Q[n], qb = Q[Math.min(R.length - 1, n + 1)] || qa;
     if (qa) dotEl.style.transform = `translate3d(${lerp(qa[0], qb[0], t).toFixed(1)}px, ${lerp(qa[1], qb[1], t).toFixed(1)}px, 0)`;   // a transform: no layout pass per frame
-    dotEl.style.opacity = qa ? span(p, .02, .04) * (1 - span(p, .8, .86)) * (hid[n] ? .45 : 1) : 0;   // dimmed while a building hides him
+    const dop = qa ? span(p, .02, .04) * (1 - span(p, .8, .86)) * (hid[n] ? .45 : 1) : 0; dotEl.style.opacity = dop;   // dimmed while a building hides him
+    dotEl.classList.toggle('nr-off', !dop);   // its pulse stops while he is not shown (it ticked every frame for nothing)
     return m;
   }
 
@@ -215,7 +216,8 @@
     if (ge && videoOk && !videoReady) { geT = 0; geo.style.opacity = p >= PR1 ? 0 : 1; }   // still loading: the poster (first frame) stands in
     else if (ge && videoOk) {
       const vt = Math.min((Math.floor(fi) + .5) / flight.fps, (ge.duration || flight.n / flight.fps) - 1 / 240);
-      if (wc) { if (!end) { wc.want(Math.floor(fi)); const k = wc.take(); if (k >= 0) { const m2 = glMap(); fcT = (k + .5) / flight.fps; if (m2) { m2.put(wc.frame()); if (ge.style.visibility !== 'hidden') ge.style.visibility = 'hidden'; } } } }
+      if (wc) { if (!end) { wc.want(Math.floor(fi)); const k = wc.take(); if (k >= 0) { const m2 = glMap(); fcT = (k + .5) / flight.fps; if (m2) { m2.put(wc.frame()); if (ge.style.visibility !== 'hidden') ge.style.visibility = 'hidden'; } } }
+        else if (p < PR1 + .05) wc.want(Math.floor(frameAt(PR1 - 1e-4))); }   // near the overview: the flight's last frames wait decoded, so scrolling back into the flight does not stall
       else if (ge.readyState >= 1) { if (end) { halt(); seek(Math.max(0, (ge.duration || 0) - 1 / 240)); } else if (LOCK) drive(vt); else seek(vt); }
       geo.style.opacity = end ? 0 : 1;
       if (wc || fc) geT = fcT >= 0 ? fcT : vt;   // route and runner follow the frame on the map canvas exactly
@@ -223,11 +225,11 @@
     } else { geT = fi / flight.fps; geo.style.opacity = 0; }
     const m = draw(p), r = at(m);
     attr.style.opacity = geo.style.opacity;   // the crop can cut the logo baked into the render, so the page shows its own
-    const nowT = performance.now(); if (nowT - txtAt > 30 || shown === progress) { txtAt = nowT;   // unreadable faster anyway; each change costs a layout pass
+    const nowT = performance.now(); if (nowT - txtAt > 60 || shown === progress) { txtAt = nowT;   // unreadable faster anyway; each change costs a layout pass
       setText(out.km, (m / 1000).toFixed(2)); setText(out.time, hms(r.secs)); setText(out.pace, r.pace ? mmss(r.pace) : '–'); setText(out.hr, r.hr || '–'); }
-    // section-wide variables restyle the whole subtree: written only when they change
-    const vd = span(p, .86, .93), vo = span(p, .58, .66), vi = span(p, .005, .03);
-    if (vd !== cssV[0]) { cssV[0] = vd; sec.style.setProperty('--done', vd); } if (vo !== cssV[1]) { cssV[1] = vo; sec.style.setProperty('--ov', vo); } if (vi !== cssV[2]) { cssV[2] = vi; sec.style.setProperty('--in', vi); }
+    // a variable on the section restyles its whole subtree: written only when it changes, and only on the element that uses it
+    const vd = span(p, .86, .93), vi = span(p, .005, .03);
+    if (vd !== cssV[0]) { cssV[0] = vd; (varEl.done || sec).style.setProperty('--done', vd); } if (vi !== cssV[2]) { cssV[2] = vi; (varEl.in || sec).style.setProperty('--in', vi); }   // set on the one element that reads each
     if (hrEl && hrClip) { const n = Math.max(1, Math.round(r.i)); if (n !== hrN && hrPts[n]) { hrN = n; const [hx, hy] = hrPts[n].split(' ').map(Number);
       if (!hrClip.w) { hrClip.w = hrClip.box.clientWidth; hrClip.h = hrEl.clientHeight; }
       const x = hx / 600 * hrClip.w + 2, y = hy / 120 * hrClip.h;

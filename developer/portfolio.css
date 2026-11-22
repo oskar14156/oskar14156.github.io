@@ -461,7 +461,7 @@ html.pf-menu-open { overflow: hidden; }
 .nr-head h2 { margin-top: 12px !important; font-size: clamp(30px, 3.2vw, 50px); line-height: 1; letter-spacing: -.05em; font-weight: 500; }
 .nr-stats { position: absolute; right: clamp(16px, 5vw, 72px); top: 40vh; width: min(30vw, 440px); display: grid; grid-template-columns: 1fr 1fr; gap: 22px 28px; margin: 0; }
 .nr-stats dt { color: rgba(242, 241, 234, .55); }
-.nr-stats dd { margin: 6px 0 0; font-size: clamp(30px, 3vw, 48px); font-weight: 500; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.nr-stats dd { margin: 6px 0 0; font-size: clamp(30px, 3vw, 48px); font-weight: 500; letter-spacing: -.04em; font-variant-numeric: tabular-nums; text-shadow: 0 1px 6px rgba(0, 0, 0, .5); }   /* the numbers change while scrolling: a 14px shadow redrawn each time cost about 1 frame in 8 on a Pixel 7 */
 .nr-stats small { margin-left: 6px; font-size: 14px; letter-spacing: 0; color: rgba(242, 241, 234, .55); }
 .nr-legend { position: absolute; left: clamp(16px, 6vw, 90px); top: clamp(90px, 14vh, 140px); display: flex; align-items: center; gap: 10px; color: rgba(242, 241, 234, .6); }
 .nr-legend i { width: 120px; height: 8px; border-radius: 4px; background: linear-gradient(90deg, #4c7dff, #22c7e8, #3fe08a, #c8f169, #ffd23f, #ff7a3d, #ff2e63); }
@@ -471,6 +471,7 @@ html.pf-menu-open { overflow: hidden; }
   .nr-head h2 { font-size: 26px; }
   .nr-stats { left: 16px; right: 16px; width: auto; top: auto; bottom: 22vh; grid-template-columns: repeat(4, 1fr); gap: 10px; }
   .nr-stats dd { font-size: 20px; } .nr-stats small { display: none; }
+  .nr-stats dt { font-size: 10px; letter-spacing: .02em; white-space: nowrap; }   /* 12px labels ran into each other (MOVING TIME / PACE) in four phone columns */
   .nr-legend { display: none; }
   .nr-scrim { background: linear-gradient(180deg, rgba(10, 15, 11, .78) 0, rgba(10, 15, 11, 0) 34%), linear-gradient(0deg, rgba(10, 15, 11, .82) 0, rgba(10, 15, 11, 0) 38%); }
   .nr-foot { display: none; }
@@ -712,6 +713,7 @@ body.pf { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-
 .pf-header { padding-left: max(clamp(16px, 3vw, 36px), env(safe-area-inset-left, 0px)); padding-right: max(clamp(16px, 3vw, 36px), env(safe-area-inset-right, 0px)); }
 
 .nr-ge-dot { left: 0; top: 0; will-change: transform; }   /* moved with transform by the script */
+.nr-ge-dot.nr-off i { animation: none; }
 
 /* heart-rate chart: uncovered by a moving window (GPU transforms), the dot rides on top */
 .nr-hr-box { position: relative; margin-top: 8px; }
