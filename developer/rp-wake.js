@@ -39,6 +39,9 @@
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr); const k = Math.min(r.width / 900, r.height / 360);
     cvK = [dpr * k, dpr * ((r.width - 900 * k) / 2 - 80 * k), dpr * (r.height - 360 * k - 130 * k)]; };   // viewBox 80 130 900 360, xMidYMax meet, as the SVG
   addEventListener('resize', () => { cvK = null; }, { passive: true });
+  // duvet outline: over the sleeper (BL0), kicked off the front of the bed to the floor (BL1); same points, interpolated
+  const BL0 = [[224, 384], [220, 340], [234, 316], [290, 312], [346, 320], [410, 322], [470, 320], [500, 330], [504, 384]];
+  const BL1 = [[262, 474], [256, 420], [258, 368], [300, 354], [350, 352], [400, 354], [446, 358], [458, 410], [462, 474]];
   const op = (el, d = 1) => (el.style.opacity === undefined || el.style.opacity === '' ? d : +el.style.opacity);
   const paint = () => {
     if (!cvK) sizeCv(); if (!cvK) return; const g = g2;
@@ -55,7 +58,14 @@
     st(E.legB.a.d, DIM, 24); st(E.armB.a.d, DIM, 16); st(E.trunk.a.d, ink, 38); st(E.legF.a.d, ink, 27);
     if (E.head.a.cx !== undefined) { g.fillStyle = ink; g.beginPath(); g.arc(+E.head.a.cx, +E.head.a.cy, 21, 0, 7); g.fill(); }
     st(E.armF.a.d, ink, 18);
-    g.globalAlpha = op(E.blanket, 1); if (g.globalAlpha > 0) { g.fillStyle = '#3b4270'; g.fill(new Path2D('M258 340 C 300 326 420 326 470 340 L470 356 L258 356 Z')); }
+    // the duvet lies over him up to the shoulders; when he sits up he kicks it off the front of the bed, where it hangs to the floor
+    { const b = +E.blanket.a.b || 0, pt = BL0.map((v, i) => [v[0] + (BL1[i][0] - v[0]) * b, v[1] + (BL1[i][1] - v[1]) * b]), n = pt.length;
+      const curve = (P, i0, i1) => { for (let i = i0; i < i1; i++) P.quadraticCurveTo(pt[i][0], pt[i][1], (pt[i][0] + pt[i + 1][0]) / 2, (pt[i][1] + pt[i + 1][1]) / 2); };
+      const path = new Path2D(); path.moveTo(pt[0][0], pt[0][1]); curve(path, 1, n - 1); path.lineTo(pt[n - 1][0], pt[n - 1][1]);
+      path.quadraticCurveTo((pt[0][0] + pt[n - 1][0]) / 2, Math.max(pt[0][1], pt[n - 1][1]) + 5, pt[0][0], pt[0][1]);
+      g.globalAlpha = 1; g.fillStyle = '#3b4270'; g.fill(path);
+      const hi = new Path2D(); hi.moveTo((pt[1][0] + pt[2][0]) / 2, (pt[1][1] + pt[2][1]) / 2); curve(hi, 2, n - 2); g.strokeStyle = '#5a64a3'; g.lineWidth = 4; g.stroke(hi);
+      const yf = 368 + 64 * b; g.strokeStyle = '#2c3259'; g.lineWidth = 3; g.beginPath(); g.moveTo(pt[0][0] + 8, yf); g.quadraticCurveTo((pt[0][0] + pt[n - 1][0]) / 2, yf + 6, pt[n - 1][0] - 8, yf - 2); g.stroke(); }
     // the on-device pose overlay
     g.globalAlpha = op(E.pose, 0);
     if (g.globalAlpha > 0) { st(E.bones.a.d, CYAN, 2.5); st(E.box.a.d, CYAN, 3);
@@ -112,7 +122,7 @@
     E.phone.setAttribute('transform', `translate(${shake} 0)`);
     E.rings.style.opacity = ringing ? .5 + .5 * Math.sin(time * 8) : 0;
     E.pglow.style.opacity = ringing ? .7 + .3 * Math.sin(time * 8) : .15;
-    E.blanket.style.opacity = 1 - span(p, .1, .18);
+    E.blanket.setAttribute('b', sm(span(p, .1, .21)));
     const reps = p < .51 ? 7 : Math.min(10, 7 + Math.floor(span(p, .51, .84) * 3 + .5));
     { const v = String(p < .27 ? '–' : reps); if (E.n._t !== v) { E.n._t = v; E.n.textContent = v; } }
     E.bar.style.transform = `scaleX(${p < .27 ? 0 : reps / 10})`;

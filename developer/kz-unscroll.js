@@ -361,7 +361,7 @@
   const narrow = host.clientWidth / window.innerHeight < 0.8;
   if (narrow) svgs.forEach((sv) => sv.setAttribute('viewBox', '520 0 860 900'));
   // phones: the big blurs are the expensive part, drop them
-  const lite = narrow || matchMedia('(max-width: 800px)').matches;
+  const lite = !window.KZ_FULL && (narrow || matchMedia('(max-width: 800px)').matches);   // the bake keeps the blurs
   if (lite) host.querySelectorAll('.kz-morning [filter], .kz-beam').forEach((n) => n.removeAttribute('filter'));
   gsap.set(qa('.kz-note-in'), { scale: 0, transformOrigin: '50% 50%' });
 
@@ -493,7 +493,7 @@
   }
   const kidX = (p) => 872 + 34 * EASE.io(span(p, .6, .66));
 
-  const motesEl = [...qa('.kz-mote')].map((m) => ({ m, x: +m.getAttribute('cx'), y: +m.getAttribute('cy'), s: Math.random() * 6.28 }));
+  const motesEl = [...qa('.kz-mote')].map((m) => ({ m, x: +m.getAttribute('cx'), y: +m.getAttribute('cy'), s: rnd() * 6.28 }));
   // three hours pass while he scrolls: 11:47 p.m. -> 2:47 a.m., the moon climbs across the window
   const dusk = q('.kz-dusk'), dark = q('.kz-dark');
   const hh = q('.kz-hh'), mh = q('.kz-mh'), shd = q('.kz-sh'), moon = q('.kz-moon'), clockTxt = q('.kz-clock'), capMeta = q('.kz-cap-1 .kz-meta');
@@ -508,10 +508,12 @@
     if (p < .3) dark.style.opacity = (.22 + .4 * span(p, 0, .15)).toFixed(3);
     moon.setAttribute('transform', `translate(${L(-190, 0, k)} ${L(150, 0, Math.sqrt(k))})`);
     const mi = Math.floor(m);
-    if (mi !== lastMin) { lastMin = mi; const H = Math.floor(mi / 60), M = mi % 60;
-      setText(clockTxt, `${pad(H)}:${pad(M)}`);
-      setText(capMeta, `Unscroll · ${((H + 11) % 12) + 1}:${pad(M)} ${H >= 12 ? 'p.m.' : 'a.m.'}`); }
+    if (mi !== lastMin) { lastMin = mi; const H = Math.floor(mi / 60), M = mi % 60; setText(clockTxt, `${pad(H)}:${pad(M)}`); }
+    capAt(p);
   }
+  // the first caption's time follows the scene's clock (also in video mode)
+  const capAt = (p) => { const mi = Math.floor((20 * 60 + 47 + 360 * span(p, 0, .24)) % 1440), H = Math.floor(mi / 60), M = mi % 60;
+    setText(capMeta, `Unscroll · ${((H + 11) % 12) + 1}:${pad(M)} ${H >= 12 ? 'p.m.' : 'a.m.'}`); };
   // the throw: the phone leaves his hand where the hand is, arcs over and lands on the rug, skids, locks
   const fly = q('.kz-phone-fly');
   const REL = (() => { const E = P.release.f[1], W = P.release.f[2], fa = Math.atan2(W[1] - E[1], W[0] - E[0]) * 180 / Math.PI; const c = rot([16, -22], fa); return [872 + W[0] + c[0], 540 + W[1] + c[1], fa + P.release.phone]; })();
@@ -524,15 +526,36 @@
     fly.style.opacity = 1 - span(p, .6, .63);
     fly.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${(t < 1 ? r : 810 + REL[2] + 70 * sk).toFixed(1)}) scale(${(1 + .25 * Math.sin(Math.PI * t)).toFixed(3)})`);
   }
-  gsap.ticker.add((time) => {
-    if (!inView) return;
-    const p = tl.progress(); idleSync(p);
+  function drawAt(p, time) {
     throwAt(p);
     clockAt(p, time);
     kidEl.setAttribute('transform', `translate(${kidX(p)} 540)`);
     if (p < .82) drawKid(p, time, el, true); if (p > .66) drawKid(.97, time, elOut, false);   // only the boy on screen
     if (p > .5 && p < .82) motesEl.forEach((o) => { o.m.setAttribute('cx', (o.x + Math.sin(time * .3 + o.s) * 18).toFixed(1)); o.m.setAttribute('cy', (o.y + Math.cos(time * .23 + o.s) * 14 - (time * 6 % 40)).toFixed(1)); });
-  });
+  }
+  let baking = false, vid = null;
+  gsap.ticker.add((time) => { if (!inView || baking) return; const p = tl.progress();
+    if (vid) { vid.w.want(Math.round(p * (vid.n - 1))); if (vid.w.take() >= 0) { vid.m.put(vid.w.frame()); if (!vid.on) vidOn(); } if (vid.on) { capAt(p); return; } }
+    idleSync(p); drawAt(p, time); });
+
+  // Phones on Chrome and Android play the scene from a pre-rendered scroll video (tools/kzbake renders this very code frame by
+  // frame, idle loops included): live, its ~2,800 SVG nodes cost about 12 ms of main thread per frame there (45 fps).
+  // The captions stay live. Until the video is in, and where WebCodecs is missing (iPhone), the SVG plays as before.
+  const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const vidOn = () => { vid.on = true; host.querySelector('.kz-stage').insertBefore(vid.m.c, q('.kz-cap')); svgs.forEach((sv) => { sv.style.display = 'none'; }); idle.forEach((tw) => tw.pause()); };
+  const vidOff = () => { if (!vid) return; vid.w.close(); vid.m.c.remove(); vid = null; svgs.forEach((sv) => { sv.style.display = ''; }); };
+  if (narrow && !reduce && !window.KZ_FULL && window.ScrubWC && ScrubWC.ok && !IOS && !/[?&]nokzv/.test(location.search)) {
+    const cv = document.createElement('canvas'); cv.className = 'kz-vid'; cv.setAttribute('aria-hidden', 'true');
+    const m = ScrubWC.glCanvas(cv);
+    const load = async () => { try {
+      const res = await fetch('/developer/media/unscroll-port.mp4'); if (!res.ok) return;
+      const buf = new Uint8Array(await res.arrayBuffer()), ix = ScrubWC.mp4Index(buf);
+      if (!(await ScrubWC.supported(ix))) return;
+      vid = { w: ScrubWC.makeWC(buf, () => {}, vidOff), m, n: ix.n, on: false };
+    } catch (e) { vidOff(); } };
+    if (m) new IntersectionObserver((es, o) => { if (es[0].isIntersecting) { o.disconnect(); load(); } }, { rootMargin: '250% 0px' }).observe(host);
+    addEventListener('resize', () => { if (vid && host.clientWidth / innerHeight >= 0.8) vidOff(); }, { passive: true });   // turned to landscape: the portrait video would not fit
+  }
 
   if (!reduce) {
     idleIn.push([0, .3]); idle.push(gsap.to(qa('.kz-note'), { y: '-=10', duration: 1.6, ease: 'sine.inOut', yoyo: true, repeat: -1, stagger: { each: .2, from: 'random' } }));
@@ -589,5 +612,8 @@
   if (reduce) { tl.progress(0.9); return; }
   ScrollTrigger.create({ trigger: host, start: 'top top', end: 'bottom bottom', scrub: 0.6, animation: tl });
   ScrollTrigger.create({ trigger: host, start: 'top 80px', end: 'bottom top', toggleClass: { targets: document.body, className: 'kz-active' } });
-  window.kzSeek = (p) => tl.progress(p);
+  window.kzSeek = (p) => tl.progress(p); window.kzVid = () => vid && { on: vid.on, ...vid.w.dbg() };
+  // tools/kz-bake: renders the scene frame by frame at a fixed progress and clock (idle loops included) into the scroll video
+  window.kzRender = (p, time) => { baking = true; ScrollTrigger.getAll().forEach((s) => s.kill()); tl.progress(p);
+    idle.forEach((tw) => { tw.pause(); tw.totalTime(time); }); drawAt(p, time); };
 })();
