@@ -781,3 +781,4 @@ body.pf { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-
 @media (min-width: 901px) and (max-height: 760px) { .nr-side > .nr-foot { display: none; } .nr-side > .nr-hr { margin-top: auto; } }
 @media (max-width: 900px) { .nr-side { display: contents; } }
 @media (max-height: 500px) and (orientation: landscape) { .vs-cap { max-width: 32vw; } .vs-big { font-size: 20px; } }   /* phones held sideways: the captions keep to the side of the globe */
+.contact-inner > .contact-about { color: rgba(255, 254, 249, .92); max-width: 560px; } .contact-about + p { margin-top: 12px !important; }
