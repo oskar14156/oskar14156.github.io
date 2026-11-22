@@ -291,6 +291,12 @@
       .fromTo('.scan-phone', { rotate: 4, xPercent: 34 }, { rotate: 0, xPercent: 0, ease: 'none', duration: .4 }, .6);
   }
 
+  /* ---------- Visitor stats (GoatCounter, no cookies): how far people get, one event per section and visit ---------- */
+  { const sent = new Set(), send = (p) => { const go = () => { if (!window.goatcounter || !goatcounter.count) return false; goatcounter.count({ path: p, title: p, event: true }); return true; };
+      if (!go()) setTimeout(go, 4000); };
+    const io = new IntersectionObserver((es) => es.forEach((e) => { const id = e.target.id; if (e.isIntersecting && !sent.has(id)) { sent.add(id); io.unobserve(e.target); send('reached/' + id); } }), { threshold: 0, rootMargin: '-40% 0px -40% 0px' });
+    ['flight', 'fork', 'voyeva', 'novus', 'stub', 'unscroll', 'riseproof', 'vbg', 'pages', 'colophon', 'contact'].forEach((id) => { const el = document.getElementById(id); if (el) io.observe(el); }); }
+
   /* ---------- Generic reveals ---------- */
   gsap.utils.toArray('.practice-grid > div, .tool-list li, .numbers-grid > div, .fork-card').forEach((el) => {
     gsap.from(el, { y: 40, opacity: 0, duration: .9, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 90%' } });
