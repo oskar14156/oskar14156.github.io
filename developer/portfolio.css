@@ -599,7 +599,7 @@ html.pf-menu-open { overflow: hidden; }
 .vc-bg { clip-path: circle(0% at 50% 40%); }
 .vc-bg-check { clip-path: none; background: #2a2f2c; background-image: linear-gradient(45deg, #3a403c 25%, transparent 25%, transparent 75%, #3a403c 75%), linear-gradient(45deg, #3a403c 25%, transparent 25%, transparent 75%, #3a403c 75%); background-size: 36px 36px; background-position: 0 0, 18px 18px; }
 .vc-bg-green { background: #00e639; } .vc-bg-coral { background: #ff7a59; }
-.vc-bg-blur { background: url(/developer/shots/vbgx/photo.jpg) center / cover; filter: blur(14px) saturate(1.2); transform: scale(1.15); }
+.vc-bg-blur { background: url(/developer/shots/vbgx/photo-blur.jpg) center / cover; transform: scale(1.15); }   /* blurred once offline: a CSS blur under an animated clip-path was redone on every frame */
 .vc-bg-grad { background: radial-gradient(circle at 30% 20%, #ffd23f, #e94bd6 55%, #5a2fd1); }
 .vc-man { object-fit: cover; }
 .vc-orig img { width: 100%; height: 100%; object-fit: cover; }
@@ -782,3 +782,11 @@ body.pf { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-
 @media (max-width: 900px) { .nr-side { display: contents; } }
 @media (max-height: 500px) and (orientation: landscape) { .vs-cap { max-width: 32vw; } .vs-big { font-size: 20px; } }   /* phones held sideways: the captions keep to the side of the globe */
 .contact-inner > .contact-about { color: rgba(255, 254, 249, .92); max-width: 560px; } .contact-about + p { margin-top: 12px !important; }
+/* touch: tap targets of at least ~40px without changing the look; keyboard focus visible on buttons too */
+@media (pointer: coarse) { .work-index ol { padding-block: 0; } .work-index a { padding-block: 9px; } .pf-footer nav a { display: inline-block; padding: 10px 2px; } .fork-also a { display: inline-block; padding: 8px 0; } }
+.pf button:focus-visible, .pf summary:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 2px; }
+.vs-stop, .vs-cap { will-change: transform, opacity; }   /* own layers: their per-frame moves and fades stay on the compositor instead of repainting the scene */
+.sf-svg, .sf-phone, .sf-cap { will-change: transform, opacity; }   /* Stub chain: the pan, the phone and the captions move on the compositor (the drawing is twice the screen wide on phones) */
+.vc-card, .vc-scan { will-change: transform; }   /* the card's big shadow and the scan line move on the compositor */
+.vc-copy, .vc-foot, .vc-chips { will-change: transform, opacity; }   /* their fades and the chip highlight no longer repaint the whole page layer */
+.vc-bg, .vc-man, .vc-orig { will-change: transform; }   /* each sheet of the card is its own layer: a clip-path step repaints only that sheet, not the cutout PNG */

@@ -272,13 +272,16 @@ function init() {
   const LADDER = small ? [[.5, 40], [.45, 36], [.42, 32], [.38, 28], [.34, 24]] : [[.55, 64], [.52, 52], [.5, 44], [.46, 38], [.43, 32], [.4, 28], [.36, 24], [.32, 22]];
   const RT_KEY = 'vs-q-' + (small ? 's' : 'l'), rtMax = LADDER[0][0];
   let lvl = small ? 2 : 3; try { const v = localStorage.getItem(RT_KEY); if (v !== null) lvl = Math.min(LADDER.length - 1, Math.max(0, +v | 0)); } catch (e) {}
-  let fanRect = null, rtScale = LADDER[lvl][0], ftAvg = 14, lastT = 0, adaptAt = 0, warmUntil = 0;
+  let fanRect = null, rtScale = LADDER[lvl][0], ftAvg = 14, lastT = 0, adaptAt = 0, warmUntil = 0, vsync = 16.7, upAt = 0, di = 0; const dts = new Float32Array(90);
   function adapt() {
     const now = performance.now(), dt = lastT ? now - lastT : 16; lastT = now; if (dt > 200) return;
+    dts[di++ % 90] = dt; if (di % 30 === 0 && di >= 90) { const q = dts.slice().sort((a, b) => a - b); vsync = Math.max(6, q[18]); }   // the display's frame interval (11.1 ms at 90 Hz): 20th percentile of the last 90 frames
     ftAvg = ftAvg * .92 + dt * .08;
     if (now < adaptAt) return;
-    const next = ftAvg > 18 ? Math.min(LADDER.length - 1, lvl + 1) : ftAvg < 13.2 ? Math.max(0, lvl - 1) : lvl;
-    if (next !== lvl) { lvl = next; rtScale = LADDER[lvl][0]; worldMat.uniforms.uSteps.value = LADDER[lvl][1]; setRt(); adaptAt = now + (now < warmUntil ? 300 : 1100); try { localStorage.setItem(RT_KEY, lvl); } catch (e) {} }
+    // relative to the refresh rate: at 90 Hz an average of 14 ms already means every third frame is dropped
+    const next = ftAvg > vsync * 1.25 ? Math.min(LADDER.length - 1, lvl + 1) : ftAvg < vsync * 1.06 && now > upAt ? Math.max(0, lvl - 1) : lvl;
+    if (next !== lvl) { if (next > lvl) upAt = now + 8000;   // after stepping down, hold before trying the finer level again (no flicker)
+      lvl = next; rtScale = LADDER[lvl][0]; worldMat.uniforms.uSteps.value = LADDER[lvl][1]; setRt(); adaptAt = now + (now < warmUntil ? 300 : 1100); try { localStorage.setItem(RT_KEY, lvl); } catch (e) {} }
   }
   let rtW = 2, rtH = 2;
   function setRt() {
@@ -391,6 +394,9 @@ function init() {
   }
   const revealScale = (p) => fanRect ? lerp(fanRect.k0, fanRect.k, easeIO(span(p, .7, .785))) : 1;
 
+  // inline styles are written only when they change: Chrome recalculates style for every write, even of the same value,
+  // and at 90 Hz the scene's labels, captions and plane rewrote theirs every frame (a quarter of all frames came late)
+  const S = (el, k, v) => { v = typeof v === 'number' ? String(+v.toFixed(4)) : String(v); const c = el._sv || (el._sv = {}); if (c[k] !== v) { c[k] = v; el.style[k] = v; } };
   function render() {
     const p = progress, t = clock.getElapsedTime();
     if (p >= .6) drawHand(clamp(Math.round((videoT(p) - 3.8) * 30), 0, HN - 1));   // before the camera: the flight follows the frame on screen
@@ -438,7 +444,7 @@ function init() {
     }
     const svgOn = p >= .62;
     if (svgOn) { mainLine.core.visible = mainLine.glow.visible = false; }
-    routeSvg.style.display = svgOn && p < .79 ? '' : 'none';
+    S(routeSvg, 'display', svgOn && p < .79 ? '' : 'none');
     if (svgOn && p < .79) {
       routeSvg.setAttribute('width', W); routeSvg.setAttribute('height', H); routeSvg.setAttribute('viewBox', `0 0 ${W} ${H}`);
       const pts = [], q = [0, 0], N = 240, rr = R / camera.position.length(), cd = camera.position.clone().normalize();
@@ -452,8 +458,8 @@ function init() {
     }
     const stopVis = lineK * (1 - span(p, .58, .64));
     STOPS.forEach((st) => { const vis = stopVis * span(p, st.at, st.at + .02) * (st.P.clone().normalize().dot(camDir) > R / camera.position.length() + .02 ? 1 : 0);
-      st.el.style.opacity = vis.toFixed(3); if (vis <= 0) return;
-      const v = st.P.clone().project(camera); st.el.style.transform = `translate(${((v.x * .5 + .5) * W).toFixed(1)}px, ${((-v.y * .5 + .5) * H).toFixed(1)}px)`; });
+      S(st.el, 'opacity', vis.toFixed(3)); if (vis <= 0) return;
+      const v = st.P.clone().project(camera); S(st.el, 'transform', `translate(${((v.x * .5 + .5) * W).toFixed(1)}px, ${((-v.y * .5 + .5) * H).toFixed(1)}px)`); });
     cities.forEach((s) => { s.material.opacity = lineK * (1 - span(p, .6, .68)) * (s.position.clone().normalize().dot(camDir) > R / camera.position.length() ? 1 : 0); s.visible = s.material.opacity > 0; });
 
     // keep the globe until the recording clip really has a frame on screen (iOS decodes late): never a see-through phone
@@ -464,10 +470,9 @@ function init() {
     const s0 = toScreen(pl, [0, 0]), s1 = toScreen(planeAt(f + .004, plAhead), [0, 0]);
     const px = s0[0], py = s0[1];
     const ang = Math.atan2(s1[1] - s0[1], s1[0] - s0[0]) + Math.PI / 2;
-    planeIcon.style.transform = `translate(${px}px, ${py}px) translate(-50%, -50%) rotate(${ang}rad)`;
-    const iconW = lerp(24, .054 * scr.w, span(p, .7, .78));
-    planeIcon.style.width = iconW + 'px';
-    planeIcon.style.opacity = (1 - clamp((planePx - 22) / 26)) * span(p, .03, .05) * (1 - span(p, .775, .79));
+    const iconW = lerp(24, .054 * scr.w, span(p, .7, .78));   // grows by scale, not width: a width change is a layout pass every frame
+    S(planeIcon, 'transform', `translate(${px.toFixed(1)}px, ${py.toFixed(1)}px) translate(-50%, -50%) rotate(${ang.toFixed(3)}rad) scale(${(iconW / 26).toFixed(3)})`);
+    S(planeIcon, 'opacity', (1 - clamp((planePx - 22) / 26)) * span(p, .03, .05) * (1 - span(p, .775, .79)));
 
     // Act D/E: the phone, the recap video, the fan
     const settle = easeIO(span(p, .783, .88));
@@ -476,33 +481,33 @@ function init() {
       const kk = settle > 0 ? lerp(k, 1, settle) : revealScale(p);
       const tx = lerp(cx - (x + w / 2), 0, settle), ty = lerp(cy - (y + h / 2), 0, settle);
       const bump = Math.sin(Math.PI * settle), bob = settle >= 1 ? Math.sin(t * 1.2) * 5 : 0;
-      fanC.style.transform = `translate(${tx}px, ${ty + bob}px) scale(${kk}) rotateY(${-16 * bump}deg) rotateZ(${-4 * bump}deg)`;
-      fanC.style.opacity = p > .7 ? 1 : 0;
+      S(fanC, 'transform', `translate(${tx}px, ${ty + bob}px) scale(${kk}) rotateY(${-16 * bump}deg) rotateZ(${-4 * bump}deg)`);
+      S(fanC, 'opacity', p > .7 ? 1 : 0);
       if (viewOffset) {
         const v = viewOffset, ins = { t: Math.max(0, v.y), l: Math.max(0, v.x), r: Math.max(0, W - v.x - v.w), b: Math.max(0, H - v.y - v.h) };
-        clipBox.style.clipPath = `inset(${ins.t}px ${ins.r}px ${ins.b}px ${ins.l}px round ${v.w * .13 * span(p, .7, .74)}px)`;
-      } else clipBox.style.clipPath = 'none';
-      clipBox.style.opacity = handOk ? 1 - span(p, .772, .783) : 1;
+        S(clipBox, 'clipPath', `inset(${ins.t}px ${ins.r}px ${ins.b}px ${ins.l}px round ${v.w * .13 * span(p, .7, .74)}px)`);
+      } else S(clipBox, 'clipPath', 'none');
+      S(clipBox, 'opacity', handOk ? 1 - span(p, .772, .783) : 1);
       // the recap's own chrome (status bar, title, distance, controls) comes in from the screen edges
       const band = span(p, .705, .75), mid = span(p, .755, .779);
       const mask = `linear-gradient(to bottom, #000 0, #000 12%, rgba(0,0,0,${mid}) 18%, rgba(0,0,0,${mid}) 72%, #000 79%)`;
-      hand.style.webkitMaskImage = hand.style.maskImage = mid >= 1 ? 'none' : mask;
-      hand.style.opacity = band;
+      { const mv = mid >= 1 ? 'none' : mask; S(hand, 'webkitMaskImage', mv); S(hand, 'maskImage', mv); }
+      S(hand, 'opacity', band);
       const sl = easeIO(span(p, .79, .87)), sr = easeIO(span(p, .8, .88));
       const side = (s2, dir) => `translateX(${dir * 64 * s2}%) translateY(${36 * s2 + (s2 >= 1 ? Math.sin(t * 1.2 + dir) * 4 : 0)}px) rotate(${dir * 9 * s2}deg) rotateY(${-dir * 18 * s2}deg) scale(${.8 + .2 * s2})`;
-      fanL.style.transform = side(sl, -1); fanR.style.transform = side(sr, 1);
-      fanL.style.opacity = span(p, .788, .82); fanR.style.opacity = span(p, .796, .83);
-      endCard.style.opacity = span(p, .74, .79);
-      endText.style.opacity = span(p, .79, .85); endText.style.transform = `translateY(${(1 - span(p, .79, .85)) * 40}px)`;
+      S(fanL, 'transform', side(sl, -1)); S(fanR, 'transform', side(sr, 1));
+      S(fanL, 'opacity', span(p, .788, .82)); S(fanR, 'opacity', span(p, .796, .83));
+      S(endCard, 'opacity', span(p, .74, .79));
+      S(endText, 'opacity', span(p, .79, .85)); S(endText, 'transform', `translateY(${(1 - span(p, .79, .85)) * 40}px)`);
     }
     if (p > .55 && !videoPrimed) { videoPrimed = true; primeVideo(); }
     if (p > .3) loadHand();
-    if (p < .8) { video.style.visibility = 'hidden'; video.style.opacity = 0; if (videoArmed) { videoArmed = false; video.pause(); } }
+    if (p < .8) { S(video, 'visibility', 'hidden'); S(video, 'opacity', 0); if (videoArmed) { videoArmed = false; video.pause(); } }
     else {
-      video.style.visibility = 'visible'; video.style.opacity = recOk ? 1 : 0; hand.style.opacity = recOk ? 0 : 1;   // the last still stays until the recording is really playing
+      S(video, 'visibility', 'visible'); S(video, 'opacity', recOk ? 1 : 0); S(hand, 'opacity', recOk ? 0 : 1);   // the last still stays until the recording is really playing
       if (!videoArmed && video.readyState >= 1) { videoArmed = true; recPainted = false; armT = videoT(.8); try { video.currentTime = armT; } catch (e) {} video.play().catch(() => {}); }
     }
-    caps.forEach((el) => { const a = +el.dataset.a, b = +el.dataset.b; const o = span(p, a, a + .03) * (1 - span(p, b - .03, b)); el.style.opacity = o; el.style.transform = `translateY(${(1 - span(p, a, a + .03)) * 24}px)`; });
+    caps.forEach((el) => { const a = +el.dataset.a, b = +el.dataset.b; const o = span(p, a, a + .03) * (1 - span(p, b - .03, b)); S(el, 'opacity', o); S(el, 'transform', `translateY(${(1 - span(p, a, a + .03)) * 24}px)`); });
     return p < .79 || p > .99;
   }
   function recapIconW() { return fanRect ? fanRect.sw * fanRect.w * fanRect.k * .066 : 24; }

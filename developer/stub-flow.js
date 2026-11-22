@@ -28,11 +28,11 @@
   <div class="sf-stage">
     <svg class="sf-svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
       <defs>
-        <filter id="sfShadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="24" stdDeviation="22" flood-color="#3a1d0e" flood-opacity=".28"/></filter>
         <clipPath id="sfGrow"><rect class="sf-grow" x="${X0}" y="0" width="0" height="900"/></clipPath>
         <linearGradient id="sfBeam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff7a3d" stop-opacity="0"/><stop offset=".7" stop-color="#ff7a3d" stop-opacity=".35"/><stop offset="1" stop-color="#ff7a3d"/></linearGradient>
       </defs>
-      <g class="sf-receipt" filter="url(#sfShadow)">
+      <g class="sf-receipt">
+        <image href="/developer/media/sf-receipt-shadow.png" x="60" y="84" width="540" height="736"/>   <!-- the drop shadow, pre-rendered (tools/bake/sfshadow.mjs): a live SVG blur was redone on every frame -->
         <path d="M${RX} ${RY} h360 v${ITEMS.length * ROW + 190} l-20 14 l-20 -14 l-20 14 l-20 -14 l-20 14 l-20 -14 l-20 14 l-20 -14 l-20 14 l-20 -14 l-20 14 l-20 -14 l-20 14 l-20 -14 l-20 14 l-20 -14 l-20 14 l-20 -14 z" fill="#fffdf7"/>
         <text x="${RX + 180}" y="${RY + 54}" text-anchor="middle" class="sf-mono sf-store">BILLA</text>
         <text x="${RX + 180}" y="${RY + 82}" text-anchor="middle" class="sf-mono sf-small">Wien · 14.03.2026 · 18:42</text>
