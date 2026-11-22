@@ -80,9 +80,9 @@ html.lenis, .lenis.lenis-smooth { scroll-behavior: auto !important; }   /* the s
 #ink-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 html:not(.has-ink) .intro-stage { background: var(--panel); }
 html:not(.has-ink) .intro-content { mix-blend-mode: normal; }
-.intro-content { position: relative; z-index: 2; mix-blend-mode: difference; color: #fff; height: 100%; display: grid; align-content: center; padding: 0 clamp(16px, 4vw, 56px); }
-.intro-kicker { font-size: 13px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #fff; margin-bottom: 2vh !important; }
-.intro-title { font-size: clamp(76px, 17.5vw, 300px); line-height: .82; font-weight: 800; letter-spacing: -.055em; color: #fff; text-transform: uppercase; will-change: transform; transform-origin: 0 0; }
+.intro-content { position: relative; z-index: 2; mix-blend-mode: difference; color: #fff; height: 100%; box-sizing: border-box; display: grid; align-content: center; padding: 72px clamp(16px, 4vw, 56px) 0; }   /* top padding: the header, so a short landscape screen cannot push the kicker under it */
+.intro-kicker { font-size: 13px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #fff; margin-bottom: calc(2vh + 2.4vw) !important; }   /* the name's capitals reach above its tight line box (line-height .8); the gap grows with it */
+.intro-title { font-size: min(clamp(76px, 17.5vw, 300px), 30vh); line-height: .82; font-weight: 800; letter-spacing: -.055em; color: #fff; text-transform: uppercase; will-change: transform; transform-origin: 0 0; }
 .intro-word { display: inline-block; }
 .intro-line { margin-top: 4vh !important; font-size: clamp(22px, 3.2vw, 46px); line-height: 1.1; letter-spacing: -.02em; color: #fff; max-width: 18ch; }
 .intro-cue { position: absolute; z-index: 2; right: clamp(16px, 4vw, 56px); bottom: 4vh; font-size: 12px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: #fff; mix-blend-mode: difference; opacity: calc(1 - var(--ink) * 10); }
@@ -656,7 +656,7 @@ html:not(.pf-loading) .pf-loader { clip-path: inset(0 0 100% 0); visibility: hid
 .pf-loader-note { margin-left: .6em; }
 /* hero entrance after the loader: kicker, name, line rise in turn (CSS translate, so the scroll transforms stay untouched) */
 html.pf-loading .intro-content > * { opacity: 0; }
-html.pf-entered .intro-kicker, html.pf-entered .intro-title, html.pf-entered .intro-line { animation: pfRise 1s cubic-bezier(.2, .8, .2, 1) both; }
+html.pf-entered .intro-kicker, html.pf-entered .intro-title, html.pf-entered .intro-line { animation: pfRise 1s cubic-bezier(.2, .8, .2, 1) backwards; }   /* backwards, not both: a held end state would override the scroll fade (the kicker stayed while the name flew past it) */
 html.pf-entered .intro-kicker { animation-delay: .35s; }
 html.pf-entered .intro-title { animation-delay: .45s; }
 html.pf-entered .intro-line { animation-delay: .7s; }
@@ -765,3 +765,19 @@ body.pf { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-
 .fork-cta { margin-top: auto; padding-top: 8px; font-weight: 600; font-size: 15px; }
 @media (max-width: 760px) { .fork-grid { grid-template-columns: 1fr; } .fork-visual { height: 230px; } }
 @media (prefers-reduced-motion: reduce) { .fk-pill:not(.is-ok) b, .fk-ready em { animation: none; opacity: 1; } .fk-bar i { animation: none; } }
+.fork-also { margin-top: 18px !important; font-size: 15px; line-height: 1.5; color: var(--text-soft); }
+.fork-also span { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.fork-also a { color: var(--text); font-weight: 600; text-decoration: none; white-space: nowrap; }
+.fork-also a:hover { text-decoration: underline; }
+.contact-alt { display: inline-flex; margin: 36px 0 0 12px; padding: 18px 26px; border-radius: 999px; border: 1px solid rgba(255, 254, 249, .28); color: inherit; font-size: clamp(15px, 1.6vw, 20px); font-weight: 600; text-decoration: none; }
+.contact-alt:hover { border-color: var(--accent); }
+@media (max-width: 520px) { .contact-alt { margin-left: 0; } }
+/* Novus run, desktop: heading, numbers, note and chart share one column, so short windows cannot stack them on top of each other */
+@media (min-width: 901px) {
+  .nr-side { position: absolute; z-index: 2; right: clamp(16px, 5vw, 72px); top: clamp(90px, 14vh, 140px); bottom: clamp(26px, 5vh, 56px); width: min(30vw, 440px); display: flex; flex-direction: column; gap: clamp(14px, 3.4vh, 40px); }
+  .nr-side > .nr-head, .nr-side > .nr-stats, .nr-side > .nr-foot, .nr-side > .nr-hr { position: relative; inset: auto; width: auto; flex: none; }
+  .nr-side > .nr-foot { margin-top: auto; }
+}
+@media (min-width: 901px) and (max-height: 760px) { .nr-side > .nr-foot { display: none; } .nr-side > .nr-hr { margin-top: auto; } }
+@media (max-width: 900px) { .nr-side { display: contents; } }
+@media (max-height: 500px) and (orientation: landscape) { .vs-cap { max-width: 32vw; } .vs-big { font-size: 20px; } }   /* phones held sideways: the captions keep to the side of the globe */

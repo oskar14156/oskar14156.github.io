@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/developer/portfolio.css?v=61">
+  <link rel="stylesheet" href="/developer/portfolio.css?v=65">
   <script>
     // Theme before first paint: saved pick, else the system setting.
     (function () {
@@ -187,6 +187,7 @@
           </div>
         </a>
       </div>
+      <p class="fork-also"><span>Also web:</span> this page itself, with WebGL, scroll video decoded in the browser and 90 fps on a mid-range phone. <a href="#colophon">How it's built ↓</a></p>
     </section>
 
     <!-- 5 · PRODUCT APPS -->
@@ -263,6 +264,7 @@
       <section class="nr" id="novus-run" aria-labelledby="nr-title">
         <div class="nr-stage">
           <div class="nr-geo" aria-hidden="true"><video class="nr-ge" data-manual muted playsinline preload="none"></video></div><img class="nr-end" alt="" aria-hidden="true" decoding="async"><canvas class="nr-ge-ov" aria-hidden="true"></canvas><span class="nr-ge-attr" aria-hidden="true">Google Earth</span><span class="nr-ge-dot" aria-hidden="true"><i></i></span><div class="nr-scrim" aria-hidden="true"></div>
+          <div class="nr-side">
           <div class="nr-head">
             <p class="nr-meta">Novus · real run · April 14, 2026</p>
             <h2 id="nr-title">29.8 km, replayed from the route and heart rate.</h2>
@@ -273,8 +275,10 @@
             <div><dt>Pace</dt><dd><span data-k="pace">–</span><small>/km</small></dd></div>
             <div><dt>Heart rate</dt><dd><span data-k="hr">–</span><small>bpm</small></dd></div>
           </dl>
-          <div class="nr-hr" aria-hidden="true"><p class="nr-meta">Heart rate · bpm</p><svg viewBox="0 0 600 120" preserveAspectRatio="none"><defs><linearGradient id="nrHrG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff2e63" stop-opacity=".3"/><stop offset="1" stop-color="#4c7dff" stop-opacity="0"/></linearGradient><linearGradient id="nrHrLine" gradientUnits="userSpaceOnUse" x1="0" y1="110" x2="0" y2="10"></linearGradient></defs><path d="M0 60 H600 M0 110 H600" stroke="rgba(255,255,255,.12)" stroke-width="1" vector-effect="non-scaling-stroke"/><path class="nr-hr-area" fill="url(#nrHrG)"/><path class="nr-hr-line" fill="none" stroke="url(#nrHrLine)" stroke-width="2" vector-effect="non-scaling-stroke"/><circle class="nr-hr-dot" r="3" fill="#fff"/></svg><p class="nr-hr-axis"><span>0 km</span><span>29.8 km</span></p></div><p class="nr-legend" aria-hidden="true"><span>Heart rate</span><span class="nr-lo">120</span><i></i><span class="nr-hi">195 bpm</span></p>
           <p class="nr-foot">In Novus, workouts come in from HealthKit with their route and heart rate, and every run is drawn coloured by heart rate.</p>
+          <div class="nr-hr" aria-hidden="true"><p class="nr-meta">Heart rate · bpm</p><svg viewBox="0 0 600 120" preserveAspectRatio="none"><defs><linearGradient id="nrHrG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff2e63" stop-opacity=".3"/><stop offset="1" stop-color="#4c7dff" stop-opacity="0"/></linearGradient><linearGradient id="nrHrLine" gradientUnits="userSpaceOnUse" x1="0" y1="110" x2="0" y2="10"></linearGradient></defs><path d="M0 60 H600 M0 110 H600" stroke="rgba(255,255,255,.12)" stroke-width="1" vector-effect="non-scaling-stroke"/><path class="nr-hr-area" fill="url(#nrHrG)"/><path class="nr-hr-line" fill="none" stroke="url(#nrHrLine)" stroke-width="2" vector-effect="non-scaling-stroke"/><circle class="nr-hr-dot" r="3" fill="#fff"/></svg><p class="nr-hr-axis"><span>0 km</span><span>29.8 km</span></p></div>
+          </div>
+          <p class="nr-legend" aria-hidden="true"><span>Heart rate</span><span class="nr-lo">120</span><i></i><span class="nr-hi">195 bpm</span></p>
           <p class="nr-credit">Flight and overview: Google Earth Studio, imagery ©2026 Google</p>
         </div>
       </section>
@@ -576,6 +580,16 @@
       </ul>
     </section>
 
+    <!-- 8b · COLOPHON: this page is the web work too -->
+    <section class="practice colophon site-container" id="colophon" aria-labelledby="colophon-title">
+      <h2 id="colophon-title">How this page is built.</h2>
+      <div class="practice-grid">
+        <div><h3>Scroll video, decoded by hand</h3><p>The Novus flight and the Unscroll short are H.264 files decoded in the browser with WebCodecs on the phone's hardware decoder. A keyframe every 12 frames makes scrolling back as smooth as scrolling on. The run's route is baked into the video, so map and route can never drift apart.</p></div>
+        <div><h3>Measured on a real phone</h3><p>Tuned on a Pixel 7 with real touch input and Chrome traces: 90 frames a second while scrolling and no layout shift. Scenes draw only while on screen; heavy SVG became canvas, video or WebGL where it cost frames.</p></div>
+        <div><h3>No framework, no build step</h3><p>Hand-written HTML, CSS and JavaScript on GitHub Pages. GSAP times the scroll, three.js draws the Voyeva globe and plane, and the offline tools that render the videos live next to the site.</p></div>
+      </div>
+    </section>
+
     <!-- 9 · CONTACT -->
     <section class="contact" id="contact" aria-labelledby="contact-title">
       <div class="contact-inner site-container">
@@ -587,6 +601,7 @@
           <li>Builds, signing and releases with EAS, TestFlight and Play tracks</li>
         </ul>
         <a class="contact-mail" href="mailto:oskarpolster.business@gmail.com">oskarpolster.business@gmail.com <span aria-hidden="true">↗</span></a>
+        <a class="contact-alt" href="https://github.com/oskar14156" rel="me noopener">GitHub <span aria-hidden="true">↗</span></a>
       </div>
     </section>
   </main>
