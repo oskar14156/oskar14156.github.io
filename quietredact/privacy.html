@@ -1,41 +1,62 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="QuietRedact privacy policy — documents are processed on your device."><title>QuietRedact Privacy Policy</title><link rel="stylesheet" href="styles.css"></head><body><header><a class="brand" href="index.html">QuietRedact</a><nav><a href="support.html">Support</a><a aria-current="page" href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="deletion.html">Data deletion</a><a href="imprint.html">Imprint</a></nav></header><main><section class="hero"><span class="eyebrow">QuietRedact</span><h1>Privacy Policy</h1><p class="meta">Effective 25 August 2026</p></section><article>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="QuietRedact privacy policy — documents are processed on your device (iOS & Android)."><title>QuietRedact Privacy Policy / Datenschutz</title><link rel="stylesheet" href="styles.css"></head><body><header><a class="brand" href="index.html">QuietRedact</a><nav><a href="support.html">Support</a><a aria-current="page" href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="deletion.html">Data deletion</a><a href="imprint.html">Imprint</a></nav></header><main><section class="hero"><span class="eyebrow">QuietRedact</span><h1>Privacy Policy &amp; Datenschutzerklärung</h1><p class="meta">Effective 23 November 2026</p></section><article>
 
-<p>QuietRedact is a privacy utility. The documents you redact are processed entirely on your device. This policy describes what the app and its purchase provider actually process. The controller is Oskar Polster, Grafenberg 116, 3730 Grafenberg, Austria — see <a href="imprint.html">Imprint</a>.</p>
+<p>QuietRedact is a privacy utility for iOS and Android. The documents you redact are processed entirely on your device. This policy describes what the app, its purchase provider, and its crash-reporting provider actually process. The controller is Oskar Polster, Grafenberg 116, 3730 Grafenberg, Austria — see <a href="imprint.html">Imprint</a>.</p>
 
 <h2>Documents, text and faces — processed on your device only</h2>
-<p>When you import a PDF or image, QuietRedact analyses it locally using Apple's on-device Vision and PDFKit frameworks. Text recognition, the detection of names, addresses, emails, phone numbers, IBANs, card numbers, document IDs and dates of birth, and face detection all run on your iPhone or iPad.</p>
-<p>QuietRedact has no server. Your documents, the recognised text, the detected values and the exported result are <strong>never</strong> uploaded to us, to RevenueCat or to any other third party. They are not used to train any model. There is no cloud OCR path in this version.</p>
+<p>When you import a PDF or image, QuietRedact analyses it locally on your device — using Apple's on-device Vision and PDFKit frameworks on iOS, and Android's PdfRenderer, PdfDocument, and on-device ML Kit models on Android. Text recognition, the detection of names, addresses, emails, phone numbers, IBANs, card numbers, document IDs and dates of birth, and face detection all run locally on your phone or tablet.</p>
+<p>QuietRedact has no document server. Your documents, the recognised text, the detected values and the exported result are <strong>never</strong> uploaded to us, to RevenueCat, to our crash-reporting provider, or to any other third party. They are not used to train any model. There is no cloud OCR path in this app.</p>
 
 <h2>Files created while you work</h2>
-<p>To analyse, preview and export a document, the app creates temporary working copies in its own sandbox, protected by iOS file protection. These are deleted when the session ends, when you leave the document, or on the next launch after a crash. QuietRedact only deletes files it created itself — your originals in Files or Photos are never modified or removed.</p>
+<p>To analyse, preview and export a document, the app creates temporary working copies in its own private sandbox (protected by iOS file protection on iOS and excluded from Google Auto Backup via <code>allowBackup=false</code> on Android). These are deleted when the session ends, when you leave the document, or on the next launch after a crash. QuietRedact only deletes files it created itself — your originals in Files, Google Drive, Photos or Gallery are never modified or removed.</p>
 
-<h2>Photos and Files access</h2>
-<p>QuietRedact reads only the specific file or photo you pick. It does not browse your photo library or your files in the background. The camera and microphone are not used.</p>
+<h2>Photos, Gallery and Files access</h2>
+<p>QuietRedact reads only the specific file or photo you choose through the system Document Picker (Storage Access Framework on Android) or system Photo Picker. It does not request broad media-library or storage permissions on Android and does not browse your files in the background. The camera and microphone are not used.</p>
 
 <h2>Purchases</h2>
-<p>Purchases are processed by Apple. QuietRedact uses <a href="https://www.revenuecat.com/privacy/">RevenueCat</a> to check whether the Pro entitlement is active and to restore purchases. For that purpose RevenueCat processes purchase history, product identifiers, entitlement status, country/storefront, device and app version information, and an <strong>anonymous</strong> app user identifier generated on the device.</p>
-<p>QuietRedact has no user account. We do not send RevenueCat your name, email address, phone number, Apple Account or any document content. We cannot connect a purchase record to your identity.</p>
+<p>Purchases are processed by Apple (App Store) or Google (Google Play). QuietRedact uses <a href="https://www.revenuecat.com/privacy/" rel="noopener noreferrer">RevenueCat</a> (RevenueCat, Inc., USA) to verify whether the Pro entitlement is active and to restore purchases. For that purpose RevenueCat processes purchase history, product identifiers, entitlement status, country/storefront, device and app version information, and an <strong>anonymous</strong> app user identifier generated on the device.</p>
+<p>QuietRedact has no user account. We do not send RevenueCat your name, email address, phone number, Apple Account, Google account, or any document content. We cannot connect a purchase record to your identity.</p>
 
-<h2>No tracking, no advertising, no analytics</h2>
-<p>QuietRedact contains no advertising SDK, no attribution SDK and no behavioural analytics SDK. It does not use the App Tracking Transparency framework because it performs no tracking across apps or websites owned by other companies, and it does not access the advertising identifier.</p>
+<h2>Crash and error reports</h2>
+<p>To diagnose crashes and technical errors, we use <strong>Sentry</strong> (Functional Software, Inc., USA), with data stored in the EU (Frankfurt am Main); privacy policy: <a href="https://sentry.io/privacy/" rel="noopener noreferrer">sentry.io/privacy</a>. When the app crashes or encounters an unexpected error, a technical report is sent containing:</p>
+<ul>
+<li>the error message and code location (stack trace),</li>
+<li>technical metadata such as app version, operating system, device model, and UI language,</li>
+<li>the last technical app steps (breadcrumbs) before the error, and basic performance metrics (app start and frame stability) sampled from 1 in 10 sessions.</li>
+</ul>
+<p>Reports <strong>never</strong> contain documents, recognised text, filenames, storage paths, email addresses, IBANs, card numbers, user IDs, IP addresses, advertising IDs, screenshots, or session replays. The app strips paths, URIs, filenames, and sensitive patterns on-device before sending, and the server applies matching scrubbers and drops IP addresses. Reports are automatically deleted after at most 90 days. Legal basis: Art. 6(1)(f) GDPR (legitimate interest in app stability and security).</p>
+
+<h2>No tracking, no advertising, no behavioural analytics</h2>
+<p>QuietRedact contains no advertising SDK, no attribution SDK, and no behavioural analytics SDK. It performs no tracking across apps or websites owned by other companies and does not access the advertising identifier (IDFA / AD_ID).</p>
 
 <h2>Legal bases (GDPR)</h2>
 <table><tr><th>Processing</th><th>Purpose</th><th>Legal basis</th></tr>
 <tr><td>On-device analysis and redaction</td><td>Providing the function you asked for</td><td>Art. 6(1)(b) — performance of a contract. No data reaches us.</td></tr>
 <tr><td>Purchase and entitlement data via RevenueCat</td><td>Unlocking, verifying and restoring Pro</td><td>Art. 6(1)(b) — performance of a contract</td></tr>
+<tr><td>Technical crash &amp; error reports</td><td>Finding and fixing crashes and bugs</td><td>Art. 6(1)(f) — legitimate interest in stability</td></tr>
 <tr><td>Support correspondence</td><td>Answering your request</td><td>Art. 6(1)(b) / Art. 6(1)(f) — legitimate interest in support</td></tr></table>
 
 <h2>Retention</h2>
-<p>App settings and the entitlement cache stay on your device until you delete the app. Temporary document files are removed as described above. RevenueCat retains purchase records for as long as needed to keep purchases restorable. Support emails are kept only as long as needed to resolve the request.</p>
+<p>App settings and the entitlement cache stay on your device until you delete the app. Temporary document files are removed as described above. Crash reports are retained for at most 90 days. RevenueCat retains purchase records for as long as needed to keep purchases restorable. Support emails are kept only as long as needed to resolve the request.</p>
 
 <h2>International transfers</h2>
-<p>RevenueCat, Inc. is based in the United States. Where personal data is transferred outside the EEA, the transfer is based on the European Commission's Standard Contractual Clauses concluded with the provider.</p>
+<p>RevenueCat, Inc. and Functional Software, Inc. are based in the United States (Sentry event data is hosted in the EU, Frankfurt am Main). Where personal data is transferred outside the EEA, the transfer is based on the European Commission's Standard Contractual Clauses concluded with the provider.</p>
 
 <h2>Children</h2>
 <p>QuietRedact is not directed at children and does not knowingly process data from children under 13.</p>
 
 <h2>Your rights</h2>
-<p>You have the right to access, rectification, erasure, restriction, data portability and objection, and the right to lodge a complaint with a supervisory authority — in Austria the Datenschutzbehörde, <a href="https://www.dsb.gv.at">dsb.gv.at</a>. Because there is no account, most of your data never leaves your device: deleting the app removes it. For purchase-related requests write to <a href="mailto:oskarpolster.business@gmail.com">oskarpolster.business@gmail.com</a>. See <a href="deletion.html">Data deletion</a>.</p>
+<p>You have the right to access, rectification, erasure, restriction, data portability and objection, and the right to lodge a complaint with a supervisory authority — in Austria the Datenschutzbehörde, <a href="https://www.dsb.gv.at" rel="noopener noreferrer">dsb.gv.at</a>. Because there is no account, most of your data never leaves your device: deleting the app removes it. For purchase-related requests write to <a href="mailto:oskarpolster.business@gmail.com">oskarpolster.business@gmail.com</a>. See <a href="deletion.html">Data deletion</a>.</p>
+
+<hr>
+
+<section lang="de">
+<h2>Kurzfassung (Deutsch)</h2>
+<p><strong>Verantwortlicher:</strong> Oskar Polster, Grafenberg 116, 3730 Grafenberg, Österreich (<a href="mailto:oskarpolster.business@gmail.com">oskarpolster.business@gmail.com</a>).</p>
+<p><strong>Dokumente bleiben auf dem Gerät:</strong> Alle PDFs, Fotos, Texterkennung (Vision/PDFKit auf iOS, PdfRenderer/PdfDocument und lokales ML Kit auf Android) und Schwärzungen laufen ausschließlich lokal. Es gibt keinen Dokumenten-Server, kein Nutzerkonto und keine Cloud-OCR. Temporäre Arbeitsdateien werden nach dem Schließen gelöscht und auf Android von der Google-Sicherung ausgeschlossen (<code>allowBackup=false</code>).</p>
+<p><strong>Käufe:</strong> Abos und Käufe wickeln Apple (App Store) bzw. Google (Google Play) ab; zur Prüfung des Pro-Status setzen wir RevenueCat (USA) mit einer anonymen Kunden-ID ein (Art. 6 Abs. 1 lit. b DSGVO).</p>
+<p><strong>Absturz- und Fehlerberichte:</strong> Zur Fehlerbehebung nutzen wir <strong>Sentry</strong> (Functional Software, Inc., USA) mit Speicherort in der EU (Frankfurt am Main; <a href="https://sentry.io/privacy/" rel="noopener noreferrer">sentry.io/privacy</a>). Übermittelt werden ausschließlich Fehlermeldung, Codestelle, App-Version, Betriebssystem, Gerätemodell, Sprache, letzte technische App-Schritte sowie Leistungsdaten aus jeder zehnten Sitzung. Niemals übermittelt werden Dokumentinhalte, Dateinamen, Speicherorte, Nutzer-IDs, IP-Adressen oder Werbe-IDs; Pfade und Dateinamen werden bereits auf dem Gerät entfernt. Löschung nach höchstens 90 Tagen. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO.</p>
+<p><strong>Was wir nicht tun:</strong> Keine Werbung, kein Tracking, keine Werbe-ID, kein Hochladen von Dokumenten, keine Bildschirmaufnahmen und kein Session Replay.</p>
+</section>
 
 <h2>Changes and contact</h2>
 <p>If features or service providers change, this policy is updated before the changed version ships. Questions: <a href="mailto:oskarpolster.business@gmail.com">oskarpolster.business@gmail.com</a>.</p>
