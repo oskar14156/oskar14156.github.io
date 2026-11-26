@@ -219,7 +219,8 @@ html:not(.has-ink) .intro-content { mix-blend-mode: normal; }
 .pf-device .pf-frame { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .pf-store { display: block; width: 100%; height: auto; aspect-ratio: 1320 / 2868; border-radius: 22px; box-shadow: 0 22px 40px -26px var(--shadow); }
 .pf-gallery figcaption { margin-top: 14px; padding-inline: 6px; font-size: 13.5px; line-height: 1.4; font-weight: 600; color: var(--text-soft); }
-.pf-dark-only { display: none; }
+/* :root raises this above `.pf img` and `.ar-img` (both display: block), which used to show both versions. */
+:root .pf-dark-only { display: none; }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .pf-dark-only { display: block; }
   :root:not([data-theme="light"]) .pf-light-only { display: none; }

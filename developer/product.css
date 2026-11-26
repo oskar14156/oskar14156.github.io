@@ -6,6 +6,10 @@
 .pp-hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(32px, 5vw, 80px); align-items: center; }
 .pp-icon { width: 88px; height: 88px; border-radius: 22px; box-shadow: 0 18px 40px -16px var(--shadow); margin-bottom: 28px; }
 .pp-hero h1 { margin-top: 14px; font-size: clamp(64px, 10vw, 156px); line-height: .84; letter-spacing: -.07em; font-weight: 500; }
+/* The name never runs under the phones: capped by the width of its own column. */
+.pp-hero-text { container-type: inline-size; }
+.pp-hero h1.pp-h1-fit { font-size: min(clamp(64px, 10vw, 156px), 24cqi); }
+.pp-hero h1.pp-h1-long { font-size: min(clamp(52px, 8vw, 128px), 19.5cqi); }
 .pp-lede { margin-top: 24px !important; max-width: 30ch; font-size: clamp(19px, 1.8vw, 24px); line-height: 1.4; letter-spacing: -.015em; }
 .pp-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 32px; }
 .pp-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 20px; border-radius: 999px; font-size: 15px; font-weight: 600; text-decoration: none; color: inherit; border: 1px solid color-mix(in srgb, currentColor 25%, transparent); }
