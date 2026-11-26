@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
   <link rel="stylesheet" href="/developer/portfolio.css?v=20">
-  <link rel="stylesheet" href="/developer/product.css?v=20">
+  <link rel="stylesheet" href="/developer/product.css?v=21">
   <script>(function(){var t=null;try{t=localStorage.getItem('pf-theme')}catch(e){}var q=location.search.match(/theme=(light|dark)/);if(q)t=q[1];if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;})();</script>
   <script data-goatcounter="https://oskarpolster.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>   <!-- cookieless visitor stats -->
   <link rel="icon" href="/icon-32.png" sizes="32x32" type="image/png">
@@ -70,6 +70,12 @@
         </div>
         <div class="pp-strip"><figure class="pp-shot "><img class="pf-store" src="/developer/shots/vbg-4.jpg" srcset="/developer/shots/w480/vbg-4.jpg 480w, /developer/shots/vbg-4.jpg 900w" sizes="auto, (max-width: 800px) 46vw, 340px" alt="HEVC with alpha and ProRes 4444" loading="lazy"><figcaption>HEVC with alpha and ProRes 4444</figcaption></figure><figure class="pp-shot "><img class="pf-store" src="/developer/shots/vbg-5.jpg" srcset="/developer/shots/w480/vbg-5.jpg 480w, /developer/shots/vbg-5.jpg 900w" sizes="auto, (max-width: 800px) 46vw, 340px" alt="Refine edges frame by frame" loading="lazy"><figcaption>Refine edges frame by frame</figcaption></figure><figure class="pp-shot "><img class="pf-store" src="/developer/shots/vbg-6.jpg" srcset="/developer/shots/w480/vbg-6.jpg 480w, /developer/shots/vbg-6.jpg 900w" sizes="auto, (max-width: 800px) 46vw, 340px" alt="Trim before processing" loading="lazy"><figcaption>Trim before processing</figcaption></figure></div>
       </div>
+    </section>
+
+    <section class="pp-hard site-container" aria-labelledby="hard-title">
+      <p class="pp-no">The hard part</p>
+      <h2 id="hard-title">A whole video cut out on the phone, with nothing uploaded.</h2>
+      <dl class="pp-hard-steps"><div><dt>Problem</dt><dd>Background removal usually runs on a server. Here every frame of the video goes through the model on the phone, on iOS and on Android.</dd></div><div><dt>What I did</dt><dd>A native engine of about 37 files: Core ML, Vision, Core Image and BackgroundTasks in Swift, the same pipeline in Kotlin, and one Expo module with a single TypeScript API over both.</dd></div><div><dt>Result</dt><dd>HEVC with alpha and ProRes 4444 for Final Cut, Premiere and CapCut, with a brush to fix edges frame by frame. Live on Google Play.</dd></div></dl>
     </section>
 
     <section class="pp-tech site-container" aria-labelledby="tech-title">

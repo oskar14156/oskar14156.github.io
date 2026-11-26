@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
   <link rel="stylesheet" href="/developer/portfolio.css?v=20">
-  <link rel="stylesheet" href="/developer/product.css?v=20">
+  <link rel="stylesheet" href="/developer/product.css?v=21">
   <script>(function(){var t=null;try{t=localStorage.getItem('pf-theme')}catch(e){}var q=location.search.match(/theme=(light|dark)/);if(q)t=q[1];if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;})();</script>
   <script data-goatcounter="https://oskarpolster.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>   <!-- cookieless visitor stats -->
   <link rel="icon" href="/icon-32.png" sizes="32x32" type="image/png">
@@ -81,6 +81,12 @@
         </div>
         <div class="pp-strip"><figure class="pp-shot "><img class="pf-store" src="/developer/shots/riseproof-6.jpg" srcset="/developer/shots/w480/riseproof-6.jpg 480w, /developer/shots/riseproof-6.jpg 900w" sizes="auto, (max-width: 800px) 46vw, 340px" alt="Streaks and stats" loading="lazy"><figcaption>Streaks and stats</figcaption></figure><figure class="pp-shot "><img class="pf-store" src="/developer/shots/riseproof-7.jpg" srcset="/developer/shots/w480/riseproof-7.jpg 480w, /developer/shots/riseproof-7.jpg 900w" sizes="auto, (max-width: 800px) 46vw, 340px" alt="Wake-up history" loading="lazy"><figcaption>Wake-up history</figcaption></figure><figure class="pp-shot "><img class="pf-store" src="/developer/shots/riseproof-5.jpg" srcset="/developer/shots/w480/riseproof-5.jpg 480w, /developer/shots/riseproof-5.jpg 900w" sizes="auto, (max-width: 800px) 46vw, 340px" alt="20+ missions to choose from" loading="lazy"><figcaption>20+ missions to choose from</figcaption></figure></div>
       </div>
+    </section>
+
+    <section class="pp-hard site-container" aria-labelledby="hard-title">
+      <p class="pp-no">The hard part</p>
+      <h2 id="hard-title">An alarm has to ring at 6:30, when the app is not running.</h2>
+      <dl class="pp-hard-steps"><div><dt>Problem</dt><dd>React Native code only runs while the app is open, so the alarm cannot depend on JavaScript. It also has to get through Silent mode and Focus.</dd></div><div><dt>What I did</dt><dd>The ringing lives in native code. On iOS it is an AlarmKit alarm with App Intents in Swift; on Android a foreground ring service and receivers that reschedule every alarm after a reboot, in Kotlin. The push-ups and the bed photo are checked on the device.</dd></div><div><dt>Result</dt><dd>It rings through Silent and Focus and only stops once the mission is done. Live on Google Play.</dd></div></dl>
     </section>
 
     <section class="pp-tech site-container" aria-labelledby="tech-title">

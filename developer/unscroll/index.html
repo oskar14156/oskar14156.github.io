@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
   <link rel="stylesheet" href="/developer/portfolio.css?v=20">
-  <link rel="stylesheet" href="/developer/product.css?v=20">
+  <link rel="stylesheet" href="/developer/product.css?v=21">
   <script>(function(){var t=null;try{t=localStorage.getItem('pf-theme')}catch(e){}var q=location.search.match(/theme=(light|dark)/);if(q)t=q[1];if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;})();</script>
   <script data-goatcounter="https://oskarpolster.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>   <!-- cookieless visitor stats -->
   <link rel="icon" href="/icon-32.png" sizes="32x32" type="image/png">
@@ -74,6 +74,12 @@
         </div>
         <div class="pp-strip"><figure class="pp-shot "><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-1.jpg" srcset="/developer/shots/w480/unscroll-1.jpg 480w, /developer/shots/unscroll-1.jpg 900w" sizes="auto, (max-width: 800px) 46vw, 340px" alt="Today: screen time and blocked time" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" srcset="/developer/shots/w480/frame-black.png 520w, /developer/shots/frame-black.png 980w" sizes="(max-width: 800px) 46vw, 340px" alt=""></div><figcaption>Today: screen time and blocked time</figcaption></figure><figure class="pp-shot "><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-3.jpg" srcset="/developer/shots/w480/unscroll-3.jpg 480w, /developer/shots/unscroll-3.jpg 900w" sizes="auto, (max-width: 800px) 46vw, 340px" alt="Stats: times you said no" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" srcset="/developer/shots/w480/frame-black.png 520w, /developer/shots/frame-black.png 980w" sizes="(max-width: 800px) 46vw, 340px" alt=""></div><figcaption>Stats: times you said no</figcaption></figure><figure class="pp-shot "><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-4.jpg" srcset="/developer/shots/w480/unscroll-4.jpg 480w, /developer/shots/unscroll-4.jpg 900w" sizes="auto, (max-width: 800px) 46vw, 340px" alt="Your life in weeks" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" srcset="/developer/shots/w480/frame-black.png 520w, /developer/shots/frame-black.png 980w" sizes="(max-width: 800px) 46vw, 340px" alt=""></div><figcaption>Your life in weeks</figcaption></figure><figure class="pp-shot "><div class="pf-device "><img class="pf-screen" src="/developer/shots/unscroll-5.jpg" srcset="/developer/shots/w480/unscroll-5.jpg 480w, /developer/shots/unscroll-5.jpg 900w" sizes="auto, (max-width: 800px) 46vw, 340px" alt="Progress and milestones" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" srcset="/developer/shots/w480/frame-black.png 520w, /developer/shots/frame-black.png 980w" sizes="(max-width: 800px) 46vw, 340px" alt=""></div><figcaption>Progress and milestones</figcaption></figure></div>
       </div>
+    </section>
+
+    <section class="pp-hard site-container" aria-labelledby="hard-title">
+      <p class="pp-no">The hard part</p>
+      <h2 id="hard-title">Blocking apps from a React Native app.</h2>
+      <dl class="pp-hard-steps"><div><dt>Problem</dt><dd>Apple&#x27;s Screen Time APIs (FamilyControls, ManagedSettings, DeviceActivity) only exist in Swift, and much of the work runs in separate app extensions, not in the app.</dd></div><div><dt>What I did</dt><dd>A Swift module under the React Native UI, and five app extensions inside the Expo project: activity monitor, shield configuration, shield action, usage report and widget. Config plugins add the extensions and their entitlements, so it still builds as an Expo project.</dd></div><div><dt>Result</dt><dd>Schedules and quick locks keep apps blocked even when Unscroll is closed.</dd></div></dl>
     </section>
 
     <section class="pp-tech site-container" aria-labelledby="tech-title">

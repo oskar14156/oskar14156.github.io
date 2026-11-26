@@ -663,10 +663,40 @@ html.pf-entered .intro-kicker { animation-delay: .35s; }
 html.pf-entered .intro-title { animation-delay: .45s; }
 html.pf-entered .intro-line { animation-delay: .7s; }
 @keyframes pfRise { from { opacity: 0; translate: 0 60px; } to { opacity: 1; translate: 0 0; } }
+/* Hero facts for a quick read: what I am looking for, three numbers, and the way out of the story.
+   Inside .intro-content, so it shares the difference blend: plain white text and outlines, no fills. */
+.intro-meta { margin-top: 3.2vh; display: grid; gap: 14px; justify-items: start; }
+.intro-open { font-size: clamp(15px, 1.25vw, 18px); font-weight: 600; letter-spacing: -.01em; }
+.intro-open::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 10px; border-radius: 50%; background: currentColor; vertical-align: .12em; }
+.intro-proof { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 0; padding: 0; list-style: none; font-family: var(--mono); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
+.intro-proof b { font-family: var(--sans, inherit); font-size: 15px; font-weight: 600; letter-spacing: -.01em; margin-right: 4px; }
+.intro-proof a { color: inherit; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.intro-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px !important; }
+.intro-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 42px; padding: 0 18px; border: 1px solid currentColor; border-radius: 999px; color: inherit; font-size: 14px; font-weight: 600; text-decoration: none; }
+.intro-btn:hover { background: rgba(255, 255, 255, .12); }
+.intro-btn-plain { border-color: transparent; padding-inline: 4px; text-decoration: underline; text-underline-offset: 4px; }
+@media (max-width: 640px) {
+  .intro-meta { gap: 12px; margin-top: 2.6vh; }
+  .intro-proof { flex-direction: column; gap: 4px; }
+  .intro-btn { min-height: 40px; padding: 0 15px; font-size: 13.5px; }
+}
+/* wide or landscape screens: the facts sit beside the line, in the empty right half, so the name keeps its height */
+@media (min-width: 1000px), (orientation: landscape) and (min-width: 700px) {
+  .intro-content { grid-template-columns: minmax(0, 1fr) auto; column-gap: clamp(32px, 5vw, 96px); }
+  .intro-kicker, .intro-title { grid-column: 1 / -1; }
+  .intro-line { grid-column: 1; }
+  .intro-meta { grid-column: 2; align-self: end; margin-top: 0; padding-bottom: .2em; }
+  .intro-proof { flex-direction: column; gap: 6px; }
+  .intro-cue { display: none; }   /* the facts end in "All projects ↓", which does the cue's job */
+}
+/* short landscape screens: the name and the line come first */
+@media (max-height: 560px) { .intro-proof, .intro-btn-plain { display: none; } .intro-meta { margin-top: 2vh; gap: 8px; } }
+@media (max-height: 440px) { .intro-meta { display: none; } .intro-cue { display: block; } }
+html.pf-entered .intro-meta { animation: pfRise 1s cubic-bezier(.2, .8, .2, 1) .85s backwards; }
 @media (prefers-reduced-motion: reduce) {
   .pf-loader { transition: opacity .3s, visibility 0s .3s; }
   html:not(.pf-loading) .pf-loader { clip-path: none; opacity: 0; }
-  html.pf-entered .intro-kicker, html.pf-entered .intro-title, html.pf-entered .intro-line { animation: none; }
+  html.pf-entered .intro-kicker, html.pf-entered .intro-title, html.pf-entered .intro-line, html.pf-entered .intro-meta { animation: none; }
 }
 /* store link next to "See the full app" where the app is live */
 .chapter-links { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 22px; margin: 24px 0 0 !important; }

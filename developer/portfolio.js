@@ -156,6 +156,7 @@
   })
     .to('.intro-kicker', { opacity: 0, y: -20, duration: .18, ease: 'none' }, .12)
     .to('.intro-line', { opacity: 0, y: -50, duration: .25, ease: 'none' }, .2)
+    .to('.intro-meta', { opacity: 0, y: -60, duration: .22, ease: 'none' }, .16)
     .to(mark, { x: () => dock().x, y: () => dock().y, scale: () => dock().scale, duration: .42, ease: 'power2.inOut' }, .54)
     .to(mark, { opacity: 0, duration: .04, ease: 'none' }, .96);
 

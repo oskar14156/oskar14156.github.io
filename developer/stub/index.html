@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
   <link rel="stylesheet" href="/developer/portfolio.css?v=20">
-  <link rel="stylesheet" href="/developer/product.css?v=20">
+  <link rel="stylesheet" href="/developer/product.css?v=21">
   <script>(function(){var t=null;try{t=localStorage.getItem('pf-theme')}catch(e){}var q=location.search.match(/theme=(light|dark)/);if(q)t=q[1];if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;})();</script>
   <script data-goatcounter="https://oskarpolster.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>   <!-- cookieless visitor stats -->
   <link rel="icon" href="/icon-32.png" sizes="32x32" type="image/png">
@@ -85,6 +85,12 @@
         </div>
         <div class="pp-strip"><figure class="pp-shot "><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-7.jpg" srcset="/developer/shots/w480/stub-7.jpg 480w, /developer/shots/stub-7.jpg 900w" sizes="auto, (max-width: 800px) 46vw, 340px" alt="A real scan: merchant, date, total, currency" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" srcset="/developer/shots/w480/frame-black.png 520w, /developer/shots/frame-black.png 980w" sizes="(max-width: 800px) 46vw, 340px" alt=""></div><figcaption>A real scan: merchant, date, total, currency</figcaption></figure><figure class="pp-shot "><div class="pf-device "><img class="pf-screen" src="/developer/shots/stub-8.jpg" srcset="/developer/shots/w480/stub-8.jpg 480w, /developer/shots/stub-8.jpg 900w" sizes="auto, (max-width: 800px) 46vw, 340px" alt="Every line item, already categorised" loading="lazy"><img class="pf-frame" src="/developer/shots/frame-black.png" srcset="/developer/shots/w480/frame-black.png 520w, /developer/shots/frame-black.png 980w" sizes="(max-width: 800px) 46vw, 340px" alt=""></div><figcaption>Every line item, already categorised</figcaption></figure></div>
       </div>
+    </section>
+
+    <section class="pp-hard site-container" aria-labelledby="hard-title">
+      <p class="pp-no">The hard part</p>
+      <h2 id="hard-title">Reading every line of a real receipt, on the phone.</h2>
+      <dl class="pp-hard-steps"><div><dt>Problem</dt><dd>Receipts come crumpled, in stacks and as PDFs, and a total alone says little about where the money went.</dd></div><div><dt>What I did</dt><dd>Text recognition runs on-device through one custom native module: Vision in Swift, ML Kit in Kotlin. A queue reads photos and PDFs in the background while you keep scanning, and the parsing and money logic sits under 77 Jest test files.</dd></div><div><dt>Result</dt><dd>On a printed BILLA receipt Stub found the store, the date and all nine items in German, translated and categorised them, and noticed it was in euros.</dd></div></dl>
     </section>
 
     <section class="pp-tech site-container" aria-labelledby="tech-title">
